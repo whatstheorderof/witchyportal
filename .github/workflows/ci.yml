@@ -8,10 +8,8 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
-    env:
-      # The build does not need a real database; pages read data at request time.
-      DATABASE_URL: postgres://ci:ci@127.0.0.1:5432/ci
-      AUTH_SECRET: ci-only-secret-not-used-in-any-deployment-000
+    # No DATABASE_URL on purpose: the build must succeed without a database,
+    # exactly like a fresh Vercel project before storage is connected.
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
