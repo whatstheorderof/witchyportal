@@ -343,11 +343,56 @@ export async function saveVideo(_: FormState, fd: FormData): Promise<FormState> 
     sortOrder: Number(str(fd, "sortOrder") || 0), isPlaceholder: bool(fd, "isPlaceholder"), status: pub.status, publishAt: pub.publishAt,
   };
   const id = uuidOrNull(fd, "id");
-  if (id) await db.update(s.videos).set(values).where(eq(s.videos.id, id));
-  else await db.insert(s.videos).values(values);
+  try {
+    if (id) await db.update(s.videos).set(values).where(eq(s.videos.id, id));
+    else await db.insert(s.videos).values(values);
+  } catch {
+    return fail("That video is already on the site.", { url: "Already added" });
+  }
   refreshSite();
   if (!id) redirect("/admin/videos?saved=1");
   return ok("Video saved.");
+}
+
+/** Imports the videos ticked in the "From your channel" list. */
+export async function importChannelVideos(fd: FormData) {
+  await requireAdmin();
+  const ids = fd.getAll("pick").map(String).filter((x) => /^[A-Za-z0-9_-]{11}$/.test(x));
+  const entries = ids.map((id) => ({
+    youtubeId: id,
+    title: str(fd, `title_${id}`).slice(0, 300) || "Ask a Witch",
+    description: str(fd, `desc_${id}`),
+    kind: (str(fd, `kind_${id}`) === "short" ? "short" : "video") as "short" | "video",
+    published: str(fd, `pub_${id}`) ? new Date(str(fd, `pub_${id}`)) : null,
+  }));
+  const { importEntries } = await import("@/lib/youtube-sync");
+  const added = await importEntries(entries, str(fd, "status") === "draft" ? "draft" : "published");
+  refreshSite();
+  redirect(`/admin/videos?imported=${added}`);
+}
+
+/** Adds many videos from pasted links, looking up each title on YouTube. */
+export async function addVideoLinks(_: FormState, fd: FormData): Promise<FormState> {
+  await requireAdmin();
+  const lines = str(fd, "links").split(/\s+/).filter(Boolean).slice(0, 50);
+  if (!lines.length) return fail("Paste at least one YouTube link", { links: "Required" });
+  const bad = lines.filter((l) => !parseYouTubeId(l));
+  if (bad.length) return fail(`These aren't YouTube video links: ${bad.slice(0, 3).join(", ")}`, { links: "Check the links" });
+  const { fetchVideoTitle } = await import("@/lib/youtube");
+  const { importEntries } = await import("@/lib/youtube-sync");
+  const seen = new Set<string>();
+  const entries = [];
+  for (const l of lines) {
+    const id = parseYouTubeId(l)!;
+    if (seen.has(id)) continue;
+    seen.add(id);
+    const kind = /\/shorts\//.test(l) ? "short" as const : "video" as const;
+    entries.push({ youtubeId: id, kind, title: (await fetchVideoTitle(id, kind)) ?? "Ask a Witch", description: "", published: new Date() });
+  }
+  const added = await importEntries(entries, "published");
+  refreshSite();
+  const skipped = entries.length - added;
+  return ok(`Added ${added} video${added === 1 ? "" : "s"}${skipped ? ` (${skipped} already on the site)` : ""}. Edit any title that needs tidying.`);
 }
 
 export async function deleteVideo(fd: FormData) {
@@ -448,7 +493,7 @@ export async function saveSettings(_: FormState, fd: FormData): Promise<FormStat
   const value: Record<string, unknown> = {};
   for (const [k, def] of Object.entries(base)) {
     if (typeof def === "boolean") value[k] = bool(fd, k);
-    else if (k.endsWith("Id")) value[k] = uuidOrNull(fd, k);
+    else if (/(MediaId|RetreatId)$/.test(k)) value[k] = uuidOrNull(fd, k);
     else value[k] = String(fd.get(k) ?? "").trim();
   }
   if (key === "contact") {
@@ -458,6 +503,11 @@ export async function saveSettings(_: FormState, fd: FormData): Promise<FormStat
       const v = String(value[k] ?? "");
       if (v && !/^https:\/\//.test(v)) return fail("Social links must start with https://", { [k]: "Must start with https://" });
     }
+  }
+  if (key === "youtube") {
+    if (value.channelId && !/^UC[A-Za-z0-9_-]{22}$/.test(String(value.channelId))) return fail("The channel id starts with UC and is 24 characters long", { channelId: "Invalid channel id" });
+    if (!["off", "ask-a-witch", "all"].includes(String(value.autoImport))) return fail("Choose an automatic import option", { autoImport: "Invalid" });
+    if (value.channelUrl && !/^https:\/\/(www\.)?youtube\.com\//.test(String(value.channelUrl))) return fail("Channel link must be a youtube.com address", { channelUrl: "Invalid" });
   }
   await saveSetting(key, value as never);
   refreshSite();

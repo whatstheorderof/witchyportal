@@ -9,7 +9,7 @@
 | Selecting (a retreat, dates, an option) | Retreat list → retreat page → choose dates → choose option → review → pay; sticky "Book now" bar on phones | — |
 | Sections beyond retreats to keep people's interest | Discover hub, Tips, Articles, Astrology, Ask a Witch, Birth Chart, newsletter sign-up | Content, videos |
 | Witchy tips to keep people coming back and convince them to book | Tips page with topic filters; new tips on the homepage each week; **every content page ends with an invitation to the featured retreat** | Content → Tips |
-| Ask a Witch page linked to YouTube Shorts/videos | Ask a Witch page: vertical Shorts row + landscape videos, privacy-friendly embeds | Ask a Witch videos |
+| Ask a Witch page linked to YouTube Shorts/videos | Ask a Witch hub for @YuliaMoonPortal: latest answer featured, Shorts row, longer videos, all playable on the page; subscribe button; daily auto-import of new Ask a Witch uploads | Ask a Witch videos; Settings → YouTube |
 | Birth chart / natal chart so they can read about themselves | Birth Chart page: real calculations, chart wheel, Sun/Moon/Rising, every planet with sign, house and meaning, aspects; handles unknown birth time | Interpretation text in `src/lib/astro/interpretations.ts` |
 | Short articles about witchy stuff | Articles page (topic filters, publish dates) + article pages | Content → Articles |
 | Short tips, affirmations, motivations | Tips page mixes tips, **affirmations** and **motivations**, each with its own filter and card style | Content → Tips / Affirmations / Motivations |

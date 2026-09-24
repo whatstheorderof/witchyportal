@@ -37,6 +37,16 @@ export interface ContactSettings {
   responseTime: string;
 }
 
+export interface YouTubeSettings {
+  /** Channel id (starts with UC…) — used to read the channel's public feed */
+  channelId: string;
+  channelUrl: string;
+  /** Daily automatic import: off | ask-a-witch (matching titles only) | all */
+  autoImport: string;
+  /** Words that mark a video as Ask a Witch (comma separated, case-insensitive) */
+  matchWords: string;
+}
+
 export interface SiteSettings {
   announcement: string;
   newsletterTitle: string;
@@ -71,10 +81,16 @@ export const DEFAULTS = {
   contact: {
     email: "hello@example.com",
     instagram: "",
-    youtube: "",
+    youtube: "https://www.youtube.com/@YuliaMoonPortal",
     tiktok: "",
     responseTime: "Yulia usually replies within 2–3 working days.",
   } as ContactSettings,
+  youtube: {
+    channelId: "UCj3-UQXzdWlMcUTAJOMigLw",
+    channelUrl: "https://www.youtube.com/@YuliaMoonPortal",
+    autoImport: "ask-a-witch",
+    matchWords: "ask a witch, askawitch, #askawitch",
+  } as YouTubeSettings,
   site: {
     announcement: "",
     newsletterTitle: "Letters from the shore",

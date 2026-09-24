@@ -243,9 +243,11 @@ export const videos = pgTable("videos", {
   topic: text("topic").notNull().default(""),
   sortOrder: integer("sort_order").default(0).notNull(),
   isPlaceholder: boolean("is_placeholder").default(false).notNull(),
+  /** "manual" or "channel" (imported from the YouTube channel feed) */
+  source: text("source").notNull().default("manual"),
   ...publishing,
   ...timestamps,
-});
+}, (t) => [uniqueIndex("videos_youtube_id_idx").on(t.youtubeId)]);
 
 export const faqs = pgTable("faqs", {
   id: uuid("id").defaultRandom().primaryKey(),

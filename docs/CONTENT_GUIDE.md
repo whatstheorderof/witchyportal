@@ -39,7 +39,14 @@ Tip: write several in one sitting and **schedule** them for the coming weeks.
 
 ## Ask a Witch videos
 
-*Ask a Witch videos → Add a video*. Paste any YouTube link (normal, youtu.be or Shorts) and choose **Short** (vertical) or **Video**. Videos only load from YouTube when a visitor presses play.
+The Ask a Witch page is a hub for your YouTube channel (@YuliaMoonPortal): the newest answer plays large at the top, then a row of Shorts and a grid of longer videos, all watchable on the site.
+
+- **Automatic:** once a day the site checks your channel and adds new uploads whose title or description mentions "Ask a Witch" (or #askawitch). Change this in *Settings → YouTube* (Ask a Witch only / every upload / off, and the matching words).
+- **From your channel:** *Ask a Witch videos → Check channel for videos* lists your latest uploads; tick the ones you want and press **Add ticked videos**.
+- **Older videos:** paste links (one per line) into **Paste links** — titles are filled in from YouTube.
+- Edit any video to change its title, add a topic (topics become filter buttons) or hide it. Videos only load from YouTube when a visitor presses play.
+
+Tip: put "Ask a Witch" in the title or description of those uploads so they're picked up automatically.
 
 ## Retreats
 

@@ -15,6 +15,13 @@
       "when": 1790250336791,
       "tag": "0001_motivation_and_benefits",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790250800455,
+      "tag": "0002_video_source",
+      "breakpoints": true
     }
   ]
 }

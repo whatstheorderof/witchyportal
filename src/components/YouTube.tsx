@@ -26,7 +26,7 @@ export function YouTubeEmbed({ id, title, vertical = false }: { id: string; titl
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={thumb}
-            onError={(e) => { const img = e.currentTarget; if (!img.dataset.fallback) { img.dataset.fallback = "1"; img.src = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`; } }}
+            onError={(e) => { const img = e.currentTarget; if (!img.dataset.fallback) { img.dataset.fallback = "1"; img.src = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`; } else { img.style.visibility = "hidden"; } }}
             alt=""
             loading="lazy"
             className="absolute inset-0 h-full w-full object-cover opacity-90 transition duration-500 group-hover:scale-[1.03] group-hover:opacity-100"

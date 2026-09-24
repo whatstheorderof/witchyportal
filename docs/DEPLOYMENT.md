@@ -4,17 +4,16 @@ Code lives in GitHub; Vercel builds every push. `main` is production; every othe
 
 ## 1. Create the GitHub repository
 
-1. On GitHub (account `whatstheorderof`) create a new **private** repository named `witchy-portal`. Don't add a README or .gitignore (the project has them).
+1. On GitHub (account `whatstheorderof`) create a new **private** repository named `witchyportal` (already created: https://github.com/whatstheorderof/witchyportal). Don't add a README or .gitignore (the project has them).
 2. From the project folder:
    ```bash
-   git remote add origin https://github.com/whatstheorderof/witchy-portal.git
-   git push -u origin main
+      git push -u origin main
    ```
 3. Recommended: *Settings → Branches → Add rule* for `main`: require a pull request and the **CI** status check to pass before merging.
 
 ## 2. Create the Vercel project
 
-1. vercel.com → **Add New… → Project → Import** `witchy-portal`. Framework is detected as Next.js; the build command comes from `vercel.json` (`npm run vercel-build` = run migrations, then build).
+1. vercel.com → **Add New… → Project → Import** `witchyportal`. Framework is detected as Next.js; the build command comes from `vercel.json` (`npm run vercel-build` = run migrations, then build).
 2. Don't deploy yet — add storage first:
    - **Storage → Create → Neon (Postgres)** via the Vercel Marketplace (choose the London region, `aws-eu-west-2`, to match the `lhr1` functions region in `vercel.json`), connect it to the project for *Production, Preview and Development*. Enable **"Create a database branch for each preview deployment"** so previews never touch production data. This sets `DATABASE_URL` and `DATABASE_URL_UNPOOLED`.
    - **Storage → Create → Blob**, connect to all environments. This sets `BLOB_READ_WRITE_TOKEN`. (Optionally create a second Blob store for Preview to keep test uploads separate.)
@@ -27,8 +26,11 @@ Code lives in GitHub; Vercel builds every push. `main` is production; every othe
 | `NEXT_PUBLIC_SITE_TIMEZONE` | `Europe/London` | `Europe/London` | `Europe/London` |
 | `PAYMENT_MODE` | leave empty (= live) | leave empty (= test) | empty |
 | `PAYMENT_ALLOWED_HOSTS` | only if needed | same | same |
+| `CRON_SECRET` | random value (`openssl rand -hex 32`) | — | — |
 
 4. **Deploy.** The first build creates the tables.
+
+The daily **YouTube import** (Ask a Witch) runs as a Vercel Cron job at 07:00 UTC (`vercel.json`). It only runs on Production and needs `CRON_SECRET`. What it imports is set in Admin → Settings → YouTube.
 
 ## 3. First-time data in each database
 

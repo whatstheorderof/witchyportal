@@ -2,5 +2,13 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
   "buildCommand": "npm run vercel-build",
-  "regions": ["lhr1"]
+  "regions": [
+    "lhr1"
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/youtube-sync",
+      "schedule": "0 7 * * *"
+    }
+  ]
 }

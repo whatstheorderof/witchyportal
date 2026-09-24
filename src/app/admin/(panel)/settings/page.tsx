@@ -12,6 +12,7 @@ import { pickerMedia } from "@/lib/admin-data";
 export const metadata = { title: "Settings" };
 
 export default async function SettingsAdmin() {
+  const yt = await getSetting("youtube");
   const [home, about, contact, site, media, rs] = await Promise.all([
     getSetting("home"), getSetting("about"), getSetting("contact"), getSetting("site"), pickerMedia(),
     db.select({ id: retreats.id, title: retreats.title }).from(retreats).orderBy(asc(retreats.sortOrder)),
@@ -19,7 +20,7 @@ export default async function SettingsAdmin() {
   return (
     <>
       <AdminHeader title="Settings" intro="Homepage, About page, contact details and newsletter text." />
-      <nav className="mb-6 flex flex-wrap gap-2 text-sm">{[["home", "Homepage"], ["about", "About Yulia"], ["contact", "Contact"], ["site", "Newsletter"]].map(([h, l]) => <a key={h} href={`#${h}`} className="chip min-h-9">{l}</a>)}</nav>
+      <nav className="mb-6 flex flex-wrap gap-2 text-sm">{[["home", "Homepage"], ["about", "About Yulia"], ["contact", "Contact"], ["youtube", "YouTube"], ["site", "Newsletter"]].map(([h, l]) => <a key={h} href={`#${h}`} className="chip min-h-9">{l}</a>)}</nav>
       <div className="grid gap-8">
         <Panel title="Homepage" id="home" intro={<>Feature cards are in <Link className="link-underline" href="/admin/highlights">Homepage features</Link>.</>}>
           <AdminForm action={saveSettings}>
@@ -59,6 +60,17 @@ export default async function SettingsAdmin() {
               <F label="YouTube URL" name="youtube" defaultValue={contact.youtube} mono />
               <F label="TikTok URL" name="tiktok" defaultValue={contact.tiktok} mono />
             </div>
+          </AdminForm>
+        </Panel>
+        <Panel title="YouTube channel" id="youtube" intro="Powers the Ask a Witch hub and the daily automatic import.">
+          <AdminForm action={saveSettings}>
+            <input type="hidden" name="key" value="youtube" />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <F label="Channel link" name="channelUrl" defaultValue={yt.channelUrl} mono />
+              <F label="Channel id" name="channelId" defaultValue={yt.channelId} mono hint="Starts with UC. Found in YouTube Studio → Settings → Channel → Advanced." />
+            </div>
+            <Select label="Automatic daily import" name="autoImport" defaultValue={yt.autoImport} options={[{ value: "ask-a-witch", label: "Ask a Witch videos only (matching words below)" }, { value: "all", label: "Every new upload" }, { value: "off", label: "Off — I'll add videos myself" }]} />
+            <F label="Ask a Witch matching words" name="matchWords" defaultValue={yt.matchWords} hint="Comma separated. A new upload is imported if its title or description contains any of these." />
           </AdminForm>
         </Panel>
         <Panel title="Newsletter" id="site">
