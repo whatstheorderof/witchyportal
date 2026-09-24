@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Witchy Portal
 
-## Getting Started
+A mobile-first retreat and lifestyle web app for **Yulia Moon** — retreat discovery and booking, witchy tips, affirmations, astrology, Ask a Witch videos and a real birth-chart calculator, with a protected admin for publishing without code changes.
 
-First, run the development server:
+**Stack:** Next.js 16 (App Router, TypeScript) · Tailwind CSS 4 · Postgres (Neon) with Drizzle ORM · Vercel Blob for media · Vercel hosting · GitHub for code.
+
+## Quick start (local)
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local          # then fill in DATABASE_URL and AUTH_SECRET
+npm run db:migrate                   # create tables
+npm run db:seed                      # starter photos + clearly marked sample content
+npm run admin:create -- you@example.com "a long passphrase" "Yulia"
+npm run dev                          # http://localhost:3000  ·  admin at /admin
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Scripts
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Local development server |
+| `npm run build` / `start` | Production build / serve |
+| `npm run lint` · `typecheck` · `test` | Quality checks (also run in GitHub Actions) |
+| `npm run db:generate` | Create a migration after editing `src/db/schema.ts` |
+| `npm run db:migrate` | Apply migrations (runs automatically on every Vercel build) |
+| `npm run db:seed` | Insert starter/sample content into empty tables |
+| `npm run admin:create` | Create or reset an admin login |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Documentation
 
-## Learn More
+- [docs/SETUP.md](docs/SETUP.md) — local setup, database, admin accounts
+- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) — GitHub → Vercel, environments, previews, custom domain
+- [docs/CONTENT_GUIDE.md](docs/CONTENT_GUIDE.md) — how Yulia edits and publishes content
+- [docs/BOOKINGS.md](docs/BOOKINGS.md) — booking model, payment-link setup, manual operating mode
+- [docs/BIRTH_CHART.md](docs/BIRTH_CHART.md) — calculation provider, conventions, verification
+- [docs/LAUNCH_CHECKLIST.md](docs/LAUNCH_CHECKLIST.md) — what's placeholder and what Yulia must supply
 
-To learn more about Next.js, take a look at the following resources:
+## Project structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+  app/(site)/        public pages (home, retreats, discover, birth chart…)
+  app/admin/         protected admin (login + panel) and server actions
+  app/api/           checkout redirect, chart calculation, place search, uploads, CSV export
+  components/        UI components (admin/ and birth-chart/ subfolders)
+  db/schema.ts       database schema (retreats → departures → booking options, content, submissions)
+  lib/               data queries, auth, validation, money/dates, astro engine
+  proxy.ts           guards /admin (Next 16 "proxy", formerly middleware)
+scripts/             migrate, seed, create-admin
+drizzle/             SQL migrations (committed)
+tests/               birth-chart accuracy and time-zone tests
+```
