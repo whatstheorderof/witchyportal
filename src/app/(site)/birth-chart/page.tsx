@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/Section";
 import { BirthChart } from "@/components/birth-chart/BirthChart";
+import { RetreatPromo } from "@/components/RetreatPromo";
 
 export const metadata: Metadata = {
   title: "Birth Chart",
@@ -14,6 +15,7 @@ export default function BirthChartPage() {
       <div className="container-page py-12 lg:py-20">
         <BirthChart />
       </div>
+      <RetreatPromo eyebrow="Now you know your stars" />
     </>
   );
 }

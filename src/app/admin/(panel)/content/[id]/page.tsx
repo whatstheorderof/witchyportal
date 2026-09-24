@@ -22,7 +22,7 @@ export default async function EditPost({ params, searchParams }: { params: Promi
   const media = await pickerMedia();
   const { created } = await searchParams;
   const previewHref = p.type === "article" ? `/articles/${p.slug}?preview=1` : p.type === "astrology" ? `/astrology/${p.slug}?preview=1` : null;
-  const short = p.type === "tip" || p.type === "affirmation";
+  const short = p.type === "tip" || p.type === "affirmation" || p.type === "motivation";
   return (
     <>
       <AdminHeader
@@ -43,7 +43,7 @@ export default async function EditPost({ params, searchParams }: { params: Promi
               {p.type === "astrology" ? <F label="Period" name="period" defaultValue={p.period} placeholder="e.g. Week of 21 Sept · Libra season" /> : <F label="Web address (slug)" name="slug" defaultValue={p.slug} mono required />}
             </div>
             {p.type === "astrology" && <F label="Web address (slug)" name="slug" defaultValue={p.slug} mono required />}
-            {p.type !== "affirmation" && <F label={short ? "Tip text (shown on the card)" : "Excerpt"} name="excerpt" defaultValue={p.excerpt} textarea rows={3} />}
+            {p.type !== "affirmation" && <F label={short ? (p.type === "motivation" ? "Motivation text (shown on the card)" : "Tip text (shown on the card)") : "Excerpt"} name="excerpt" defaultValue={p.excerpt} textarea rows={3} />}
             {!short && <F label="Body" name="body" defaultValue={p.body} textarea rows={16} hint="Markdown: ## Heading, **bold**, *italic*, - lists, > quotes, [link](https://…)." />}
             {short && <input type="hidden" name="body" value={p.body} />}
             {!short && <MediaPicker name="coverMediaId" label="Cover image" media={media} defaultValue={p.coverMediaId} />}

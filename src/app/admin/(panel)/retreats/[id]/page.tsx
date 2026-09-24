@@ -95,6 +95,7 @@ export default async function EditRetreat({ params, searchParams }: { params: Pr
             <F label="Concept" name="concept" defaultValue={r.concept} textarea rows={6} hint="Markdown supported: **bold**, *italic*, lists, [links](https://…)." />
             <F label="Yulia's personal message" name="personalMessage" defaultValue={r.personalMessage} textarea rows={5} />
             <F label="Intended guest experience" name="guestExperience" defaultValue={r.guestExperience} textarea rows={5} />
+            <F label="What guests will take home (one per line)" name="benefits" defaultValue={r.benefits.join("\n")} textarea rows={5} hint="How the retreat helps — what Yulia hopes the women gain. Shown as a highlighted list." />
             <Repeater name="activities" label="Activities" addLabel="Add activity" initial={r.activities} fields={[{ key: "title", label: "Title" }, { key: "description", label: "Description", textarea: true }]} />
             <Repeater name="itinerary" label="Sample itinerary" addLabel="Add day" initial={r.itinerary} fields={[{ key: "day", label: "Day label" }, { key: "title", label: "Title" }, { key: "description", label: "Description", textarea: true }]} />
             <div className="grid gap-4 sm:grid-cols-2">
@@ -104,7 +105,7 @@ export default async function EditRetreat({ params, searchParams }: { params: Pr
             <F label="Accommodation" name="accommodation" defaultValue={r.accommodation} textarea rows={5} />
             <F label="Retreat-specific terms" name="terms" defaultValue={r.terms} textarea rows={5} />
             <MediaPicker name="heroMediaId" label="Hero image" media={media} defaultValue={r.heroMediaId} />
-            <MediaPicker name="gallery" label="Gallery" media={media} defaultValue={r.gallery} multiple hint="Order matters — the first image is shown largest." />
+            <MediaPicker name="gallery" label="Gallery (photos and dancing footage)" media={media} defaultValue={r.gallery} multiple kind="any" hint="Order matters — the first item is shown largest. Uploaded videos play with sound off and controls." />
             <F label="YouTube video (optional)" name="videoUrl" defaultValue={r.videoUrl} mono placeholder="https://youtu.be/…" />
             <div className="grid gap-4 sm:grid-cols-2">
               <F label="SEO title" name="seoTitle" defaultValue={r.seoTitle} maxLength={70} />

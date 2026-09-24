@@ -64,6 +64,11 @@ async function main() {
           "[Placeholder] A personal note from Yulia to the women considering this retreat — in her own words.",
         guestExperience:
           "[Placeholder] Describe the intended guest experience: the pace of the days, how much free time there is, the size of the group and the feeling of the space.",
+        benefits: [
+          "[Placeholder] What Yulia hopes each woman takes home — e.g. a feeling, a practice, a new confidence",
+          "[Placeholder] How the retreat helps in everyday life afterwards",
+          "[Placeholder] A ritual or tool to keep using at home",
+        ],
         activities: [
           { title: "[Activity] Sunrise movement", description: "[Placeholder] e.g. gentle dance or movement on the beach — replace with the real activity." },
           { title: "[Activity] Moon ritual circle", description: "[Placeholder] Describe the ritual or circle practice." },
@@ -124,6 +129,7 @@ async function main() {
       { type: "tip", slug: "sample-tip-barefoot", title: "Five barefoot minutes", excerpt: "Stand barefoot on grass or sand and notice three things you can hear. [Sample tip — replace]", topic: "Grounding", status: "published", publishAt: days(6), isPlaceholder: true },
       { type: "affirmation", slug: "sample-affirmation-tide", title: "Like the tide, I am allowed to rise and rest", status: "published", publishAt: days(0), isPlaceholder: true, topic: "Self-trust" },
       { type: "affirmation", slug: "sample-affirmation-voice", title: "My intuition is a voice worth listening to", status: "published", publishAt: days(4), isPlaceholder: true, topic: "Intuition" },
+      { type: "motivation", slug: "sample-motivation-small-steps", title: "Small steps still move you forward", excerpt: "You don't need a full moon or a perfect plan to begin. One small, kind action today is enough. [Sample motivation — replace]", topic: "Motivation", status: "published", publishAt: days(2), isPlaceholder: true },
       { type: "astrology", slug: "sample-libra-season", title: "[Sample] Libra season: finding your balance", period: "Libra season", topic: "Seasonal", excerpt: "[Sample astrology post — Yulia to write her own weekly or seasonal wisdom here.]", body: "[Sample body text. Replace with Yulia's own astrology post.]\n\nLibra season traditionally invites reflection on balance and relationships. Use this space for Yulia's interpretation and suggested ritual.", coverMediaId: mediaIds.veil, status: "published", publishAt: days(2), isPlaceholder: true },
       { type: "article", slug: "sample-article-beginning-a-practice", title: "[Sample] Beginning a gentle daily practice", topic: "Rituals", excerpt: "[Sample article excerpt — replace with Yulia's writing.]", body: "[Sample article body — replace with Yulia's writing.]\n\n## A heading\n\nArticles support **Markdown**: headings, lists, links and quotes.\n\n> A pull quote looks like this.\n\n- A list item\n- Another list item", coverMediaId: mediaIds.sand, status: "published", publishAt: days(5), isPlaceholder: true },
       { type: "article", slug: "sample-article-sea-and-self", title: "[Sample] What the sea teaches about rest", topic: "Nature", excerpt: "[Sample article excerpt — replace with Yulia's writing.]", body: "[Sample article body — replace.]", coverMediaId: mediaIds.sea, status: "published", publishAt: days(9), isPlaceholder: true },

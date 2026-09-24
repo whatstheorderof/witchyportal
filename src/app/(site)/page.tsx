@@ -12,12 +12,13 @@ import { formatDateRange } from "@/lib/dates";
 import { formatMoney } from "@/lib/money";
 
 export default async function HomePage() {
-  const [home, retreats, highlights, tips, affirmations, astro, articles, shorts] = await Promise.all([
+  const [home, retreats, highlights, tips, affirmations, motivations, astro, articles, shorts] = await Promise.all([
     getSetting("home"),
     listRetreats(),
     listHighlights(),
     listPosts("tip", { limit: 2 }),
     listPosts("affirmation", { limit: 1 }),
+    listPosts("motivation", { limit: 1 }),
     listPosts("astrology", { limit: 1 }),
     listPosts("article", { limit: 3 }),
     listVideos({ kind: "short", limit: 8 }),
@@ -28,7 +29,7 @@ export default async function HomePage() {
   const introImg = home.introMediaId ? mediaMap.get(home.introMediaId) : null;
   const featured = retreats.find((r) => r.id === home.featuredRetreatId) ?? retreats[0];
   const others = retreats.filter((r) => r.id !== featured?.id).slice(0, 2);
-  const weekly = [...affirmations, ...tips];
+  const weekly = [...affirmations, ...motivations, ...tips];
 
   return (
     <>

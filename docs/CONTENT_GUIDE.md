@@ -4,6 +4,8 @@ Sign in at **your-domain.com/admin**. Everything you save goes live on the site 
 
 ## Publishing states
 
+Tips, astrology, articles, Ask a Witch and the birth chart each finish with an invitation to the featured retreat, so visitors who come for the content are led towards booking.
+
 Every retreat, post, video, FAQ, homepage feature and policy page has a **Status**:
 
 | Status | What visitors see |
@@ -19,6 +21,7 @@ Times are UK time (Europe/London).
 
 - **Tips** — *Content → Tips*. Title + a short tip text + topic (topics become filter buttons).
 - **Affirmations** — the title *is* the affirmation.
+- **Motivations** — *Content → Motivations*. A short title plus a few encouraging lines.
 - **Astrology** — add a *Period* such as "Libra season" or "Week of 21 September", an excerpt, the full text and optionally a cover image.
 - **Articles** — title, topic, excerpt, body and cover image.
 
@@ -42,7 +45,7 @@ Tip: write several in one sitting and **schedule** them for the coming weeks.
 
 *Retreats & dates → Edit*. A retreat has:
 
-1. **Details** — concept, your personal message, guest experience, activities, sample itinerary, included / not included, accommodation, terms, hero image and gallery.
+1. **Details** — concept, your personal message, guest experience, **what guests will take home** (one benefit per line), activities, sample itinerary, included / not included, accommodation, terms, hero image and a gallery of photos **and dancing footage** (uploaded videos play muted with controls).
 2. **Dates** (departures) — each with its own availability.
 3. **Booking options** for each date — label, price, deposit or full payment, and payment links. See [BOOKINGS.md](BOOKINGS.md).
 4. **FAQs** for that retreat.

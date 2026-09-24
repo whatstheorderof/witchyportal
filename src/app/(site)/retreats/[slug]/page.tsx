@@ -67,7 +67,7 @@ export default async function RetreatPage(props: Props) {
 
   const sections = [
     { id: "overview", label: "Overview", show: true },
-    { id: "experience", label: "Experience", show: Boolean(retreat.guestExperience || retreat.activities.length) },
+    { id: "experience", label: "Experience", show: Boolean(retreat.guestExperience || retreat.activities.length || retreat.benefits.length) },
     { id: "itinerary", label: "Itinerary", show: retreat.itinerary.length > 0 },
     { id: "stay", label: "Stay", show: Boolean(retreat.accommodation) },
     { id: "book", label: "Dates & prices", show: true },
@@ -143,7 +143,7 @@ export default async function RetreatPage(props: Props) {
           {/* GALLERY */}
           {(retreat.gallery.length > 0 || videoId) && (
             <section className="mt-16" aria-label="Gallery">
-              <div tabIndex={0} aria-label="Photo gallery — scroll sideways" className="no-scrollbar -mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0">
+              <div tabIndex={0} aria-label="Photo and video gallery — scroll sideways" className="no-scrollbar -mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0">
                 {videoId && (
                   <div className="w-[85vw] shrink-0 snap-center sm:col-span-2 sm:w-auto">
                     <YouTubeEmbed id={videoId} title={`${retreat.title} — video`} />
@@ -151,7 +151,11 @@ export default async function RetreatPage(props: Props) {
                 )}
                 {retreat.gallery.map((m, i) => (
                   <figure key={m.id} className={`relative w-[80vw] shrink-0 snap-center overflow-hidden rounded-(--radius-card) bg-sand sm:w-auto ${i % 3 === 0 ? "aspect-[4/5] sm:row-span-2 sm:aspect-auto" : "aspect-[4/5] sm:aspect-[4/3]"}`}>
-                    <MediaImage media={m} sizes="(min-width:640px) 40vw, 80vw" />
+                    {m.kind === "video" ? (
+                      <video src={m.url} poster={m.posterUrl ?? undefined} aria-label={m.alt || `${retreat.title} — video`} controls muted loop playsInline preload="metadata" className="absolute inset-0 h-full w-full object-cover" />
+                    ) : (
+                      <MediaImage media={m} sizes="(min-width:640px) 40vw, 80vw" />
+                    )}
                     {m.caption && <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-plum-deep/80 to-transparent p-4 text-sm text-ivory">{m.caption}</figcaption>}
                   </figure>
                 ))}
@@ -160,11 +164,19 @@ export default async function RetreatPage(props: Props) {
           )}
 
           {/* EXPERIENCE */}
-          {(retreat.guestExperience || retreat.activities.length > 0) && (
+          {(retreat.guestExperience || retreat.activities.length > 0 || retreat.benefits.length > 0) && (
             <section id="experience" className="mt-20 scroll-mt-36">
               <p className="eyebrow">Your experience</p>
               <h2 className="display-md mt-3">What your days will feel like</h2>
               {retreat.guestExperience && <div className="mt-6"><Markdown>{retreat.guestExperience}</Markdown></div>}
+              {retreat.benefits.length > 0 && (
+                <div className="mt-10 rounded-[2rem] bg-lavender/35 p-6 sm:p-8">
+                  <h3 className="font-display text-2xl text-plum">What you&rsquo;ll take home</h3>
+                  <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+                    {retreat.benefits.map((b, i) => <li key={i} className="flex gap-3"><span aria-hidden className="text-blush-deep">✦</span>{b}</li>)}
+                  </ul>
+                </div>
+              )}
               {retreat.activities.length > 0 && (
                 <ul className="mt-10 grid gap-4 sm:grid-cols-2">
                   {retreat.activities.map((a, i) => (

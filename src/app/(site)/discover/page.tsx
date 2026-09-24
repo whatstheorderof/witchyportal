@@ -5,13 +5,15 @@ import { PageHero, SectionHeading } from "@/components/Section";
 import { ArticleCard, AstrologyCard, ShortCard, TipCard } from "@/components/PostCards";
 import { discoverNav } from "@/components/nav";
 import { ArrowRight } from "@/components/Icons";
+import { RetreatPromo } from "@/components/RetreatPromo";
 
 export const metadata: Metadata = { title: "Discover", description: "Witchy tips, affirmations, astrology, articles and Ask a Witch videos." };
 
 export default async function DiscoverPage() {
-  const [tips, affirmations, astro, articles, shorts] = await Promise.all([
+  const [tips, affirmations, motivations, astro, articles, shorts] = await Promise.all([
     listPosts("tip", { limit: 3 }),
     listPosts("affirmation", { limit: 2 }),
+    listPosts("motivation", { limit: 1 }),
     listPosts("astrology", { limit: 2 }),
     listPosts("article", { limit: 3 }),
     listVideos({ kind: "short", limit: 8 }),
@@ -34,9 +36,9 @@ export default async function DiscoverPage() {
 
       {[...affirmations, ...tips].length > 0 && (
         <section className="container-page py-16 lg:py-24">
-          <SectionHeading eyebrow="Witchy tips" title="Tips & affirmations" href="/tips" />
+          <SectionHeading eyebrow="Witchy tips" title="Tips, affirmations & motivation" href="/tips" />
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {[...affirmations.slice(0, 1), ...tips].slice(0, 3).map((p, i) => <TipCard key={p.id} post={p} index={i} />)}
+            {[...affirmations.slice(0, 1), ...motivations, ...tips].slice(0, 3).map((p, i) => <TipCard key={p.id} post={p} index={i} />)}
           </div>
         </section>
       )}
@@ -58,6 +60,7 @@ export default async function DiscoverPage() {
           <div className="mt-10 grid gap-10 md:grid-cols-3">{articles.map((a) => <ArticleCard key={a.id} post={a} />)}</div>
         </section>
       )}
+      <RetreatPromo />
     </>
   );
 }

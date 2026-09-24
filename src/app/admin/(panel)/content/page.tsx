@@ -13,6 +13,7 @@ const LABELS: Record<string, { title: string; one: string; intro: string; public
   article: { title: "Articles", one: "article", intro: "Concise articles with a topic and publish date.", publicHref: "/articles" },
   tip: { title: "Witchy tips", one: "tip", intro: "Short, browsable tips. The excerpt is what's shown on the card.", publicHref: "/tips" },
   affirmation: { title: "Affirmations", one: "affirmation", intro: "The title is the affirmation itself.", publicHref: "/tips?kind=affirmation" },
+  motivation: { title: "Motivations", one: "motivation", intro: "Short motivational notes — a title plus a few encouraging lines.", publicHref: "/tips?kind=motivation" },
   astrology: { title: "Astrology", one: "astrology post", intro: "Weekly or seasonal wisdom. Add a period label like “Libra season”.", publicHref: "/astrology" },
 };
 

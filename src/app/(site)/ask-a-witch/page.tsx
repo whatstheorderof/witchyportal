@@ -3,6 +3,7 @@ import { listVideos } from "@/lib/queries";
 import { PageHero, EmptyState, SectionHeading } from "@/components/Section";
 import { ShortCard, VideoCard } from "@/components/PostCards";
 import { TopicFilter } from "@/components/TopicFilter";
+import { RetreatPromo } from "@/components/RetreatPromo";
 
 export const metadata: Metadata = { title: "Ask a Witch", description: "Yulia Moon answers your questions in videos and Shorts." };
 
@@ -38,6 +39,7 @@ export default async function AskAWitchPage({ searchParams }: { searchParams: Pr
           )}
         </>
       )}
+      <RetreatPromo eyebrow="Ask Yulia in person" />
     </>
   );
 }

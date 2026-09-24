@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getPost } from "@/lib/queries";
 import { getAdmin } from "@/lib/auth";
 import { PostDetail } from "@/components/PostDetail";
+import { RetreatPromo } from "@/components/RetreatPromo";
 
 type Props = { params: Promise<{ slug: string }>; searchParams: Promise<{ preview?: string }> };
 
@@ -21,5 +22,10 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 export default async function AstrologyPostPage(props: Props) {
   const { post, isPreview } = await load(props);
   if (!post) notFound();
-  return <PostDetail post={post} back="/astrology" backLabel="All astrology" isPreview={isPreview} />;
+  return (
+    <>
+      <PostDetail post={post} back="/astrology" backLabel="All astrology" isPreview={isPreview} />
+      <RetreatPromo />
+    </>
+  );
 }

@@ -39,6 +39,7 @@ export const postType = pgEnum("post_type", [
   "article",
   "tip",
   "affirmation",
+  "motivation",
   "astrology",
 ]);
 
@@ -123,6 +124,8 @@ export const retreats = pgTable("retreats", {
   concept: text("concept").notNull().default(""),
   personalMessage: text("personal_message").notNull().default(""),
   guestExperience: text("guest_experience").notNull().default(""),
+  /** "What you'll take home" — what Yulia hopes guests gain, one per line */
+  benefits: jsonb("benefits").$type<string[]>().default([]).notNull(),
   activities: jsonb("activities").$type<Activity[]>().default([]).notNull(),
   itinerary: jsonb("itinerary").$type<ItineraryDay[]>().default([]).notNull(),
   inclusions: jsonb("inclusions").$type<string[]>().default([]).notNull(),

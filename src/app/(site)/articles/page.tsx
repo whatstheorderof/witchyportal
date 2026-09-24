@@ -3,6 +3,7 @@ import { listPosts, listTopics } from "@/lib/queries";
 import { PageHero, EmptyState } from "@/components/Section";
 import { ArticleCard } from "@/components/PostCards";
 import { TopicFilter } from "@/components/TopicFilter";
+import { RetreatPromo } from "@/components/RetreatPromo";
 
 export const metadata: Metadata = { title: "Articles", description: "Short articles on ritual, movement and living by the moon." };
 
@@ -21,6 +22,7 @@ export default async function ArticlesPage({ searchParams }: { searchParams: Pro
           <div className="grid gap-x-10 gap-y-14 md:grid-cols-2 lg:grid-cols-3">{posts.map((p) => <ArticleCard key={p.id} post={p} />)}</div>
         )}
       </section>
+      <RetreatPromo />
     </>
   );
 }

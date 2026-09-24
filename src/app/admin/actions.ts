@@ -147,6 +147,7 @@ export async function updateRetreat(_: FormState, fd: FormData): Promise<FormSta
       concept: str(fd, "concept"),
       personalMessage: str(fd, "personalMessage"),
       guestExperience: str(fd, "guestExperience"),
+      benefits: lines(fd, "benefits"),
       accommodation: str(fd, "accommodation"),
       terms: str(fd, "terms"),
       inclusions: lines(fd, "inclusions"),

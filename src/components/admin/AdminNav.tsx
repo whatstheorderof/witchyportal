@@ -13,6 +13,7 @@ const groups = [
       { href: "/admin/content?type=article", label: "Articles" },
       { href: "/admin/content?type=tip", label: "Tips" },
       { href: "/admin/content?type=affirmation", label: "Affirmations" },
+      { href: "/admin/content?type=motivation", label: "Motivations" },
       { href: "/admin/content?type=astrology", label: "Astrology" },
       { href: "/admin/videos", label: "Ask a Witch videos" },
       { href: "/admin/faqs", label: "FAQs" },

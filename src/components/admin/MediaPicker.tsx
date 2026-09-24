@@ -13,11 +13,11 @@ function Thumb({ m, className = "" }: { m: PickerMedia; className?: string }) {
   );
 }
 
-export function MediaPicker({ name, label, media, defaultValue, multiple = false, kind = "image", hint }: { name: string; label: string; media: PickerMedia[]; defaultValue?: string | string[] | null; multiple?: boolean; kind?: "image" | "video"; hint?: string }) {
+export function MediaPicker({ name, label, media, defaultValue, multiple = false, kind = "image", hint }: { name: string; label: string; media: PickerMedia[]; defaultValue?: string | string[] | null; multiple?: boolean; kind?: "image" | "video" | "any"; hint?: string }) {
   const initial = Array.isArray(defaultValue) ? defaultValue : defaultValue ? [defaultValue] : [];
   const [selected, setSelected] = useState<string[]>(initial.filter((id) => media.some((m) => m.id === id)));
   const dialog = useRef<HTMLDialogElement>(null);
-  const options = media.filter((m) => m.kind === kind);
+  const options = kind === "any" ? media : media.filter((m) => m.kind === kind);
   const toggle = (id: string) => {
     if (multiple) setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
     else { setSelected([id]); dialog.current?.close(); }
@@ -42,12 +42,12 @@ export function MediaPicker({ name, label, media, defaultValue, multiple = false
       {hint && <p className="field-hint">{hint}</p>}
       <dialog ref={dialog} className="m-auto w-[min(92vw,960px)] rounded-3xl bg-ivory p-0 backdrop:bg-plum-deep/60" aria-label={`Choose ${label}`}>
         <div className="flex items-center justify-between border-b border-line px-6 py-4">
-          <p className="font-display text-2xl text-plum">Choose {kind === "video" ? "a video" : multiple ? "images" : "an image"}</p>
+          <p className="font-display text-2xl text-plum">Choose {kind === "video" ? "a video" : kind === "any" ? "photos or videos" : multiple ? "images" : "an image"}</p>
           <button type="button" onClick={() => dialog.current?.close()} className="btn-outline min-h-10 text-sm">Done</button>
         </div>
         <div className="max-h-[70vh] overflow-auto p-6">
           {options.length === 0 ? (
-            <p className="text-muted">No {kind}s in the media library yet. Upload them in <a className="link-underline" href="/admin/media" target="_blank">Media</a>, then reopen this.</p>
+            <p className="text-muted">No {kind === "any" ? "media" : `${kind}s`} in the media library yet. Upload them in <a className="link-underline" href="/admin/media" target="_blank">Media</a>, then reopen this.</p>
           ) : (
             <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {options.map((m) => {

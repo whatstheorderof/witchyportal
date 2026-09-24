@@ -10,7 +10,8 @@
 - [ ] **Booking terms & cancellation policy**, privacy policy details (business name/address, retention), website terms — reviewed by a legal adviser
 - [ ] **Photos** with alt text, and **dancing footage** (short loop for the homepage; longer clips on YouTube)
 - [ ] **YouTube videos/Shorts** for Ask a Witch
-- [ ] First tips, affirmations, astrology posts and articles
+- [ ] First tips, affirmations, motivations, astrology posts and articles
+- [ ] For each retreat: "what you'll take home" — how it helps the women who come
 - [ ] Contact email and social links; retreat FAQs
 - [ ] Domain name
 

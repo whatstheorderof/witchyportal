@@ -37,7 +37,7 @@ export function TipCard({ post, index = 0 }: { post: P; index?: number }) {
     <article className={`relative flex h-full flex-col justify-between gap-6 rounded-(--radius-card) p-6 sm:p-7 ${tone}`}>
       <div>
         <p className={`text-[0.7rem] font-medium uppercase tracking-[0.22em] ${dark ? "text-blush" : "text-plum-soft"}`}>
-          {isAffirmation ? "Affirmation" : post.topic || "Witchy tip"}
+          {isAffirmation ? "Affirmation" : post.type === "motivation" ? "Motivation" : post.topic || "Witchy tip"}
         </p>
         {isAffirmation ? (
           <blockquote className={`mt-4 font-display text-[1.7rem] italic leading-snug ${dark ? "text-ivory" : "text-plum"}`}>“{post.title}”</blockquote>

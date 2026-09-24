@@ -4,6 +4,7 @@ import { PageHero, EmptyState } from "@/components/Section";
 import { AstrologyCard } from "@/components/PostCards";
 import Link from "next/link";
 import { ArrowRight } from "@/components/Icons";
+import { RetreatPromo } from "@/components/RetreatPromo";
 
 export const metadata: Metadata = { title: "Astrology", description: "Short weekly and seasonal astrology wisdom from Yulia Moon." };
 
@@ -25,6 +26,7 @@ export default async function AstrologyPage() {
           </div>
         )}
       </section>
+      <RetreatPromo eyebrow="Written in the stars?" />
     </>
   );
 }
