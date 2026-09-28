@@ -10,6 +10,7 @@ export async function SiteFooter() {
     { href: contact.instagram, label: "Instagram" },
     { href: contact.youtube, label: "YouTube" },
     { href: contact.tiktok, label: "TikTok" },
+    { href: contact.etsy, label: "Etsy shop" },
   ].filter((s) => s.href);
 
   return (
@@ -50,7 +51,7 @@ export async function SiteFooter() {
           <Wordmark light />
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
             {socials.map((s) => <a key={s.label} href={s.href} className="hover:text-ivory" rel="noopener noreferrer" target="_blank">{s.label}</a>)}
-            <a href={`mailto:${contact.email}`} className="hover:text-ivory">{contact.email}</a>
+            {contact.email && <a href={`mailto:${contact.email}`} className="hover:text-ivory">{contact.email}</a>}
             <span>© {new Date().getFullYear()} Yulia Moon</span>
           </div>
         </div>

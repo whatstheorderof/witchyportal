@@ -34,6 +34,7 @@ export interface ContactSettings {
   instagram: string;
   youtube: string;
   tiktok: string;
+  etsy: string;
   responseTime: string;
 }
 
@@ -79,10 +80,11 @@ export const DEFAULTS = {
     isPlaceholder: true,
   } as AboutSettings,
   contact: {
-    email: "hello@example.com",
+    email: "",
     instagram: "",
     youtube: "https://www.youtube.com/@YuliaMoonPortal",
     tiktok: "",
+    etsy: "",
     responseTime: "Yulia usually replies within 2–3 working days.",
   } as ContactSettings,
   youtube: {

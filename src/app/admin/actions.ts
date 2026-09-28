@@ -498,8 +498,8 @@ export async function saveSettings(_: FormState, fd: FormData): Promise<FormStat
   }
   if (key === "contact") {
     const email = String(value.email);
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return fail("Enter a valid contact email", { email: "Invalid email" });
-    for (const k of ["instagram", "youtube", "tiktok"]) {
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return fail("Enter a valid contact email", { email: "Invalid email" });
+    for (const k of ["instagram", "youtube", "tiktok", "etsy"]) {
       const v = String(value[k] ?? "");
       if (v && !/^https:\/\//.test(v)) return fail("Social links must start with https://", { [k]: "Must start with https://" });
     }

@@ -19,10 +19,23 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
           <EnquiryForm retreats={retreats.map((r) => ({ id: r.id, title: r.title }))} defaultRetreatId={defaultRetreat} />
         </section>
         <aside className="grid content-start gap-10">
-          <div>
-            <p className="eyebrow">Email</p>
-            <a href={`mailto:${contact.email}`} className="mt-2 block font-display text-2xl text-plum link-underline">{contact.email}</a>
-          </div>
+          {(contact.email || contact.instagram) && (
+            <div className="grid gap-6">
+              {contact.email && (
+                <div>
+                  <p className="eyebrow">Email</p>
+                  <a href={`mailto:${contact.email}`} className="mt-2 block font-display text-2xl text-plum link-underline">{contact.email}</a>
+                </div>
+              )}
+              {contact.instagram && (
+                <div>
+                  <p className="eyebrow">Instagram</p>
+                  <a href={contact.instagram} target="_blank" rel="noopener noreferrer" className="mt-2 block font-display text-2xl text-plum link-underline">@{contact.instagram.replace(/\/$/, "").split("/").pop()}</a>
+                  <p className="mt-1 text-sm text-muted">Send Yulia your Ask a Witch questions by DM.</p>
+                </div>
+              )}
+            </div>
+          )}
           {faqs.length > 0 && (
             <div>
               <p className="eyebrow">Frequently asked</p>

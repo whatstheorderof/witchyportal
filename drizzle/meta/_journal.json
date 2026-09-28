@@ -22,6 +22,13 @@
       "when": 1790250800455,
       "tag": "0002_video_source",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1790608554799,
+      "tag": "0003_post_sync_hash",
+      "breakpoints": true
     }
   ]
 }

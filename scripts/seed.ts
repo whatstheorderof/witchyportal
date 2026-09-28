@@ -140,23 +140,8 @@ async function main() {
   }
 
   /* ---------------- Content ---------------- */
-  if (await empty(s.posts)) {
-    const now = Date.now();
-    const days = (n: number) => new Date(now - n * 86400000);
-    await db.insert(s.posts).values([
-      { type: "tip", slug: "sample-tip-salt-bowl", title: "Keep a small bowl of sea salt by your door", excerpt: "A simple threshold ritual: as you come home, pause, touch the salt and leave the day outside. [Sample tip — replace]", topic: "Home rituals", status: "published", publishAt: days(1), isPlaceholder: true },
-      { type: "tip", slug: "sample-tip-moon-journal", title: "Start a moon journal", excerpt: "Write one line each night about how you feel and note the moon phase. After a month, look for your own patterns. [Sample tip — replace]", topic: "Moon magic", status: "published", publishAt: days(3), isPlaceholder: true },
-      { type: "tip", slug: "sample-tip-barefoot", title: "Five barefoot minutes", excerpt: "Stand barefoot on grass or sand and notice three things you can hear. [Sample tip — replace]", topic: "Grounding", status: "published", publishAt: days(6), isPlaceholder: true },
-      { type: "affirmation", slug: "sample-affirmation-tide", title: "Like the tide, I am allowed to rise and rest", status: "published", publishAt: days(0), isPlaceholder: true, topic: "Self-trust" },
-      { type: "affirmation", slug: "sample-affirmation-voice", title: "My intuition is a voice worth listening to", status: "published", publishAt: days(4), isPlaceholder: true, topic: "Intuition" },
-      { type: "motivation", slug: "sample-motivation-small-steps", title: "Small steps still move you forward", excerpt: "You don't need a full moon or a perfect plan to begin. One small, kind action today is enough. [Sample motivation — replace]", topic: "Motivation", status: "published", publishAt: days(2), isPlaceholder: true },
-      { type: "astrology", slug: "sample-libra-season", title: "[Sample] Libra season: finding your balance", period: "Libra season", topic: "Seasonal", excerpt: "[Sample astrology post — Yulia to write her own weekly or seasonal wisdom here.]", body: "[Sample body text. Replace with Yulia's own astrology post.]\n\nLibra season traditionally invites reflection on balance and relationships. Use this space for Yulia's interpretation and suggested ritual.", coverMediaId: mediaIds.veil, status: "published", publishAt: days(2), isPlaceholder: true },
-      { type: "article", slug: "sample-article-beginning-a-practice", title: "[Sample] Beginning a gentle daily practice", topic: "Rituals", excerpt: "[Sample article excerpt — replace with Yulia's writing.]", body: "[Sample article body — replace with Yulia's writing.]\n\n## A heading\n\nArticles support **Markdown**: headings, lists, links and quotes.\n\n> A pull quote looks like this.\n\n- A list item\n- Another list item", coverMediaId: mediaIds.sand, status: "published", publishAt: days(5), isPlaceholder: true },
-      { type: "article", slug: "sample-article-sea-and-self", title: "[Sample] What the sea teaches about rest", topic: "Nature", excerpt: "[Sample article excerpt — replace with Yulia's writing.]", body: "[Sample article body — replace.]", coverMediaId: mediaIds.sea, status: "published", publishAt: days(9), isPlaceholder: true },
-      { type: "article", slug: "sample-article-scheduled", title: "[Sample] A scheduled article", topic: "Rituals", excerpt: "This sample is scheduled for the future to show how scheduling works — it becomes public automatically at its publish time.", body: "Scheduled sample.", status: "scheduled", publishAt: new Date(now + 7 * 86400000), isPlaceholder: true },
-    ]);
-    console.log("✓ sample posts");
-  }
+  // Tips, affirmations, motivations, astrology and articles come from /content
+  // (scripts/sync-content.ts), not from this seed.
 
   if (await empty(s.faqs)) {
     // only reached when the retreat already existed

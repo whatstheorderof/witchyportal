@@ -1,0 +1,1 @@
+ALTER TABLE "posts" ADD COLUMN "sync_hash" text;

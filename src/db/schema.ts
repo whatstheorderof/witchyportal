@@ -225,6 +225,8 @@ export const posts = pgTable(
     coverMediaId: uuid("cover_media_id").references(() => media.id, { onDelete: "set null" }),
     isPlaceholder: boolean("is_placeholder").default(false).notNull(),
     seoDescription: text("seo_description"),
+    /** Set when the post comes from a file in /content (see content/README.md) */
+    syncHash: text("sync_hash"),
     ...publishing,
     ...timestamps,
   },

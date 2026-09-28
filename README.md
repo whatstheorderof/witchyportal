@@ -31,7 +31,8 @@ npm run dev                          # http://localhost:3000  ·  admin at /admi
 
 - [docs/SETUP.md](docs/SETUP.md) — local setup, database, admin accounts
 - [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) — GitHub → Vercel, environments, previews, custom domain
-- [docs/CONTENT_GUIDE.md](docs/CONTENT_GUIDE.md) — how Yulia edits and publishes content
+- [content/README.md](content/README.md) — site copy and posts kept as files, published on every deploy
+- [docs/CONTENT_GUIDE.md](docs/CONTENT_GUIDE.md) — how Yulia edits and publishes content in /admin
 - [docs/BOOKINGS.md](docs/BOOKINGS.md) — booking model, payment-link setup, manual operating mode
 - [docs/BIRTH_CHART.md](docs/BIRTH_CHART.md) — calculation provider, conventions, verification
 - [docs/LAUNCH_CHECKLIST.md](docs/LAUNCH_CHECKLIST.md) — what's placeholder and what Yulia must supply

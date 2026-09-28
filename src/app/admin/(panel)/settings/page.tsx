@@ -53,9 +53,10 @@ export default async function SettingsAdmin() {
         <Panel title="Contact" id="contact">
           <AdminForm action={saveSettings}>
             <input type="hidden" name="key" value="contact" />
-            <F label="Public email" name="email" type="email" defaultValue={contact.email} />
+            <F label="Public email" name="email" type="email" defaultValue={contact.email} hint="Leave empty to hide it — people can still use the contact form." />
             <F label="Response time note" name="responseTime" defaultValue={contact.responseTime} />
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <F label="Etsy shop URL" name="etsy" defaultValue={contact.etsy} mono />
               <F label="Instagram URL" name="instagram" defaultValue={contact.instagram} mono />
               <F label="YouTube URL" name="youtube" defaultValue={contact.youtube} mono />
               <F label="TikTok URL" name="tiktok" defaultValue={contact.tiktok} mono />

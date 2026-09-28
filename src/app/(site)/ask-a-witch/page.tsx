@@ -14,7 +14,7 @@ export const metadata: Metadata = { title: "Ask a Witch", description: "Yulia Mo
 
 export default async function AskAWitchPage({ searchParams }: { searchParams: Promise<{ topic?: string }> }) {
   const { topic } = await searchParams;
-  const [all, yt] = await Promise.all([listVideos(), getSetting("youtube")]);
+  const [all, yt, contact] = await Promise.all([listVideos(), getSetting("youtube"), getSetting("contact")]);
   const topics = [...new Set(all.map((v) => v.topic).filter(Boolean))].sort();
   const list = topic ? all.filter((v) => v.topic === topic) : all;
   const byDate = [...list].sort((a, b) => +(b.publishAt ?? b.createdAt) - +(a.publishAt ?? a.createdAt));
@@ -33,7 +33,11 @@ export default async function AskAWitchPage({ searchParams }: { searchParams: Pr
               Subscribe on YouTube <ExternalIcon />
             </a>
           )}
-          <Link href="/contact" className="btn-outline">Send Yulia a question</Link>
+          {contact.instagram ? (
+            <a href={contact.instagram} target="_blank" rel="noopener noreferrer" className="btn-outline">Send Yulia a question on Instagram <ExternalIcon /></a>
+          ) : (
+            <Link href="/contact" className="btn-outline">Send Yulia a question</Link>
+          )}
         </div>
         <TopicFilter base="/ask-a-witch" topics={topics} active={topic} />
       </PageHero>
