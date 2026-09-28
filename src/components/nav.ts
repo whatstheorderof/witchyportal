@@ -3,6 +3,7 @@ export const primaryNav = [
   { href: "/discover", label: "Discover" },
   { href: "/birth-chart", label: "Birth Chart" },
   { href: "/about", label: "About Yulia" },
+  { href: "/socials", label: "Socials" },
   { href: "/contact", label: "Contact" },
 ];
 

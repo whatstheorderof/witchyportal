@@ -74,7 +74,7 @@ export function MobileTabBar() {
             </button>
           </div>
           <ul className="grid gap-1">
-            {[...discoverNav, { href: "/about", label: "About Yulia", blurb: "Her story and why she hosts retreats." }, { href: "/contact", label: "Contact", blurb: "Questions, enquiries and collaborations." }].map((i) => (
+            {[...discoverNav, { href: "/about", label: "About Yulia", blurb: "Her story and why she hosts retreats." }, { href: "/socials", label: "Socials", blurb: "Yulia on Instagram, YouTube and Etsy." }, { href: "/contact", label: "Contact", blurb: "Questions, enquiries and collaborations." }].map((i) => (
               <li key={i.href}>
                 <Link href={i.href} className="flex min-h-14 flex-col justify-center rounded-2xl px-4 py-2 hover:bg-sand/50">
                   <span className="font-display text-xl text-plum">{i.label}</span>
