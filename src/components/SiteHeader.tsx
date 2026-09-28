@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Wordmark } from "./Logo";
+import { ShortcutMenu } from "./ShortcutMenu";
 import { primaryNav } from "./nav";
 
 export function SiteHeader() {
@@ -29,9 +29,7 @@ export function SiteHeader() {
       }`}
     >
       <div className="container-page flex h-16 items-center justify-between gap-6 lg:h-20">
-        <Link href="/" aria-label="Witchy Portal home" className="rounded-lg">
-          <Wordmark light={transparent} />
-        </Link>
+        <ShortcutMenu light={transparent} />
         <nav aria-label="Main" className="hidden lg:block">
           <ul className="flex items-center gap-1">
             {primaryNav.map((item) => {

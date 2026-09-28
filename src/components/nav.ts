@@ -13,3 +13,27 @@ export const discoverNav = [
   { href: "/astrology", label: "Astrology", blurb: "Weekly and seasonal wisdom from the sky." },
   { href: "/ask-a-witch", label: "Ask a Witch", blurb: "Yulia answers your questions on video." },
 ];
+
+/** Shortcut menu opened from the Witchy Portal logo. */
+export const shortcutGroups = [
+  {
+    title: "Visit",
+    items: [
+      { href: "/", label: "Home", blurb: "Start here." },
+      { href: "/retreats", label: "Retreats", blurb: "Dates, prices and booking." },
+      { href: "/about", label: "About Yulia", blurb: "Her story and why she hosts retreats." },
+      { href: "/birth-chart", label: "Birth Chart", blurb: "Your Sun, Moon and Rising in seconds." },
+    ],
+  },
+  {
+    title: "Discover",
+    items: discoverNav,
+  },
+  {
+    title: "Connect",
+    items: [
+      { href: "/socials", label: "Socials", blurb: "Instagram, YouTube and Etsy." },
+      { href: "/contact", label: "Contact", blurb: "Questions, enquiries and collaborations." },
+    ],
+  },
+];
