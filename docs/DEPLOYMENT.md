@@ -32,16 +32,23 @@ Code lives in GitHub; Vercel builds every push. `main` is production; every othe
 
 The daily **YouTube import** (Ask a Witch) runs as a Vercel Cron job at 07:00 UTC (`vercel.json`). It only runs on Production and needs `CRON_SECRET`. What it imports is set in Admin → Settings → YouTube.
 
-## 3. First-time data in each database
+## 3. Starter content and the first admin login (no terminal needed)
 
-Run from your computer with that environment's database URL (Vercel → Storage → Neon → `.env.local` tab):
+Every Vercel build runs `npm run vercel-build`, which:
 
-```bash
-DATABASE_URL="postgres://…production…" npm run db:seed
-DATABASE_URL="postgres://…production…" npm run admin:create -- yulia@… "long passphrase" "Yulia"
-```
+1. applies database migrations,
+2. adds the starter content (photos, sample retreat, sample posts, policy templates) — **only the first time** a database is set up, so anything Yulia later deletes never comes back,
+3. creates the first admin account from environment variables if the database has no admin yet.
 
-Preview database branches are copied from production when created, so they already contain content and admin accounts.
+To create the first login, add these in Vercel → **Settings → Environment Variables** (Production and Preview), then redeploy:
+
+| Variable | Value |
+| --- | --- |
+| `ADMIN_EMAIL` | the email Yulia will sign in with |
+| `ADMIN_PASSWORD` | a passphrase of 12+ characters |
+| `ADMIN_NAME` | optional, e.g. `Yulia` |
+
+The build log shows "✓ Admin account created for …". After that the variables are ignored (an admin exists), and you can delete `ADMIN_PASSWORD`. To add more admins or reset a password later, use `npm run admin:create` from a computer (see SETUP.md).
 
 ## 4. Everyday workflow
 

@@ -2,7 +2,10 @@
  * Seeds starter content. Safe to run more than once: each section is only
  * inserted when its table is empty.
  *
- *   npm run db:seed
+ *   npm run db:seed          — fill any empty tables
+ *   tsx scripts/seed.ts --once   — used by every Vercel build: seeds a
+ *                                  database only the first time, so content
+ *                                  Yulia deletes never comes back
  *
  * Everything marked isPlaceholder / "[Placeholder]" is sample content that
  * Yulia must replace or delete before launch. No facts about Yulia,
@@ -14,9 +17,16 @@ import postgres from "postgres";
 import type { PgTable } from "drizzle-orm/pg-core";
 import * as s from "../src/db/schema";
 
-const url = process.env.DATABASE_URL_UNPOOLED ?? process.env.DATABASE_URL;
-if (!url) throw new Error("DATABASE_URL is not set");
-const client = postgres(url, { max: 1 });
+const once = process.argv.includes("--once");
+const url = process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL;
+if (!url) {
+  if (once) {
+    console.warn("⚠ DATABASE_URL not set — skipping starter content.");
+    process.exit(0);
+  }
+  throw new Error("DATABASE_URL is not set");
+}
+const client = postgres(url, { max: 1, onnotice: () => {} });
 const db = drizzle(client, { schema: s });
 
 const empty = async (table: PgTable) => {
@@ -24,7 +34,17 @@ const empty = async (table: PgTable) => {
   return n === 0;
 };
 
+const MARKER = "_seeded";
+
 async function main() {
+  if (once) {
+    const done = await db.select().from(s.settings).where(dsql`${s.settings.key} = ${MARKER}`);
+    if (done.length) {
+      console.log("✓ Starter content already added — skipping");
+      await client.end();
+      return;
+    }
+  }
   /* ---------------- Media: the supplied starter photographs ---------------- */
   let mediaIds: Record<string, string> = {};
   if (await empty(s.media)) {
@@ -186,8 +206,9 @@ async function main() {
     console.log("✓ settings");
   }
 
+  await db.insert(s.settings).values({ key: MARKER, value: { at: new Date().toISOString() } }).onConflictDoNothing();
   await client.end();
-  console.log("Seed complete.");
+  console.log("✓ Starter content added");
 }
 
 main().catch(async (e) => {
