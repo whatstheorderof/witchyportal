@@ -28,13 +28,13 @@ export async function RetreatPromo({ eyebrow = "Ready to go deeper?", title }: {
             <h2 className="display-md mt-3 text-ivory">{title ?? `Join Yulia at the ${r.title}`}</h2>
             {r.summary && <p className="mt-4 max-w-xl text-ivory/85 line-clamp-3">{r.summary}</p>}
             <div className="mt-5 flex flex-wrap items-center gap-3 text-sm">
-              {r.nextDeparture && <span className="rounded-full bg-ivory/15 px-3 py-1.5 backdrop-blur">{formatDateRange(r.nextDeparture.startDate, r.nextDeparture.endDate)}</span>}
+              {r.nextDeparture ? <span className="rounded-full bg-ivory/15 px-3 py-1.5 backdrop-blur">{formatDateRange(r.nextDeparture.startDate, r.nextDeparture.endDate)}</span> : <span className="rounded-full bg-ivory/15 px-3 py-1.5 backdrop-blur">Dates coming soon</span>}
               {r.overallAvailability && <AvailabilityBadge value={r.overallAvailability} solid />}
             </div>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row lg:flex-col lg:items-end">
             {r.fromPrice && <p className="text-ivory/80">from <span className="font-display text-3xl text-ivory">{formatMoney(r.fromPrice.amount, r.fromPrice.currency)}</span></p>}
-            <Link href={`/retreats/${r.slug}#book`} className="btn-light">See dates &amp; book <ArrowRight /></Link>
+            <Link href={`/retreats/${r.slug}#book`} className="btn-light">{r.departures.length ? <>See dates &amp; book</> : <>Join the waitlist</>} <ArrowRight /></Link>
           </div>
         </div>
       </div>

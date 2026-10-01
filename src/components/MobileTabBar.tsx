@@ -9,7 +9,7 @@ import { discoverNav } from "./nav";
 const tabs = [
   { href: "/", label: "Home", Icon: HomeIcon, match: (p: string) => p === "/" },
   { href: "/retreats", label: "Retreats", Icon: WaveIcon, match: (p: string) => p.startsWith("/retreats") },
-  { href: "/discover", label: "Discover", Icon: SparkIcon, match: (p: string) => ["/discover", "/tips", "/articles", "/astrology", "/ask-a-witch"].some((x) => p.startsWith(x)) },
+  { href: "/discover", label: "Discover", Icon: SparkIcon, match: (p: string) => ["/discover", "/tips", "/articles", "/astrology", "/ask-a-witch", "/tarot", "/moon"].some((x) => p.startsWith(x)) },
   { href: "/birth-chart", label: "Chart", Icon: ChartIcon, match: (p: string) => p.startsWith("/birth-chart") },
 ];
 

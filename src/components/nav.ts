@@ -12,6 +12,8 @@ export const discoverNav = [
   { href: "/articles", label: "Articles", blurb: "Short reads on magic, movement and living by the moon." },
   { href: "/astrology", label: "Astrology", blurb: "Weekly and seasonal wisdom from the sky." },
   { href: "/ask-a-witch", label: "Ask a Witch", blurb: "Yulia answers your questions on video." },
+  { href: "/tarot", label: "Tarot", blurb: "Card of the day — and draw your own." },
+  { href: "/moon", label: "Moon calendar", blurb: "Tonight's moon and the next new and full moons." },
 ];
 
 /** Shortcut menu opened from the Witchy Portal logo. */

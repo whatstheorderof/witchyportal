@@ -21,7 +21,7 @@ export default async function DiscoverPage() {
   return (
     <>
       <PageHero eyebrow="Discover" title="Little rituals for everyday magic" intro="Browse Yulia's tips, affirmations, astrology and short reads — fresh each week.">
-        <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {discoverNav.map((d) => (
             <li key={d.href}>
               <Link href={d.href} className="group flex h-full flex-col justify-between gap-4 rounded-2xl bg-white/70 p-5 ring-1 ring-line transition hover:bg-white hover:shadow-(--shadow-soft)">

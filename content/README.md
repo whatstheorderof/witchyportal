@@ -7,6 +7,7 @@ Everything in this folder is published to the website automatically when it's de
 | `site/home.md` | Homepage hero and "Hello, I'm Yulia" introduction |
 | `site/about.md` | About Yulia page |
 | `site/contact.md` | Contact details and social links (footer, Contact, Ask a Witch) |
+| `retreats/` | Retreat pages — description, activities, benefits, images (dates, prices and payment links are managed in /admin) |
 | `socials.ts` | Socials page links (Instagram, YouTube, Etsy…) |
 | `tips/` | Witchy Tips page (tip cards) |
 | `affirmations/` | Witchy Tips page (affirmation cards) |

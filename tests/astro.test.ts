@@ -59,3 +59,19 @@ describe("LMT and Placidus consistency", () => {
     expect(c.houseSystem).toBe("whole-sign");
   });
 });
+
+import { moonNow, upcomingMoons } from "../src/lib/astro/moon";
+describe("moon phases", () => {
+  it("finds the 26 Oct 2026 full moon in Taurus", () => {
+    const m = upcomingMoons(4, new Date("2026-10-01T00:00:00Z"));
+    const full = m.find((x) => x.kind === "full")!;
+    expect(full.date.toISOString().slice(0, 10)).toBe("2026-10-26");
+    expect(full.sign).toBe("Taurus");
+    expect(m[0]).toMatchObject({ kind: "new", sign: "Libra" });
+  });
+  it("is full at the full moon", () => {
+    const n = moonNow(new Date("2026-10-26T04:12:00Z"));
+    expect(n.phaseKey).toBe("full");
+    expect(n.illumination).toBeGreaterThan(0.99);
+  });
+});

@@ -29,6 +29,13 @@
       "when": 1790608554799,
       "tag": "0003_post_sync_hash",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790818660856,
+      "tag": "0004_retreat_sync_hash",
+      "breakpoints": true
     }
   ]
 }

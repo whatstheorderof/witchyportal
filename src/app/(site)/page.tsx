@@ -8,8 +8,11 @@ import { SectionHeading } from "@/components/Section";
 import { ArticleCard, AstrologyCard, ShortCard, TipCard } from "@/components/PostCards";
 import { AvailabilityBadge } from "@/components/Availability";
 import { ArrowRight, CalendarIcon, PinIcon } from "@/components/Icons";
-import { formatDateRange } from "@/lib/dates";
+import { formatDate, formatDateRange } from "@/lib/dates";
 import { formatMoney } from "@/lib/money";
+import { FULL_MOON_NAMES, moonNow, upcomingMoons } from "@/lib/astro/moon";
+import { cardOfTheDay } from "@/lib/tarot";
+import { MoonGlyph } from "@/components/MoonGlyph";
 
 export default async function HomePage() {
   const [home, retreats, highlights, tips, affirmations, motivations, astro, articles, shorts] = await Promise.all([
@@ -30,6 +33,9 @@ export default async function HomePage() {
   const featured = retreats.find((r) => r.id === home.featuredRetreatId) ?? retreats[0];
   const others = retreats.filter((r) => r.id !== featured?.id).slice(0, 2);
   const weekly = [...affirmations, ...motivations, ...tips];
+  const moon = moonNow();
+  const nextMoon = upcomingMoons(1)[0];
+  const card = cardOfTheDay();
 
   return (
     <>
@@ -52,6 +58,30 @@ export default async function HomePage() {
             </Link>
             <Link href="/about" className="btn-ghost-light">Meet Yulia</Link>
           </div>
+        </div>
+      </section>
+
+      {/* TODAY'S MAGIC */}
+      <section aria-label="Today's magic" className="border-b border-line/70 bg-ivory-deep">
+        <div className="container-page grid gap-3 py-5 sm:grid-cols-2">
+          <Link href="/moon" className="group flex items-center gap-4 rounded-2xl bg-white/70 p-4 ring-1 ring-line transition hover:bg-white">
+            <MoonGlyph angle={moon.angle} size={56} />
+            <span className="min-w-0">
+              <span className="block text-[0.7rem] uppercase tracking-[0.2em] text-plum-soft">Tonight&rsquo;s moon</span>
+              <span className="block font-display text-xl leading-tight text-plum">{moon.phaseName} in {moon.sign}</span>
+              {nextMoon && <span className="block text-sm text-muted">Next {nextMoon.kind === "new" ? "new moon" : `full moon (${FULL_MOON_NAMES[nextMoon.date.getUTCMonth()]})`}: {formatDate(nextMoon.date, { weekday: "short", day: "numeric", month: "short", year: undefined })}</span>}
+            </span>
+            <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-plum transition group-hover:translate-x-1" />
+          </Link>
+          <Link href="/tarot" className="group flex items-center gap-4 rounded-2xl bg-white/70 p-4 ring-1 ring-line transition hover:bg-white">
+            <span aria-hidden className="grid h-14 w-10 shrink-0 place-items-center rounded-md border-2 border-ivory bg-plum font-display text-2xl text-ivory shadow-(--shadow-soft)">{card.symbol}</span>
+            <span className="min-w-0">
+              <span className="block text-[0.7rem] uppercase tracking-[0.2em] text-plum-soft">Card of the day</span>
+              <span className="block font-display text-xl leading-tight text-plum">{card.name}</span>
+              <span className="block truncate text-sm text-muted">{card.keywords}</span>
+            </span>
+            <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-plum transition group-hover:translate-x-1" />
+          </Link>
         </div>
       </section>
 
@@ -79,7 +109,7 @@ export default async function HomePage() {
                 </ul>
               )}
               <div className="mt-8 flex flex-wrap items-center gap-5">
-                <Link href={`/retreats/${featured.slug}#book`} className="btn-primary">View dates &amp; book <ArrowRight /></Link>
+                <Link href={`/retreats/${featured.slug}#book`} className="btn-primary">{featured.departures.length ? <>View dates &amp; book</> : <>Join the waitlist</>} <ArrowRight /></Link>
                 {featured.fromPrice && <p className="text-muted">from <span className="font-display text-2xl text-plum">{formatMoney(featured.fromPrice.amount, featured.fromPrice.currency)}</span></p>}
               </div>
             </div>

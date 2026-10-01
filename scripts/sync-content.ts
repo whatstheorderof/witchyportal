@@ -12,7 +12,7 @@ import { readdirSync, readFileSync, existsSync } from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
 import { drizzle } from "drizzle-orm/postgres-js";
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull, ne } from "drizzle-orm";
 import postgres from "postgres";
 import * as s from "../src/db/schema";
 
@@ -108,6 +108,102 @@ async function main() {
         }
         await db.update(s.posts).set(values).where(eq(s.posts.id, row.id));
         counts.updated++;
+      }
+    }
+
+    /* ---------------- Retreats ---------------- */
+    const retreatDir = path.join(ROOT, "retreats");
+    let syncedRetreats = 0;
+    if (existsSync(retreatDir)) {
+      const mediaId = async (img: unknown): Promise<string | null> => {
+        const src = typeof img === "string" ? img : (img as { src?: string })?.src;
+        const alt = typeof img === "object" && img ? String((img as { alt?: string }).alt ?? "") : "";
+        if (!src) return null;
+        const [m] = await db.select().from(s.media).where(eq(s.media.url, src)).limit(1);
+        if (m) return m.id;
+        const [created] = await db.insert(s.media).values({ url: src, alt, kind: /\.(mp4|webm|mov)$/i.test(src) ? "video" : "image" }).returning();
+        return created.id;
+      };
+      const retreatFields = (r: Record<string, unknown>) => [
+        r.title, r.tagline, r.location, r.country, r.summary, r.concept, r.personalMessage, r.guestExperience,
+        r.benefits, r.activities, r.itinerary, r.inclusions, r.exclusions, r.accommodation, r.terms, r.videoUrl, r.sortOrder,
+        r.seoTitle, r.seoDescription, r.status === "draft" ? "draft" : "live",
+      ];
+      for (const file of readdirSync(retreatDir).filter((f) => f.endsWith(".md")).sort()) {
+        const { data, content } = matter(readFileSync(path.join(retreatDir, file), "utf8"));
+        const slug = String(data.slug ?? file.replace(/\.md$/, ""));
+        const str = (k: string) => (data[k] == null ? "" : String(data[k]).trim());
+        const list = (k: string) => (Array.isArray(data[k]) ? (data[k] as unknown[]).map((x) => String(x).trim()).filter(Boolean) : []);
+        const values = {
+          slug,
+          title: str("title"),
+          tagline: str("tagline"),
+          location: str("location"),
+          country: str("country"),
+          summary: str("summary"),
+          concept: content.trim(),
+          personalMessage: str("personalMessage"),
+          guestExperience: str("guestExperience"),
+          benefits: list("benefits"),
+          activities: (Array.isArray(data.activities) ? data.activities : []).map((a: { title?: string; description?: string }) => ({ title: String(a.title ?? ""), description: String(a.description ?? "") })),
+          itinerary: (Array.isArray(data.itinerary) ? data.itinerary : []).map((d: { day?: string; title?: string; description?: string }) => ({ day: String(d.day ?? ""), title: String(d.title ?? ""), description: String(d.description ?? "") })),
+          inclusions: list("inclusions"),
+          exclusions: list("exclusions"),
+          accommodation: str("accommodation"),
+          terms: str("terms"),
+          videoUrl: str("videoUrl") || null,
+          sortOrder: Number(data.sortOrder ?? 0),
+          seoTitle: str("seoTitle") || null,
+          seoDescription: str("seoDescription") || null,
+          status: (data.draft ? "draft" : "published") as "draft" | "published",
+        };
+        if (!values.title) {
+          console.warn(`⚠ retreats/${file}: missing title — skipped`);
+          continue;
+        }
+        const fileHash = hash([retreatFields(values), data.heroImage ?? null, data.gallery ?? null, data.isPlaceholder ?? false]);
+        const [row] = await db.select().from(s.retreats).where(eq(s.retreats.slug, slug)).limit(1);
+        syncedRetreats++;
+        if (row?.syncHash === fileHash) {
+          counts.unchanged++;
+          continue;
+        }
+        if (row && !row.syncHash) {
+          console.log(`  • kept (created in admin): retreats/${file}`);
+          counts.keptAdminEdits++;
+          continue;
+        }
+        if (row) {
+          const appliedRows = await db.select({ applied: s.settings.value }).from(s.settings).where(eq(s.settings.key, `_sync_retreat_${slug}`));
+          const applied = appliedRows[0]?.applied as string | undefined;
+          if (applied && hash(retreatFields(row as unknown as Record<string, unknown>)) !== applied) {
+            console.log(`  • kept admin edits: retreats/${file}`);
+            counts.keptAdminEdits++;
+            continue;
+          }
+        }
+        const heroMediaId = await mediaId(data.heroImage);
+        const gallery = [];
+        for (const g of Array.isArray(data.gallery) ? data.gallery : []) {
+          const id = await mediaId(g);
+          if (id) gallery.push(id);
+        }
+        const full = { ...values, heroMediaId, gallery, isPlaceholder: Boolean(data.isPlaceholder), syncHash: fileHash, publishAt: row?.publishAt ?? new Date() };
+        if (row) await db.update(s.retreats).set(full).where(eq(s.retreats.id, row.id));
+        else await db.insert(s.retreats).values(full);
+        const appliedHash = hash(retreatFields(values as unknown as Record<string, unknown>));
+        await db.insert(s.settings).values({ key: `_sync_retreat_${slug}`, value: appliedHash as unknown as object }).onConflictDoUpdate({ target: s.settings.key, set: { value: appliedHash as unknown as object } });
+        if (row) counts.updated++;
+        else counts.added++;
+      }
+      if (syncedRetreats > 0) {
+        // Real retreats exist: hide the seeded sample retreat(s).
+        const archived = await db
+          .update(s.retreats)
+          .set({ status: "archived" })
+          .where(and(eq(s.retreats.isPlaceholder, true), isNull(s.retreats.syncHash), ne(s.retreats.status, "archived")))
+          .returning({ slug: s.retreats.slug });
+        for (const a of archived) console.log(`  • archived sample retreat: ${a.slug}`);
       }
     }
 

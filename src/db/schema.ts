@@ -140,6 +140,8 @@ export const retreats = pgTable("retreats", {
   sortOrder: integer("sort_order").default(0).notNull(),
   seoTitle: text("seo_title"),
   seoDescription: text("seo_description"),
+  /** Set when the retreat comes from a file in /content/retreats */
+  syncHash: text("sync_hash"),
   ...publishing,
   ...timestamps,
 });

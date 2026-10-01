@@ -35,6 +35,7 @@ npm run dev                          # http://localhost:3000  ·  admin at /admi
 - [docs/CONTENT_GUIDE.md](docs/CONTENT_GUIDE.md) — how Yulia edits and publishes content in /admin
 - [docs/BOOKINGS.md](docs/BOOKINGS.md) — booking model, payment-link setup, manual operating mode
 - [docs/BIRTH_CHART.md](docs/BIRTH_CHART.md) — calculation provider, conventions, verification
+- [docs/IMPROVEMENTS.md](docs/IMPROVEMENTS.md) — prioritised list of next improvements
 - [docs/LAUNCH_CHECKLIST.md](docs/LAUNCH_CHECKLIST.md) — what's placeholder and what Yulia must supply
 
 ## Project structure

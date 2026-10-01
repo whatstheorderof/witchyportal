@@ -1,0 +1,1 @@
+ALTER TABLE "retreats" ADD COLUMN "sync_hash" text;
