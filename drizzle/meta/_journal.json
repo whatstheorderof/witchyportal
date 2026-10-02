@@ -36,6 +36,20 @@
       "when": 1790818660856,
       "tag": "0004_retreat_sync_hash",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790946268722,
+      "tag": "0005_retreat_details",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790946636482,
+      "tag": "0006_events",
+      "breakpoints": true
     }
   ]
 }

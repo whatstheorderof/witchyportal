@@ -15,6 +15,12 @@ export interface HomeSettings {
   introTitle: string;
   introText: string;
   introMediaId: string | null;
+  /** Optional 30–60 second welcome video from Yulia (YouTube link) */
+  welcomeVideoUrl: string;
+  /** "This week with Yulia" picks — empty means "show the latest" */
+  weekVideoPickId: string | null;
+  weekArticlePickId: string | null;
+  weekTipPickId: string | null;
 }
 
 export interface AboutSettings {
@@ -67,6 +73,10 @@ export const DEFAULTS = {
     introText:
       "[Placeholder introduction — replace with Yulia's own words in Admin → Settings → Homepage.] A short, warm paragraph about who Yulia is, what Witchy Portal is for and who her retreats are made for.",
     introMediaId: null,
+    welcomeVideoUrl: "",
+    weekVideoPickId: null,
+    weekArticlePickId: null,
+    weekTipPickId: null,
   } as HomeSettings,
   about: {
     title: "About Yulia",

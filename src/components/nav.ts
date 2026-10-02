@@ -1,9 +1,9 @@
 export const primaryNav = [
   { href: "/retreats", label: "Retreats" },
+  { href: "/watch", label: "Watch" },
   { href: "/discover", label: "Discover" },
   { href: "/birth-chart", label: "Birth Chart" },
   { href: "/about", label: "About Yulia" },
-  { href: "/socials", label: "Socials" },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -24,6 +24,7 @@ export const shortcutGroups = [
       { href: "/", label: "Home", blurb: "Start here." },
       { href: "/retreats", label: "Retreats", blurb: "Dates, prices and booking." },
       { href: "/about", label: "About Yulia", blurb: "Her story and why she hosts retreats." },
+      { href: "/watch", label: "Watch", blurb: "Witchy TV — all of Yulia's videos." },
       { href: "/birth-chart", label: "Birth Chart", blurb: "Your Sun, Moon and Rising in seconds." },
     ],
   },
@@ -36,6 +37,7 @@ export const shortcutGroups = [
     items: [
       { href: "/socials", label: "Socials", blurb: "Instagram, YouTube and Etsy." },
       { href: "/contact", label: "Contact", blurb: "Questions, enquiries and collaborations." },
+      { href: "/favourites", label: "Your favourites", blurb: "Everything you've saved on this device." },
     ],
   },
 ];

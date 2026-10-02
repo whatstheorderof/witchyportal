@@ -20,6 +20,11 @@ export async function SiteFooter() {
           <p className="eyebrow text-blush">Newsletter</p>
           <h2 className="mt-3 display-md text-ivory">{site.newsletterTitle}</h2>
           <p className="mt-4 text-ivory/75">{site.newsletterText}</p>
+          <ul className="mt-5 grid gap-2 text-sm text-ivory/85">
+            <li className="flex gap-2"><span aria-hidden className="text-blush">✦</span>New retreat dates as soon as they&rsquo;re announced</li>
+            <li className="flex gap-2"><span aria-hidden className="text-blush">✦</span>Moon notes, tips and rituals from Yulia</li>
+            <li className="flex gap-2"><span aria-hidden className="text-blush">✦</span>Free, and your email is only used for these letters</li>
+          </ul>
           <div className="mt-6"><NewsletterForm dark /></div>
         </div>
         <div className="grid grid-cols-2 gap-8 text-sm sm:grid-cols-3">
@@ -27,6 +32,8 @@ export async function SiteFooter() {
             <p className="eyebrow text-blush/90">Visit</p>
             <ul className="mt-4 grid gap-2.5">
               {primaryNav.map((i) => <li key={i.href}><Link className="text-ivory/80 hover:text-ivory" href={i.href}>{i.label}</Link></li>)}
+              <li><Link className="text-ivory/80 hover:text-ivory" href="/socials">Socials</Link></li>
+              <li><Link className="text-ivory/80 hover:text-ivory" href="/favourites">Your favourites</Link></li>
             </ul>
           </div>
           <div>

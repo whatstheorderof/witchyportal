@@ -3,11 +3,13 @@ import type { RetreatCard as R } from "@/lib/queries";
 import { formatMoney } from "@/lib/money";
 import { formatDateRange } from "@/lib/dates";
 import { MediaImage } from "./MediaImage";
+import { retreatFacts } from "@/lib/retreat-facts";
 import { AvailabilityBadge } from "./Availability";
 import { CalendarIcon, PinIcon } from "./Icons";
 
 export function RetreatCard({ retreat, priority, size = "md" }: { retreat: R; priority?: boolean; size?: "md" | "lg" }) {
   const more = retreat.departures.length - 1;
+  const f = retreatFacts(retreat);
   return (
     <article className="group relative flex flex-col">
       <div className={`relative overflow-hidden rounded-(--radius-card) bg-sand ${size === "lg" ? "aspect-[4/5] sm:aspect-[16/11]" : "aspect-[4/5]"}`}>
@@ -18,7 +20,7 @@ export function RetreatCard({ retreat, priority, size = "md" }: { retreat: R; pr
         </div>
       </div>
       <div className="flex flex-1 flex-col pt-5">
-        <p className="flex items-center gap-1.5 text-sm text-muted"><PinIcon />{retreat.location}{retreat.country ? `, ${retreat.country}` : ""}</p>
+        <p className="flex items-center gap-1.5 text-sm text-muted"><PinIcon />{f.destination} · {f.duration}</p>
         <h3 className="mt-2 font-display text-[1.9rem] leading-tight text-plum">
           <Link href={`/retreats/${retreat.slug}`} className="after:absolute after:inset-0 after:content-['']">
             {retreat.title}
@@ -34,13 +36,15 @@ export function RetreatCard({ retreat, priority, size = "md" }: { retreat: R; pr
                 {more > 0 && <span className="text-muted"> + {more} more date{more > 1 ? "s" : ""}</span>}
               </span>
             ) : (
-              <span className="text-muted">New dates coming soon</span>
+              <span className="text-muted">Dates to be announced</span>
             )}
           </p>
-          {retreat.fromPrice && (
+          {retreat.fromPrice ? (
             <p className="text-sm text-muted">
               from <span className="font-display text-2xl text-plum">{formatMoney(retreat.fromPrice.amount, retreat.fromPrice.currency)}</span>
             </p>
+          ) : (
+            <p className="text-sm text-muted">Price to be announced</p>
           )}
         </div>
       </div>

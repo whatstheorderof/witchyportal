@@ -131,6 +131,12 @@ export const retreats = pgTable("retreats", {
   inclusions: jsonb("inclusions").$type<string[]>().default([]).notNull(),
   exclusions: jsonb("exclusions").$type<string[]>().default([]).notNull(),
   accommodation: text("accommodation").notNull().default(""),
+  /** e.g. "7 days · 6 nights" — shown when no dates are set yet */
+  duration: text("duration").notNull().default(""),
+  meals: text("meals").notNull().default(""),
+  travel: text("travel").notNull().default(""),
+  /** "Is this retreat for me?" questions and answers */
+  forMe: jsonb("for_me").$type<{ question: string; answer: string }[]>().default([]).notNull(),
   terms: text("terms").notNull().default(""),
   heroMediaId: uuid("hero_media_id").references(() => media.id, { onDelete: "set null" }),
   gallery: jsonb("gallery").$type<string[]>().default([]).notNull(),
@@ -344,3 +350,16 @@ export type Media = typeof media.$inferSelect;
 export type Faq = typeof faqs.$inferSelect;
 export type Highlight = typeof highlights.$inferSelect;
 export type Page = typeof pages.$inferSelect;
+
+/** Anonymous journey events (no personal data, no birth details, no IP). */
+export const events = pgTable(
+  "events",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    name: text("name").notNull(),
+    path: text("path").notNull().default(""),
+    props: jsonb("props").$type<Record<string, string>>().default({}).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("events_name_idx").on(t.name, t.createdAt)],
+);

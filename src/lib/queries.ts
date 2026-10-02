@@ -1,6 +1,6 @@
 import "server-only";
 import { connection } from "next/server";
-import { and, asc, desc, eq, inArray, lte, or, sql, type SQL } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, lte, ne, or, sql, type SQL } from "drizzle-orm";
 import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import { db } from "@/db";
 import {
@@ -205,4 +205,53 @@ export async function getPage(slug: string) {
   await connection();
   const [row] = await db.select().from(pages).where(and(eq(pages.slug, slug), isLive(pages))).limit(1);
   return row ?? null;
+}
+
+export async function getLivePostById(id: string | null | undefined) {
+  if (!id) return null;
+  await connection();
+  const [row] = await db
+    .select({ post: posts, cover: media })
+    .from(posts)
+    .leftJoin(media, eq(posts.coverMediaId, media.id))
+    .where(and(eq(posts.id, id), isLive(posts)))
+    .limit(1);
+  return row ? { ...row.post, cover: row.cover } : null;
+}
+
+export async function getLiveVideoById(id: string | null | undefined) {
+  if (!id) return null;
+  await connection();
+  const [row] = await db.select().from(videos).where(and(eq(videos.id, id), isLive(videos))).limit(1);
+  return row ?? null;
+}
+
+/** Latest of several short-post types (tips, affirmations, motivations). */
+export async function latestShortPost() {
+  const all = await Promise.all((["tip", "affirmation", "motivation"] as const).map((t) => listPosts(t, { limit: 1 })));
+  return all.flat().sort((a, b) => +(b.publishAt ?? b.createdAt) - +(a.publishAt ?? a.createdAt))[0] ?? null;
+}
+
+/** A few other live posts of the given types, same topic first. */
+export async function relatedPosts(types: (typeof posts.$inferSelect)["type"][], exclude: string, topic: string | null, limit = 3) {
+  await connection();
+  const rows = await db
+    .select({ post: posts, cover: media })
+    .from(posts)
+    .leftJoin(media, eq(posts.coverMediaId, media.id))
+    .where(and(inArray(posts.type, types), isLive(posts), ne(posts.id, exclude)))
+    .orderBy(desc(sql`coalesce(${posts.publishAt}, ${posts.createdAt})`))
+    .limit(40);
+  const all = rows.map((r) => ({ ...r.post, cover: r.cover }));
+  const same = topic ? all.filter((p) => p.topic === topic) : [];
+  return [...same, ...all.filter((p) => !same.includes(p))].slice(0, limit);
+}
+
+/** Find a tip, affirmation or motivation by slug. */
+export async function getTipLike(slug: string, opts: { preview?: boolean } = {}) {
+  for (const t of ["tip", "affirmation", "motivation"] as const) {
+    const p = await getPost(t, slug, opts);
+    if (p) return p;
+  }
+  return null;
 }

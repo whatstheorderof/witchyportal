@@ -8,6 +8,7 @@ import { paymentMode } from "@/lib/env";
 import { isBookable, AVAILABILITY_LABEL } from "@/components/Availability";
 import { ArrowLeft, CalendarIcon, LockIcon, PinIcon } from "@/components/Icons";
 import { ConfirmAndPay } from "@/components/ConfirmAndPay";
+import { TrackView } from "@/components/Track";
 
 export const metadata: Metadata = { title: "Review your booking", robots: { index: false } };
 
@@ -34,6 +35,7 @@ export default async function BookPage(props: Props) {
 
   return (
     <div className="container-prose pt-24 pb-24 lg:pt-32">
+      <TrackView name="review_view" props={{ retreat: retreat.slug }} />
       <Link href={`/retreats/${retreat.slug}#book`} className="inline-flex items-center gap-2 text-sm text-plum link-underline"><ArrowLeft />Change selection</Link>
       <p className="eyebrow mt-8">Review your booking</p>
       <h1 className="display-md mt-3">You&rsquo;re about to reserve</h1>
@@ -64,6 +66,12 @@ export default async function BookPage(props: Props) {
             <dt className="font-medium">{option.paymentType === "deposit" ? "Deposit payable now" : "Full payment now"}</dt>
             <dd className="font-display text-4xl text-plum">{formatMoney(option.amount, option.currency)}</dd>
           </div>
+          {option.paymentType === "deposit" && balance !== null && balance > 0 && (
+            <div className="flex flex-wrap justify-between gap-2 py-4">
+              <dt className="text-muted">Remaining balance</dt>
+              <dd className="text-right font-medium">{formatMoney(balance, option.currency)}{option.balanceNote && <span className="block text-sm font-normal text-muted">{option.balanceNote}</span>}</dd>
+            </div>
+          )}
           {option.paymentType === "deposit" && (
             <div className="py-4 text-sm text-ink/80">
               <p>

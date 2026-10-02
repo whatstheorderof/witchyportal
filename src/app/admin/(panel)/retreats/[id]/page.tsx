@@ -102,7 +102,11 @@ export default async function EditRetreat({ params, searchParams }: { params: Pr
               <F label="Included (one per line)" name="inclusions" defaultValue={r.inclusions.join("\n")} textarea rows={6} />
               <F label="Not included (one per line)" name="exclusions" defaultValue={r.exclusions.join("\n")} textarea rows={6} />
             </div>
+            <F label="Duration" name="duration" defaultValue={r.duration} placeholder="e.g. 7 days · 6 nights" hint="Shown on cards before dates are set." />
             <F label="Accommodation" name="accommodation" defaultValue={r.accommodation} textarea rows={5} />
+            <F label="Meals" name="meals" defaultValue={r.meals} textarea rows={3} hint="What's included, dietary requirements you can cater for." />
+            <F label="Travel guidance" name="travel" defaultValue={r.travel} textarea rows={4} hint="Nearest airport, transfers, when to arrive and leave." />
+            <Repeater name="forMe" label="Is this retreat for me? (questions & answers)" addLabel="Add question" initial={r.forMe} fields={[{ key: "question", label: "Question" }, { key: "answer", label: "Answer", textarea: true }]} />
             <F label="Retreat-specific terms" name="terms" defaultValue={r.terms} textarea rows={5} />
             <MediaPicker name="heroMediaId" label="Hero image" media={media} defaultValue={r.heroMediaId} />
             <MediaPicker name="gallery" label="Gallery (photos and dancing footage)" media={media} defaultValue={r.gallery} multiple kind="any" hint="Order matters — the first item is shown largest. Uploaded videos play with sound off and controls." />

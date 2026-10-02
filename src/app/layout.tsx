@@ -17,7 +17,6 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "Witchy Portal",
-    images: [{ url: "/images/horned-dusk-beach.jpg", width: 2560, height: 1710 }],
   },
   twitter: { card: "summary_large_image" },
   appleWebApp: { capable: true, title: "Witchy Portal", statusBarStyle: "black-translucent" },

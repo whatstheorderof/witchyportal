@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useId, useMemo, useState } from "react";
 import { AVAILABILITY_LABEL } from "./Availability";
+import { track } from "./Track";
 import { ArrowRight, CalendarIcon, CheckIcon } from "./Icons";
 
 export interface SelectorOption {
@@ -12,6 +13,7 @@ export interface SelectorOption {
   paymentType: "deposit" | "full";
   amountLabel: string;
   totalLabel: string | null;
+  remainingLabel: string | null;
   balanceNote: string | null;
   availability: keyof typeof AVAILABILITY_LABEL;
   bookable: boolean;
@@ -89,20 +91,21 @@ export function BookingSelector({ slug, departures }: { slug: string; departures
                     o.bookable ? "border-line hover:border-plum/40" : "cursor-not-allowed border-line/60 opacity-60"
                   }`}
                 >
-                  <input type="radio" name={`${gid}-opt`} value={o.id} disabled={!o.bookable} checked={optId === o.id} onChange={() => setOptId(o.id)} className="sr-only" />
+                  <input type="radio" name={`${gid}-opt`} value={o.id} disabled={!o.bookable} checked={optId === o.id} onChange={() => { setOptId(o.id); track("option_select", { option: o.label }); }} className="sr-only" />
                   <span className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                     <span className="font-medium text-ink">{o.label}</span>
                     <span className="font-display text-2xl text-plum">{o.amountLabel}</span>
                   </span>
-                  <span className="text-sm text-muted">
-                    {o.paymentType === "deposit" ? (
-                      <>Deposit{o.totalLabel ? <> towards a total of <strong className="font-medium text-ink">{o.totalLabel}</strong></> : null}{o.balanceNote ? ` · ${o.balanceNote}` : ""}</>
-                    ) : (
-                      <>Full payment</>
-                    )}
-                    {!o.bookable && ` · ${AVAILABILITY_LABEL[o.availability]}`}
-                    {o.bookable && o.availability === "limited" && " · Few left"}
-                  </span>
+                  <dl className="mt-1 grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-sm">
+                    <dt className="text-muted">{o.paymentType === "deposit" ? "Deposit today" : "Pay today"}</dt>
+                    <dd className="font-medium text-ink">{o.amountLabel}{o.paymentType === "full" ? " — paid in full" : ""}</dd>
+                    {o.totalLabel && <><dt className="text-muted">Total price</dt><dd className="text-ink">{o.totalLabel}</dd></>}
+                    {o.remainingLabel && <><dt className="text-muted">Remaining</dt><dd className="text-ink">{o.remainingLabel}{o.balanceNote ? ` · ${o.balanceNote}` : ""}</dd></>}
+                    {!o.remainingLabel && o.balanceNote && <><dt className="text-muted">When</dt><dd className="text-ink">{o.balanceNote}</dd></>}
+                  </dl>
+                  {(!o.bookable || o.availability === "limited") && (
+                    <span className="text-sm text-muted">{!o.bookable ? AVAILABILITY_LABEL[o.availability] : "Few places left"}</span>
+                  )}
                   {o.description && <span className="text-sm text-ink/75">{o.description}</span>}
                   {optId === o.id && <CheckIcon className="absolute right-4 top-4 h-5 w-5 text-plum" />}
                 </label>
@@ -119,9 +122,12 @@ export function BookingSelector({ slug, departures }: { slug: string; departures
             <p className="mt-2 font-display text-2xl">{dep.dateLabel}</p>
             <p className="text-ivory/80">{option.label}</p>
             <p className="mt-3 text-ivory/90">
-              {option.paymentType === "deposit" ? "Deposit today: " : "Pay in full: "}
+              {option.paymentType === "deposit" ? "Deposit today: " : "Pay in full today: "}
               <strong className="font-display text-3xl font-medium">{option.amountLabel}</strong>
             </p>
+            {option.totalLabel && option.paymentType === "deposit" && (
+              <p className="text-sm text-ivory/75">Total {option.totalLabel}{option.remainingLabel ? ` · ${option.remainingLabel} remaining` : ""}{option.balanceNote ? ` · ${option.balanceNote}` : ""}</p>
+            )}
             <Link href={`/retreats/${slug}/book?option=${option.id}`} className="btn-light mt-5 w-full sm:w-auto">
               Review &amp; continue <ArrowRight />
             </Link>

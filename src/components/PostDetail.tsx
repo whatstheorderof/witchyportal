@@ -5,8 +5,9 @@ import { MediaImage } from "./MediaImage";
 import { Markdown, PlaceholderNote } from "./Markdown";
 import { ArrowLeft } from "./Icons";
 import { PreviewBanner } from "./PreviewBanner";
+import { FavouriteButton, ShareButton, type Favourite } from "./ShareFavourite";
 
-export function PostDetail({ post, back, backLabel, isPreview }: { post: Post & { cover: Media | null }; back: string; backLabel: string; isPreview?: boolean }) {
+export function PostDetail({ post, back, backLabel, isPreview, favType, href }: { post: Post & { cover: Media | null }; back: string; backLabel: string; isPreview?: boolean; favType: Favourite["type"]; href: string }) {
   const when = post.publishAt ?? post.createdAt;
   return (
     <article>
@@ -20,6 +21,10 @@ export function PostDetail({ post, back, backLabel, isPreview }: { post: Post & 
         </p>
         <h1 className="display-lg mt-3">{post.title}</h1>
         {post.excerpt && <p className="mt-5 text-xl leading-relaxed text-muted">{post.excerpt}</p>}
+        <div className="mt-6 flex flex-wrap items-center gap-2">
+          <FavouriteButton item={{ key: `${favType}:${post.slug}`, type: favType, title: post.title, href }} />
+          <ShareButton title={post.title} text={post.excerpt || undefined} />
+        </div>
         {post.isPlaceholder && <div className="mt-5"><PlaceholderNote>Sample post — replace or delete in Admin</PlaceholderNote></div>}
       </header>
       {post.cover && (

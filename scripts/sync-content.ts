@@ -124,11 +124,13 @@ async function main() {
         const [created] = await db.insert(s.media).values({ url: src, alt, kind: /\.(mp4|webm|mov)$/i.test(src) ? "video" : "image" }).returning();
         return created.id;
       };
-      const retreatFields = (r: Record<string, unknown>) => [
+      // v1 field list — kept so databases synced before v2 are still recognised as unedited
+      const retreatFieldsV1 = (r: Record<string, unknown>) => [
         r.title, r.tagline, r.location, r.country, r.summary, r.concept, r.personalMessage, r.guestExperience,
         r.benefits, r.activities, r.itinerary, r.inclusions, r.exclusions, r.accommodation, r.terms, r.videoUrl, r.sortOrder,
         r.seoTitle, r.seoDescription, r.status === "draft" ? "draft" : "live",
       ];
+      const retreatFields = (r: Record<string, unknown>) => [...retreatFieldsV1(r), r.duration, r.meals, r.travel, r.forMe];
       for (const file of readdirSync(retreatDir).filter((f) => f.endsWith(".md")).sort()) {
         const { data, content } = matter(readFileSync(path.join(retreatDir, file), "utf8"));
         const slug = String(data.slug ?? file.replace(/\.md$/, ""));
@@ -150,6 +152,10 @@ async function main() {
           inclusions: list("inclusions"),
           exclusions: list("exclusions"),
           accommodation: str("accommodation"),
+          duration: str("duration"),
+          meals: str("meals"),
+          travel: str("travel"),
+          forMe: (Array.isArray(data.forMe) ? data.forMe : []).map((q: { question?: string; answer?: string }) => ({ question: String(q.question ?? ""), answer: String(q.answer ?? "") })).filter((q: { question: string; answer: string }) => q.question && q.answer),
           terms: str("terms"),
           videoUrl: str("videoUrl") || null,
           sortOrder: Number(data.sortOrder ?? 0),
@@ -175,8 +181,12 @@ async function main() {
         }
         if (row) {
           const appliedRows = await db.select({ applied: s.settings.value }).from(s.settings).where(eq(s.settings.key, `_sync_retreat_${slug}`));
-          const applied = appliedRows[0]?.applied as string | undefined;
-          if (applied && hash(retreatFields(row as unknown as Record<string, unknown>)) !== applied) {
+          const stored = appliedRows[0]?.applied as string | { v: number; h: string } | undefined;
+          const rowObj = row as unknown as Record<string, unknown>;
+          const edited = typeof stored === "string"
+            ? hash(retreatFieldsV1(rowObj)) !== stored
+            : stored ? hash(retreatFields(rowObj)) !== stored.h : false;
+          if (edited) {
             console.log(`  • kept admin edits: retreats/${file}`);
             counts.keptAdminEdits++;
             continue;
@@ -191,8 +201,8 @@ async function main() {
         const full = { ...values, heroMediaId, gallery, isPlaceholder: Boolean(data.isPlaceholder), syncHash: fileHash, publishAt: row?.publishAt ?? new Date() };
         if (row) await db.update(s.retreats).set(full).where(eq(s.retreats.id, row.id));
         else await db.insert(s.retreats).values(full);
-        const appliedHash = hash(retreatFields(values as unknown as Record<string, unknown>));
-        await db.insert(s.settings).values({ key: `_sync_retreat_${slug}`, value: appliedHash as unknown as object }).onConflictDoUpdate({ target: s.settings.key, set: { value: appliedHash as unknown as object } });
+        const applied = { v: 2, h: hash(retreatFields(values as unknown as Record<string, unknown>)) };
+        await db.insert(s.settings).values({ key: `_sync_retreat_${slug}`, value: applied }).onConflictDoUpdate({ target: s.settings.key, set: { value: applied } });
         if (row) counts.updated++;
         else counts.added++;
       }

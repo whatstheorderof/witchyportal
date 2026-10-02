@@ -13,6 +13,9 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/api/places": ["./node_modules/all-the-cities/cities.pbf"],
     "/birth-chart": ["./node_modules/all-the-cities/cities.pbf"],
+    // Social preview images read fonts and pre-cropped photos from ./assets
+    "/**/opengraph-image*": ["./assets/**/*"],
+    "/opengraph-image*": ["./assets/**/*"],
   },
   experimental: {
     serverActions: { bodySizeLimit: "25mb" },

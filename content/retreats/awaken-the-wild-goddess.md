@@ -2,6 +2,7 @@
 title: Awaken the Wild Goddess
 tagline: An intimate 7-day journey to awaken the wild Goddess within.
 location: Location to be announced
+duration: 7 days
 country: ""
 summary: "This is your sacred invitation to rise — seven days of tarot, crystal and candle rituals, sea and nature ceremonies, island boat adventures and wild dancing under the stars."
 guestExperience: |

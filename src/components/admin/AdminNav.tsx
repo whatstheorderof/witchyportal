@@ -6,7 +6,7 @@ import { Suspense } from "react";
 
 const groups = [
   { title: "", items: [{ href: "/admin", label: "Dashboard" }] },
-  { title: "Bookings", items: [{ href: "/admin/retreats", label: "Retreats & dates" }, { href: "/admin/checkouts", label: "Payment redirects" }, { href: "/admin/inbox", label: "Inbox" }] },
+  { title: "Bookings", items: [{ href: "/admin/retreats", label: "Retreats & dates" }, { href: "/admin/insights", label: "Insights" }, { href: "/admin/checkouts", label: "Payment redirects" }, { href: "/admin/inbox", label: "Inbox" }] },
   {
     title: "Content",
     items: [

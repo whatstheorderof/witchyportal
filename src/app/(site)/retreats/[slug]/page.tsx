@@ -6,13 +6,17 @@ import { getAdmin } from "@/lib/auth";
 import { formatDateRange, nightsBetween } from "@/lib/dates";
 import { formatMoney } from "@/lib/money";
 import { parseYouTubeId } from "@/lib/validation";
+import { retreatFacts } from "@/lib/retreat-facts";
 import { MediaImage } from "@/components/MediaImage";
 import { Markdown, PlaceholderNote } from "@/components/Markdown";
 import { AvailabilityBadge, isBookable } from "@/components/Availability";
 import { BookingSelector, type SelectorDeparture } from "@/components/BookingSelector";
+import { RetreatBookingCard } from "@/components/RetreatBookingCard";
+import { StickyBookingBar } from "@/components/StickyBookingBar";
+import { TrackView } from "@/components/Track";
 import { WaitlistForm } from "@/components/forms";
 import { YouTubeEmbed } from "@/components/YouTube";
-import { ArrowRight, CalendarIcon, CheckIcon, MinusIcon, PinIcon } from "@/components/Icons";
+import { CheckIcon, MinusIcon, PinIcon } from "@/components/Icons";
 import { PreviewBanner } from "@/components/PreviewBanner";
 
 type Props = { params: Promise<{ slug: string }>; searchParams: Promise<{ preview?: string }> };
@@ -28,48 +32,86 @@ async function load(props: Props) {
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const { retreat } = await load(props);
   if (!retreat) return { title: "Retreat not found" };
-  return {
-    title: retreat.seoTitle || retreat.title,
-    description: retreat.seoDescription || retreat.summary,
-    openGraph: retreat.hero ? { images: [{ url: retreat.hero.url, alt: retreat.hero.alt }] } : undefined,
-  };
+  const title = retreat.seoTitle || retreat.title;
+  const description = retreat.seoDescription || retreat.summary;
+  return { title, description, openGraph: { title, description, type: "website" }, twitter: { card: "summary_large_image", title, description } };
+}
+
+function Fact({ label, value, muted }: { label: string; value: React.ReactNode; muted?: boolean }) {
+  return (
+    <div className="min-w-[8.5rem]">
+      <dt className="text-[0.68rem] uppercase tracking-[0.18em] text-muted">{label}</dt>
+      <dd className={`mt-0.5 font-medium ${muted ? "text-muted" : "text-ink"}`}>{value}</dd>
+    </div>
+  );
+}
+
+function Detail({ id, eyebrow, title, children }: { id?: string; eyebrow: string; title: string; children: React.ReactNode }) {
+  return (
+    <section id={id} className="mt-20 scroll-mt-36" aria-labelledby={id ? `${id}-h` : undefined}>
+      <p className="eyebrow">{eyebrow}</p>
+      <h2 id={id ? `${id}-h` : undefined} className="display-md mt-3">{title}</h2>
+      <div className="mt-6">{children}</div>
+    </section>
+  );
 }
 
 export default async function RetreatPage(props: Props) {
   const { retreat, isPreview } = await load(props);
   if (!retreat) notFound();
+  const f = retreatFacts(retreat);
 
   const departures: SelectorDeparture[] = retreat.departures.map((d) => {
     const n = nightsBetween(d.startDate, d.endDate);
     return {
       id: d.id,
       dateLabel: formatDateRange(d.startDate, d.endDate),
-      nightsLabel: `${n} night${n === 1 ? "" : "s"}`,
+      nightsLabel: `${n + 1} days · ${n} night${n === 1 ? "" : "s"}`,
       availability: d.availability,
       availabilityNote: d.availabilityNote,
       bookable: isBookable(d.availability),
-      options: d.options.map((o) => ({
-        id: o.id,
-        label: o.label,
-        description: o.description,
-        paymentType: o.paymentType,
-        amountLabel: formatMoney(o.amount, o.currency),
-        totalLabel: o.totalPrice ? formatMoney(o.totalPrice, o.currency) : null,
-        balanceNote: o.balanceNote,
-        availability: o.availability,
-        bookable: isBookable(o.availability) && isBookable(d.availability),
-      })),
+      options: d.options.map((o) => {
+        const total = o.totalPrice ?? (o.paymentType === "full" ? o.amount : null);
+        const remaining = total != null && o.paymentType === "deposit" ? total - o.amount : null;
+        return {
+          id: o.id,
+          label: o.label,
+          description: o.description,
+          paymentType: o.paymentType,
+          amountLabel: formatMoney(o.amount, o.currency),
+          totalLabel: total != null ? formatMoney(total, o.currency) : null,
+          remainingLabel: remaining && remaining > 0 ? formatMoney(remaining, o.currency) : null,
+          balanceNote: o.balanceNote,
+          availability: o.availability,
+          bookable: isBookable(o.availability) && isBookable(d.availability),
+        };
+      }),
     };
   });
-  const anyBookable = departures.some((d) => d.bookable && d.options.some((o) => o.bookable));
-  const showWaitlist = retreat.departures.length === 0 || retreat.departures.some((d) => !isBookable(d.availability)) || !anyBookable;
+  const showWaitlist = retreat.departures.length === 0 || retreat.departures.some((d) => !isBookable(d.availability)) || !f.bookable;
   const videoId = retreat.videoUrl ? parseYouTubeId(retreat.videoUrl) : null;
+  const hasIncluded = retreat.inclusions.length > 0 || retreat.exclusions.length > 0;
+
+  // What Yulia still needs to confirm — shown honestly instead of empty sections.
+  const pending = [
+    !f.datesKnown && "Dates and prices",
+    !f.destinationKnown && "Location",
+    retreat.itinerary.length === 0 && "Day-by-day itinerary",
+    !retreat.accommodation && "Accommodation",
+    !retreat.meals && "Meals",
+    !retreat.travel && "Travel guidance",
+    !hasIncluded && "What's included",
+    retreat.forMe.length === 0 && retreat.faqs.length === 0 && "Questions & answers",
+  ].filter(Boolean) as string[];
 
   const sections = [
     { id: "overview", label: "Overview", show: true },
+    { id: "for-you", label: "Is it for me?", show: retreat.forMe.length > 0 },
     { id: "experience", label: "Experience", show: Boolean(retreat.guestExperience || retreat.activities.length || retreat.benefits.length) },
     { id: "itinerary", label: "Itinerary", show: retreat.itinerary.length > 0 },
-    { id: "stay", label: "Stay", show: Boolean(retreat.accommodation) },
+    { id: "stay", label: "Stay & food", show: Boolean(retreat.accommodation || retreat.meals) },
+    { id: "included", label: "Included", show: hasIncluded },
+    { id: "travel", label: "Travel", show: Boolean(retreat.travel) },
     { id: "book", label: "Dates & prices", show: true },
     { id: "faq", label: "FAQs", show: retreat.faqs.length > 0 },
   ].filter((s) => s.show);
@@ -90,25 +132,34 @@ export default async function RetreatPage(props: Props) {
     <>
       {isPreview && <PreviewBanner status={retreat.status} editHref={`/admin/retreats/${retreat.id}`} />}
       {!isPreview && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />}
+      {!isPreview && <TrackView name="retreat_view" props={{ retreat: retreat.slug }} />}
 
       {/* HERO */}
-      <section className="relative isolate flex min-h-[78svh] items-end overflow-hidden bg-plum-deep text-ivory">
+      <section className="relative isolate flex min-h-[70svh] items-end overflow-hidden bg-plum-deep text-ivory lg:min-h-[76svh]">
         <div className="absolute inset-0 -z-10">
           <MediaImage media={retreat.hero} fallback="horns" priority sizes="100vw" />
           <div className="scrim-hero absolute inset-0" />
         </div>
-        <div className="container-page pb-12 pt-32 lg:pb-16">
+        <div className="container-page pb-10 pt-32 lg:pb-14">
           <Link href="/retreats" className="text-sm text-ivory/80 hover:text-ivory">← All retreats</Link>
-          <p className="mt-6 flex items-center gap-1.5 text-ivory/85"><PinIcon />{retreat.location}{retreat.country ? `, ${retreat.country}` : ""}</p>
+          <p className="mt-6 flex items-center gap-1.5 text-ivory/85"><PinIcon />{f.destination}</p>
           <h1 className="display-xl mt-3 max-w-4xl text-ivory">{retreat.title}</h1>
-          {retreat.tagline && <p className="mt-4 max-w-2xl text-lg text-ivory/85 sm:text-xl">{retreat.tagline}</p>}
-          <div className="mt-6 flex flex-wrap items-center gap-3">
-            {retreat.nextDeparture && (
-              <span className="inline-flex items-center gap-2 rounded-full bg-ivory/15 px-4 py-2 text-sm backdrop-blur"><CalendarIcon />Next: {formatDateRange(retreat.nextDeparture.startDate, retreat.nextDeparture.endDate)}</span>
-            )}
-            {retreat.overallAvailability && <AvailabilityBadge value={retreat.overallAvailability} solid />}
-            {retreat.isPlaceholder && <span className="placeholder-flag">Sample retreat — details are placeholders</span>}
-          </div>
+          {retreat.tagline && <p className="mt-4 max-w-2xl text-lg text-ivory/90 sm:text-xl">{retreat.tagline}</p>}
+          {retreat.isPlaceholder && <span className="placeholder-flag mt-5">Sample retreat — details are placeholders</span>}
+        </div>
+      </section>
+
+      {/* KEY FACTS — destination, dates, duration, price, availability together */}
+      <section aria-label="Key facts" className="border-b border-line/70 bg-white">
+        <div className="container-page flex flex-wrap items-center justify-between gap-x-10 gap-y-4 py-5">
+          <dl className="flex flex-wrap gap-x-8 gap-y-3">
+            <Fact label="Destination" value={f.destination} muted={!f.destinationKnown} />
+            <Fact label="Dates" value={f.dates} muted={!f.datesKnown} />
+            <Fact label="Duration" value={f.duration} />
+            <Fact label="Price" value={f.price} muted={!f.priceKnown} />
+            {f.availability && <Fact label="Availability" value={<AvailabilityBadge value={f.availability} />} />}
+          </dl>
+          <a href="#book" className="btn-primary hidden min-h-11 lg:inline-flex">{f.bookable ? "Choose dates & book" : "Join the waitlist"}</a>
         </div>
       </section>
 
@@ -121,7 +172,7 @@ export default async function RetreatPage(props: Props) {
         </ul>
       </nav>
 
-      <div className="container-page grid gap-16 py-14 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-20 lg:py-20">
+      <div className="container-page grid gap-16 py-14 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-x-16 lg:py-20 xl:gap-x-24">
         <div className="min-w-0">
           {/* OVERVIEW */}
           <section id="overview" className="scroll-mt-36">
@@ -140,35 +191,57 @@ export default async function RetreatPage(props: Props) {
             </section>
           )}
 
-          {/* GALLERY */}
-          {(retreat.gallery.length > 0 || videoId) && (
-            <section className="mt-16" aria-label="Gallery">
-              <div tabIndex={0} aria-label="Photo and video gallery — scroll sideways" className="no-scrollbar -mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0">
-                {videoId && (
-                  <div className="w-[85vw] shrink-0 snap-center sm:col-span-2 sm:w-auto">
-                    <YouTubeEmbed id={videoId} title={`${retreat.title} — video`} />
+          {/* IS THIS FOR ME */}
+          {retreat.forMe.length > 0 && (
+            <Detail id="for-you" eyebrow="Is this retreat for me?" title="Your questions, answered gently">
+              <div className="grid gap-3 sm:grid-cols-2">
+                {retreat.forMe.map((q, i) => (
+                  <div key={i} className="card p-6">
+                    <h3 className="font-display text-xl text-plum">{q.question}</h3>
+                    <div className="mt-2 text-[0.97rem]"><Markdown>{q.answer}</Markdown></div>
                   </div>
-                )}
-                {retreat.gallery.map((m, i) => (
-                  <figure key={m.id} className={`relative w-[80vw] shrink-0 snap-center overflow-hidden rounded-(--radius-card) bg-sand sm:w-auto ${i % 3 === 0 ? "aspect-[4/5] sm:row-span-2 sm:aspect-auto" : "aspect-[4/5] sm:aspect-[4/3]"}`}>
-                    {m.kind === "video" ? (
-                      <video src={m.url} poster={m.posterUrl ?? undefined} aria-label={m.alt || `${retreat.title} — video`} controls muted loop playsInline preload="metadata" className="absolute inset-0 h-full w-full object-cover" />
-                    ) : (
-                      <MediaImage media={m} sizes="(min-width:640px) 40vw, 80vw" />
-                    )}
-                    {m.caption && <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-plum-deep/80 to-transparent p-4 text-sm text-ivory">{m.caption}</figcaption>}
-                  </figure>
                 ))}
               </div>
-            </section>
+            </Detail>
           )}
+        </div>
 
+        {/* DESKTOP BOOKING SUMMARY */}
+        <aside className="hidden lg:col-start-2 lg:row-span-3 lg:row-start-1 lg:block" aria-label="Booking summary">
+          <div className="sticky top-40">
+            <RetreatBookingCard retreat={retreat} layout="stacked" showImage={false} />
+            <Link href={`/contact?retreat=${retreat.id}`} className="mt-4 block text-center text-sm text-plum link-underline">Ask Yulia a question</Link>
+          </div>
+        </aside>
+
+        {/* GALLERY — wider grid on desktop */}
+        {(retreat.gallery.length > 0 || videoId) && (
+          <section aria-label="Gallery" className="min-w-0 lg:col-start-1">
+            <div tabIndex={0} aria-label="Photo and video gallery — scroll sideways" className="no-scrollbar -mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0">
+              {videoId && (
+                <div className="w-[85vw] shrink-0 snap-center sm:col-span-3 sm:w-auto">
+                  <YouTubeEmbed id={videoId} title={`${retreat.title} — video`} />
+                </div>
+              )}
+              {retreat.gallery.map((m, i) => (
+                <figure key={m.id} className={`relative w-[80vw] shrink-0 snap-center overflow-hidden rounded-(--radius-card) bg-sand sm:w-auto ${i === 0 ? "aspect-[4/5] sm:col-span-2 sm:row-span-2 sm:aspect-auto" : "aspect-[4/5] sm:aspect-[4/3]"}`}>
+                  {m.kind === "video" ? (
+                    <video src={m.url} poster={m.posterUrl ?? undefined} aria-label={m.alt || `${retreat.title} — video`} controls muted loop playsInline preload="metadata" className="absolute inset-0 h-full w-full object-cover" />
+                  ) : (
+                    <MediaImage media={m} sizes="(min-width:640px) 40vw, 80vw" />
+                  )}
+                  {m.caption && <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-plum-deep/80 to-transparent p-4 text-sm text-ivory">{m.caption}</figcaption>}
+                </figure>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <div className="min-w-0 lg:col-start-1">
           {/* EXPERIENCE */}
           {(retreat.guestExperience || retreat.activities.length > 0 || retreat.benefits.length > 0) && (
-            <section id="experience" className="mt-20 scroll-mt-36">
-              <p className="eyebrow">Your experience</p>
-              <h2 className="display-md mt-3">What your days will feel like</h2>
-              {retreat.guestExperience && <div className="mt-6"><Markdown>{retreat.guestExperience}</Markdown></div>}
+            <Detail id="experience" eyebrow="Your experience" title="What your days will feel like">
+              {retreat.guestExperience && <Markdown>{retreat.guestExperience}</Markdown>}
               {retreat.benefits.length > 0 && (
                 <div className="mt-10 rounded-[2rem] bg-lavender/35 p-6 sm:p-8">
                   <h3 className="font-display text-2xl text-plum">What you&rsquo;ll take home</h3>
@@ -188,18 +261,16 @@ export default async function RetreatPage(props: Props) {
                   ))}
                 </ul>
               )}
-            </section>
+            </Detail>
           )}
 
           {/* ITINERARY */}
           {retreat.itinerary.length > 0 && (
-            <section id="itinerary" className="mt-20 scroll-mt-36">
-              <p className="eyebrow">Sample itinerary</p>
-              <h2 className="display-md mt-3">Day by day</h2>
-              <p className="mt-3 text-muted">A sample rhythm — the exact schedule may shift with the weather, the tides and the group.</p>
-              <ol className="mt-8 border-l border-line">
+            <Detail id="itinerary" eyebrow="Sample itinerary" title="Day by day">
+              <p className="-mt-3 mb-6 text-muted">A sample rhythm — the exact schedule may shift with the weather, the tides and the group.</p>
+              <ol className="border-l border-line">
                 {retreat.itinerary.map((d, i) => (
-                  <li key={i} className="relative pl-8 pb-8 last:pb-0">
+                  <li key={i} className="relative pb-8 pl-8 last:pb-0">
                     <span aria-hidden className="absolute -left-[7px] top-2 h-3.5 w-3.5 rounded-full border-2 border-ivory bg-blush-deep" />
                     <details open={i === 0} className="group">
                       <summary className="flex min-h-11 cursor-pointer list-none items-baseline gap-3 [&::-webkit-details-marker]:hidden">
@@ -212,12 +283,22 @@ export default async function RetreatPage(props: Props) {
                   </li>
                 ))}
               </ol>
-            </section>
+            </Detail>
+          )}
+
+          {/* STAY & FOOD */}
+          {(retreat.accommodation || retreat.meals) && (
+            <Detail id="stay" eyebrow="Where you'll stay" title="Accommodation & food">
+              <div className="grid gap-6 sm:grid-cols-2">
+                {retreat.accommodation && <div><h3 className="font-display text-xl text-plum">Accommodation</h3><div className="mt-2"><Markdown>{retreat.accommodation}</Markdown></div></div>}
+                {retreat.meals && <div><h3 className="font-display text-xl text-plum">Meals</h3><div className="mt-2"><Markdown>{retreat.meals}</Markdown></div></div>}
+              </div>
+            </Detail>
           )}
 
           {/* INCLUDED */}
-          {(retreat.inclusions.length > 0 || retreat.exclusions.length > 0) && (
-            <section className="mt-20 grid gap-6 sm:grid-cols-2" aria-label="What's included">
+          {hasIncluded && (
+            <section id="included" className="mt-20 grid scroll-mt-36 gap-6 sm:grid-cols-2" aria-label="What's included">
               {retreat.inclusions.length > 0 && (
                 <div className="card p-6 sm:p-7">
                   <h2 className="font-display text-2xl text-plum">Included</h2>
@@ -237,12 +318,25 @@ export default async function RetreatPage(props: Props) {
             </section>
           )}
 
-          {/* STAY */}
-          {retreat.accommodation && (
-            <section id="stay" className="mt-20 scroll-mt-36">
-              <p className="eyebrow">Where you&rsquo;ll stay</p>
-              <h2 className="display-md mt-3">Accommodation</h2>
-              <div className="mt-6"><Markdown>{retreat.accommodation}</Markdown></div>
+          {/* TRAVEL */}
+          {retreat.travel && (
+            <Detail id="travel" eyebrow="Getting there" title="Travel guidance">
+              <Markdown>{retreat.travel}</Markdown>
+            </Detail>
+          )}
+
+          {/* STILL TO BE CONFIRMED */}
+          {pending.length > 0 && (
+            <section className="mt-16 rounded-[2rem] border border-dashed border-lavender-deep/40 bg-lavender/20 p-6 sm:p-8" aria-labelledby="pending-h">
+              <h2 id="pending-h" className="font-display text-2xl text-plum">Still being finalised</h2>
+              <p className="mt-2 text-ink/80">Yulia is confirming these details now. Join the waitlist to hear the moment they&rsquo;re announced, or ask her anything.</p>
+              <ul className="mt-4 flex flex-wrap gap-2">
+                {pending.map((p) => <li key={p} className="rounded-full bg-white/80 px-3 py-1 text-sm ring-1 ring-line">{p}</li>)}
+              </ul>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <a href="#waitlist" className="btn-primary min-h-11">Join the waitlist</a>
+                <Link href={`/contact?retreat=${retreat.id}`} className="btn-outline min-h-11">Ask Yulia</Link>
+              </div>
             </section>
           )}
 
@@ -254,13 +348,13 @@ export default async function RetreatPage(props: Props) {
               {departures.length > 0 ? (
                 <BookingSelector slug={retreat.slug} departures={departures} />
               ) : (
-                <p className="rounded-2xl bg-sand/60 p-5">New dates for this retreat will be announced soon. Join the waitlist and you&rsquo;ll hear first.</p>
+                <p className="rounded-2xl bg-white/70 p-5 ring-1 ring-line">Dates and prices for this retreat will be announced soon. Join the waitlist below and you&rsquo;ll hear first — joining doesn&rsquo;t commit you to anything.</p>
               )}
             </div>
             {showWaitlist && (
-              <div className="mt-10 border-t border-line pt-8" id="waitlist">
+              <div className="mt-10 scroll-mt-36 border-t border-line pt-8" id="waitlist">
                 <h3 className="font-display text-2xl text-plum">Join the waitlist</h3>
-                <p className="mt-2 text-muted">Leave your details and we&rsquo;ll email you if a place opens up or new dates are released. Joining the waitlist is not a booking.</p>
+                <p className="mt-2 text-muted">We&rsquo;ll email you when dates are released or a place opens up, before anything is announced publicly. Joining the waitlist is not a booking.</p>
                 <div className="mt-5">
                   <WaitlistForm retreatId={retreat.id} departures={departures.map((d) => ({ id: d.id, label: d.dateLabel }))} />
                 </div>
@@ -270,21 +364,19 @@ export default async function RetreatPage(props: Props) {
 
           {/* FAQ */}
           {retreat.faqs.length > 0 && (
-            <section id="faq" className="mt-20 scroll-mt-36">
-              <p className="eyebrow">Good to know</p>
-              <h2 className="display-md mt-3">Questions &amp; answers</h2>
-              <div className="mt-8 divide-y divide-line border-y border-line">
-                {retreat.faqs.map((f) => (
-                  <details key={f.id} className="group py-2">
+            <Detail id="faq" eyebrow="Good to know" title="Questions & answers">
+              <div className="divide-y divide-line border-y border-line">
+                {retreat.faqs.map((q) => (
+                  <details key={q.id} className="group py-2">
                     <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 font-display text-xl text-plum [&::-webkit-details-marker]:hidden">
-                      {f.question}
+                      {q.question}
                       <span aria-hidden className="text-2xl transition group-open:rotate-45">+</span>
                     </summary>
-                    <div className="pb-4"><Markdown>{f.answer}</Markdown></div>
+                    <div className="pb-4"><Markdown>{q.answer}</Markdown></div>
                   </details>
                 ))}
               </div>
-            </section>
+            </Detail>
           )}
 
           {/* TERMS */}
@@ -300,37 +392,13 @@ export default async function RetreatPage(props: Props) {
 
           {retreat.isPlaceholder && <div className="mt-10"><PlaceholderNote>All details on this retreat are placeholders for Yulia to replace</PlaceholderNote></div>}
         </div>
-
-        {/* DESKTOP STICKY SUMMARY */}
-        <aside className="hidden lg:block" aria-label="Booking summary">
-          <div className="sticky top-40 card p-7">
-            <p className="eyebrow">From</p>
-            <p className="mt-1 font-display text-4xl text-plum">{retreat.fromPrice ? formatMoney(retreat.fromPrice.amount, retreat.fromPrice.currency) : "Price TBC"}</p>
-            <ul className="mt-5 grid gap-2 text-sm">
-              {retreat.departures.slice(0, 4).map((d) => (
-                <li key={d.id} className="flex items-center justify-between gap-3">
-                  <span>{formatDateRange(d.startDate, d.endDate)}</span>
-                  <AvailabilityBadge value={d.availability} />
-                </li>
-              ))}
-            </ul>
-            <a href="#book" className="btn-primary mt-6 w-full">{anyBookable ? "Choose dates" : "Join the waitlist"} <ArrowRight /></a>
-            <Link href={`/contact?retreat=${retreat.id}`} className="mt-3 block text-center text-sm text-plum link-underline">Ask Yulia a question</Link>
-          </div>
-        </aside>
       </div>
 
-      {/* MOBILE STICKY BOOKING BAR */}
-      <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-30 border-t border-line bg-ivory/95 px-4 py-3 backdrop-blur-md lg:hidden">
-        <div className="mx-auto flex max-w-md items-center justify-between gap-4">
-          <div className="min-w-0">
-            <p className="text-xs text-muted">From</p>
-            <p className="truncate font-display text-2xl leading-none text-plum">{retreat.fromPrice ? formatMoney(retreat.fromPrice.amount, retreat.fromPrice.currency) : "Price TBC"}</p>
-          </div>
-          <a href="#book" className="btn-primary min-h-12 px-6">{anyBookable ? "Book now" : "Waitlist"}</a>
-        </div>
-      </div>
-      <div className="h-20 lg:hidden" aria-hidden />
+      <StickyBookingBar
+        price={retreat.fromPrice ? formatMoney(retreat.fromPrice.amount, retreat.fromPrice.currency) : null}
+        dates={retreat.nextDeparture ? formatDateRange(retreat.nextDeparture.startDate, retreat.nextDeparture.endDate) : null}
+        bookable={f.bookable}
+      />
     </>
   );
 }

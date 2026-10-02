@@ -48,6 +48,14 @@ The Ask a Witch page is a hub for your YouTube channel (@YuliaMoonPortal): the n
 
 Tip: put "Ask a Witch" in the title or description of those uploads so they're picked up automatically.
 
+## Watch (Witchy TV)
+
+`/watch` plays every video the site knows about, one after another, like a TV channel: Everything, Ask a Witch, Shorts, Full episodes and one channel per topic. **Whole channel** plays the YouTube uploads playlist directly, so it works even before videos are imported. Nothing loads from YouTube until the visitor presses play. Videos added under *Ask a Witch videos* appear here automatically.
+
+## This week with Yulia
+
+*Settings → Homepage → This week with Yulia* lets you pin a video, an article and a tip for the homepage's weekly strip. Leave a box on "Latest" and the newest published item is used — so if you publish something every week, you don't need to touch these. **Welcome video** (a YouTube link) replaces the portrait in the homepage "Meet Yulia" section.
+
 ## Retreats
 
 *Retreats & dates → Edit*. A retreat has:
@@ -69,6 +77,14 @@ Untick **Placeholder content** once the real details are in — this removes the
 ## Homepage and About page
 
 *Settings* holds the homepage hero text, featured retreat, introduction, the About page (your story, views on retreats, why you host them, what you hope guests gain), contact email and social links. *Homepage features* are the three image cards on the homepage.
+
+## Insights
+
+*Insights* shows how visitors move through booking over the last 7, 30 or 90 days: retreat page views → booking option chosen → summary viewed → sent to the payment page, plus waitlist, enquiry and newsletter counts. It stores no names, emails, IP addresses or birth details — only which step happened and when. "Sent to payment" is not the same as paid: always confirm payments in Stripe (or your payment provider).
+
+## Favourites and sharing
+
+Visitors can save tips, articles, astrology posts and videos with the heart button; they're kept on their own phone (no account) and listed at `/favourites`. Every tip, affirmation and motivation now has its own page (`/tips/<name>`) with a Share button, and shared links show a branded preview image with the title.
 
 ## Enquiries, waitlist and newsletter
 

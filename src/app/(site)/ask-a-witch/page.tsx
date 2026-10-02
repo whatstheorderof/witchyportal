@@ -28,8 +28,9 @@ export default async function AskAWitchPage({ searchParams }: { searchParams: Pr
     <>
       <PageHero eyebrow="Ask a Witch" title="Your questions, answered" intro="Yulia's Ask a Witch videos and Shorts, all in one place. Press play to watch right here — nothing loads from YouTube until you do.">
         <div className="mt-8 flex flex-wrap items-center gap-3">
+          <Link href="/watch" className="btn-primary">Watch on Witchy TV</Link>
           {subscribe && (
-            <a href={subscribe} target="_blank" rel="noopener noreferrer" className="btn-primary">
+            <a href={subscribe} target="_blank" rel="noopener noreferrer" className="btn-outline">
               Subscribe on YouTube <ExternalIcon />
             </a>
           )}

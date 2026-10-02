@@ -3,14 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
-import { ChartIcon, CloseIcon, HomeIcon, MenuIcon, SparkIcon, WaveIcon } from "./Icons";
+import { CloseIcon, HomeIcon, MenuIcon, SparkIcon, TvIcon, WaveIcon } from "./Icons";
 import { discoverNav } from "./nav";
 
 const tabs = [
   { href: "/", label: "Home", Icon: HomeIcon, match: (p: string) => p === "/" },
   { href: "/retreats", label: "Retreats", Icon: WaveIcon, match: (p: string) => p.startsWith("/retreats") },
+  { href: "/watch", label: "Watch", Icon: TvIcon, match: (p: string) => p.startsWith("/watch") },
   { href: "/discover", label: "Discover", Icon: SparkIcon, match: (p: string) => ["/discover", "/tips", "/articles", "/astrology", "/ask-a-witch", "/tarot", "/moon"].some((x) => p.startsWith(x)) },
-  { href: "/birth-chart", label: "Chart", Icon: ChartIcon, match: (p: string) => p.startsWith("/birth-chart") },
 ];
 
 export function MobileTabBar() {
@@ -74,7 +74,7 @@ export function MobileTabBar() {
             </button>
           </div>
           <ul className="grid gap-1">
-            {[...discoverNav, { href: "/about", label: "About Yulia", blurb: "Her story and why she hosts retreats." }, { href: "/socials", label: "Socials", blurb: "Yulia on Instagram, YouTube and Etsy." }, { href: "/contact", label: "Contact", blurb: "Questions, enquiries and collaborations." }].map((i) => (
+            {[{ href: "/birth-chart", label: "Birth Chart", blurb: "Your Sun, Moon and Rising in seconds." }, ...discoverNav, { href: "/about", label: "About Yulia", blurb: "Her story and why she hosts retreats." }, { href: "/socials", label: "Socials", blurb: "Yulia on Instagram, YouTube and Etsy." }, { href: "/favourites", label: "Your favourites", blurb: "Tips, articles and videos you've saved." }, { href: "/contact", label: "Contact", blurb: "Questions, enquiries and collaborations." }].map((i) => (
               <li key={i.href}>
                 <Link href={i.href} className="flex min-h-14 flex-col justify-center rounded-2xl px-4 py-2 hover:bg-sand/50">
                   <span className="font-display text-xl text-plum">{i.label}</span>

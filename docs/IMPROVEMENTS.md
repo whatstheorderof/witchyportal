@@ -1,6 +1,6 @@
 # Witchy Portal — improvements list
 
-Last updated 1 October 2026. Effort: **S** = under a day, **M** = 1–3 days, **L** = a week or more.
+Last updated 2 October 2026. See also [PRIORITY_REVIEW.md](PRIORITY_REVIEW.md) for the 24-point checklist. Effort: **S** = under a day, **M** = 1–3 days, **L** = a week or more.
 
 ## 1. Before launch — needs Yulia
 
@@ -18,9 +18,9 @@ Last updated 1 October 2026. Effort: **S** = under a day, **M** = 1–3 days, **
 ## 2. Quick wins (S)
 
 1. **Email Yulia when someone enquires or joins the waitlist** (via Resend or Postmark) — right now she has to check /admin.
-2. **Privacy-friendly analytics** (Vercel Web Analytics) and a count of "Continue to payment" clicks per retreat.
+2. ~~Booking funnel~~ — done (*Admin → Insights*). Optional extra: Vercel Web Analytics for overall traffic.
 3. **Install as an app** (web app manifest + icons) so fans can add Witchy Portal to their home screen.
-4. **Share images**: automatic social preview cards for every article, astrology post, tarot card and retreat.
+4. ~~Share images~~ — done for retreats, articles, astrology and tips. Tarot cards still use the default image.
 5. **Moon calendar → phone calendar**: an "Add to calendar" feed (.ics) of new and full moons.
 6. **Etsy picks**: a small "From Yulia's shop" strip on relevant articles and the Socials page.
 
@@ -31,7 +31,7 @@ Last updated 1 October 2026. Effort: **S** = under a day, **M** = 1–3 days, **
 3. **Tarot**: extend to the full 78-card deck and add three-card spreads (past · present · future).
 4. **Birth chart**: let visitors download or share their chart; add Yulia's own interpretations; add a compatibility (synastry) check.
 5. **Instagram feed** on the Socials page (needs a Meta developer token).
-6. **"Is this retreat for me?" quiz** that ends with the waitlist — a gentle lead magnet.
+6. **"Is this retreat for me?" quiz** that ends with the waitlist — a gentle lead magnet (the Q&A section is built; a quiz would go further).
 
 ## 4. Earn more (M–L)
 

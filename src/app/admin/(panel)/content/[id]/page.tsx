@@ -21,7 +21,7 @@ export default async function EditPost({ params, searchParams }: { params: Promi
   if (!p) notFound();
   const media = await pickerMedia();
   const { created } = await searchParams;
-  const previewHref = p.type === "article" ? `/articles/${p.slug}?preview=1` : p.type === "astrology" ? `/astrology/${p.slug}?preview=1` : null;
+  const previewHref = p.type === "article" ? `/articles/${p.slug}?preview=1` : p.type === "astrology" ? `/astrology/${p.slug}?preview=1` : `/tips/${p.slug}?preview=1`;
   const short = p.type === "tip" || p.type === "affirmation" || p.type === "motivation";
   return (
     <>

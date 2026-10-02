@@ -16,3 +16,4 @@ export const MinusIcon = ({ className }: P) => (<svg {...base(className ?? "h-4 
 export const PlayIcon = ({ className }: P) => (<svg viewBox="0 0 24 24" className={className ?? "h-6 w-6"} aria-hidden="true"><path d="M8 5.5v13a.8.8 0 0 0 1.2.7l10.3-6.5a.8.8 0 0 0 0-1.4L9.2 4.8A.8.8 0 0 0 8 5.5Z" fill="currentColor" /></svg>);
 export const LockIcon = ({ className }: P) => (<svg {...base(className ?? "h-4 w-4")}><rect x="5" y="10.5" width="14" height="10" rx="2" /><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" /></svg>);
 export const ExternalIcon = ({ className }: P) => (<svg {...base(className ?? "h-4 w-4")}><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" /></svg>);
+export const TvIcon = ({ className }: P) => (<svg {...base(className)}><rect x="3" y="6" width="18" height="12.5" rx="2.5" /><path d="m9 2.5 3 3.5 3-3.5M8 21h8" /><path d="m10.5 10 4 2.2-4 2.2v-4.4Z" fill="currentColor" stroke="none" /></svg>);

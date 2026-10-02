@@ -247,9 +247,19 @@ export function BirthChart() {
             </div>
           </div>
 
-          <div className="grid gap-10 lg:grid-cols-2">
-            <div>
-              <h3 className="font-display text-2xl text-plum">Planetary placements</h3>
+          <div>
+            <h3 className="font-display text-2xl text-plum">What your chart says</h3>
+            <p className="mt-1 text-sm text-muted">A short reading of your main placements. Tap the sections below for the full detail.</p>
+                <ul className="mt-4 grid gap-3 text-[1rem] leading-relaxed sm:grid-cols-2 sm:gap-x-8">
+                  {chart.placements.filter((p) => !p.signUncertain).slice(0, 7).map((p) => (
+                    <li key={p.body}><strong className="font-medium text-plum">{p.body} in {p.sign}</strong> — {BODY_INFO[p.body].meaning}, coloured by {SIGN_INFO[p.sign].keywords}{p.house ? `, focused on ${HOUSE_MEANING[p.house - 1]} (house ${p.house})` : ""}.</li>
+                  ))}
+                </ul>
+          </div>
+
+          <div className="grid gap-3">
+            <details className="card p-5 sm:p-6">
+              <summary className="cursor-pointer font-display text-xl text-plum">All placements, degrees & houses</summary>
               <div className="mt-4 overflow-x-auto rounded-2xl ring-1 ring-line">
                 <table className="w-full min-w-[420px] text-left text-[0.95rem]">
                   <caption className="sr-only">Planet positions</caption>
@@ -276,27 +286,18 @@ export function BirthChart() {
                   </tbody>
                 </table>
               </div>
-            </div>
-            <div className="grid content-start gap-10">
-              <div>
-                <h3 className="font-display text-2xl text-plum">What each planet represents</h3>
-                <ul className="mt-4 grid gap-2 text-[0.95rem]">
-                  {chart.placements.filter((p) => !p.signUncertain).slice(0, 7).map((p) => (
-                    <li key={p.body}><strong className="font-medium text-plum">{p.body} in {p.sign}</strong> — {BODY_INFO[p.body].meaning}, coloured by {SIGN_INFO[p.sign].keywords}{p.house ? `, focused on ${HOUSE_MEANING[p.house - 1]} (house ${p.house})` : ""}.</li>
-                  ))}
-                </ul>
-              </div>
-              {chart.aspects.length > 0 && (
-                <div>
-                  <h3 className="font-display text-2xl text-plum">Key aspects</h3>
+            </details>
+            {chart.aspects.length > 0 && (
+              <details className="card p-5 sm:p-6">
+                <summary className="cursor-pointer font-display text-xl text-plum">Key aspects ({Math.min(8, chart.aspects.length)})</summary>
+                <p className="mt-3 text-sm text-muted">Aspects are angles between planets — they show which parts of you work together easily and which create creative tension.</p>
                   <ul className="mt-4 grid gap-2 text-[0.95rem]">
                     {chart.aspects.slice(0, 8).map((a, i) => (
                       <li key={i}><span aria-hidden className="mr-1 text-plum">{ASPECT_INFO[a.type].symbol}</span>{a.a} {ASPECT_INFO[a.type].label} {a.b} <span className="text-muted">({a.orb.toFixed(1)}° orb · {ASPECT_INFO[a.type].note})</span></li>
                     ))}
                   </ul>
-                </div>
-              )}
-            </div>
+              </details>
+            )}
           </div>
 
           {chart.notes.length > 0 && (

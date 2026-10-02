@@ -32,6 +32,24 @@ draft: true               # optional — keeps it hidden
 The full text (articles and astrology). Markdown: **bold**, *italic*, ## headings, - lists.
 ```
 
+## Retreat files
+
+`retreats/<name>.md` holds everything about a retreat except dates, prices and payment links (those live in /admin so availability can't be overwritten by a deploy). Useful fields:
+
+```yaml
+duration: 7 days            # shown in the key facts strip and on cards
+location: Location to be announced
+meals: |                    # "Stay & food" section
+  Breakfast and dinner daily…
+travel: |                   # "Getting there" section — nearest airport, transfers
+  Fly into …
+forMe:                      # "Is this retreat for me?" — Yulia's own answers only
+  - question: I've never done tarot — is that OK?
+    answer: …
+```
+
+Leave a field out until the real answer is known — the retreat page lists it under "Still being finalised" instead of guessing.
+
 ## Files vs the admin area
 
 - New files are added on the next deploy; changed files update the site.

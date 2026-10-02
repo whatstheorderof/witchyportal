@@ -127,10 +127,11 @@ export async function updateRetreat(_: FormState, fd: FormData): Promise<FormSta
     });
   if (!parsed.success) return fail("Please fix the highlighted fields.", fieldErrors(parsed.error.issues));
 
-  let activities, itinerary;
+  let activities, itinerary, forMe;
   try {
     activities = activitySchema.parse(JSON.parse(str(fd, "activities") || "[]"));
     itinerary = itinerarySchema.parse(JSON.parse(str(fd, "itinerary") || "[]"));
+    forMe = z.array(z.object({ question: z.string().trim().min(1).max(300), answer: z.string().trim().min(1).max(3000) })).max(30).parse(JSON.parse(str(fd, "forMe") || "[]"));
   } catch {
     return fail("Each activity and itinerary day needs at least a title.", { activities: "Check activities and itinerary" });
   }
@@ -149,6 +150,10 @@ export async function updateRetreat(_: FormState, fd: FormData): Promise<FormSta
       guestExperience: str(fd, "guestExperience"),
       benefits: lines(fd, "benefits"),
       accommodation: str(fd, "accommodation"),
+      duration: str(fd, "duration"),
+      meals: str(fd, "meals"),
+      travel: str(fd, "travel"),
+      forMe,
       terms: str(fd, "terms"),
       inclusions: lines(fd, "inclusions"),
       exclusions: lines(fd, "exclusions"),
@@ -493,7 +498,7 @@ export async function saveSettings(_: FormState, fd: FormData): Promise<FormStat
   const value: Record<string, unknown> = {};
   for (const [k, def] of Object.entries(base)) {
     if (typeof def === "boolean") value[k] = bool(fd, k);
-    else if (/(MediaId|RetreatId)$/.test(k)) value[k] = uuidOrNull(fd, k);
+    else if (/(MediaId|RetreatId|PickId)$/.test(k)) value[k] = uuidOrNull(fd, k);
     else value[k] = String(fd.get(k) ?? "").trim();
   }
   if (key === "contact") {
@@ -503,6 +508,9 @@ export async function saveSettings(_: FormState, fd: FormData): Promise<FormStat
       const v = String(value[k] ?? "");
       if (v && !/^https:\/\//.test(v)) return fail("Social links must start with https://", { [k]: "Must start with https://" });
     }
+  }
+  if (key === "home" && value.welcomeVideoUrl && !parseYouTubeId(String(value.welcomeVideoUrl))) {
+    return fail("The welcome video must be a YouTube link", { welcomeVideoUrl: "Paste a YouTube link" });
   }
   if (key === "youtube") {
     if (value.channelId && !/^UC[A-Za-z0-9_-]{22}$/.test(String(value.channelId))) return fail("The channel id starts with UC and is 24 characters long", { channelId: "Invalid channel id" });

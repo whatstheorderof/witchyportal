@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { asc } from "drizzle-orm";
+import { asc, desc, inArray, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { retreats } from "@/db/schema";
+import { posts, retreats, videos } from "@/db/schema";
 import { AdminHeader, Panel } from "@/components/admin/ui";
 import { AdminForm, Check, F, Select } from "@/components/admin/AdminForm";
 import { MediaPicker } from "@/components/admin/MediaPicker";
@@ -13,6 +13,12 @@ export const metadata = { title: "Settings" };
 
 export default async function SettingsAdmin() {
   const yt = await getSetting("youtube");
+  const recent = sql`coalesce(publish_at, created_at)`;
+  const [vids, arts, shortsPosts] = await Promise.all([
+    db.select({ id: videos.id, title: videos.title }).from(videos).orderBy(desc(recent)).limit(40),
+    db.select({ id: posts.id, title: posts.title }).from(posts).where(inArray(posts.type, ["article"])).orderBy(desc(recent)).limit(40),
+    db.select({ id: posts.id, title: posts.title, type: posts.type }).from(posts).where(inArray(posts.type, ["tip", "affirmation", "motivation"])).orderBy(desc(recent)).limit(60),
+  ]);
   const [home, about, contact, site, media, rs] = await Promise.all([
     getSetting("home"), getSetting("about"), getSetting("contact"), getSetting("site"), pickerMedia(),
     db.select({ id: retreats.id, title: retreats.title }).from(retreats).orderBy(asc(retreats.sortOrder)),
@@ -31,6 +37,14 @@ export default async function SettingsAdmin() {
             <MediaPicker name="heroMediaId" label="Hero image" media={media} defaultValue={home.heroMediaId} hint="Also used as the video poster and for visitors who prefer reduced motion." />
             <MediaPicker name="heroVideoMediaId" label="Hero background video (optional)" media={media} defaultValue={home.heroVideoMediaId} kind="video" hint="Short, silent loop (10–20s, under 15 MB). Plays muted; never shown to visitors who prefer reduced motion." />
             <Select label="Featured retreat" name="featuredRetreatId" defaultValue={home.featuredRetreatId ?? ""} options={[{ value: "", label: "First published retreat" }, ...rs.map((r) => ({ value: r.id, label: r.title }))]} />
+            <fieldset className="grid gap-4 rounded-2xl bg-ivory-deep p-4 ring-1 ring-line">
+              <legend className="px-1 text-sm font-medium">This week with Yulia</legend>
+              <p className="text-sm text-muted">Leave as “Latest” to show the newest automatically, or pin a specific item.</p>
+              <Select label="Video" name="weekVideoPickId" defaultValue={home.weekVideoPickId ?? ""} options={[{ value: "", label: "Latest video" }, ...vids.map((v) => ({ value: v.id, label: v.title }))]} />
+              <Select label="Article" name="weekArticlePickId" defaultValue={home.weekArticlePickId ?? ""} options={[{ value: "", label: "Latest article" }, ...arts.map((v) => ({ value: v.id, label: v.title }))]} />
+              <Select label="Tip, affirmation or motivation" name="weekTipPickId" defaultValue={home.weekTipPickId ?? ""} options={[{ value: "", label: "Latest" }, ...shortsPosts.map((v) => ({ value: v.id, label: `${v.type}: ${v.title}` }))]} />
+            </fieldset>
+            <F label="Welcome video (YouTube link)" name="welcomeVideoUrl" defaultValue={home.welcomeVideoUrl} mono hint="A 30–60 second hello from Yulia. Shown beside her introduction instead of the photo." />
             <F label="Introduction heading" name="introTitle" defaultValue={home.introTitle} />
             <F label="Introduction text" name="introText" defaultValue={home.introText} textarea rows={4} />
             <MediaPicker name="introMediaId" label="Introduction image" media={media} defaultValue={home.introMediaId} />

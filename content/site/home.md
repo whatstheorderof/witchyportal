@@ -1,7 +1,7 @@
 ---
-heroEyebrow: Tarot · Moon rituals · Astrology · Retreats
-heroTitle: Come home to your wild, luminous self
-heroSubtitle: Grounded magic with a touch of glamour — weekly wisdom, rituals and seaside retreats with Yulia Moon, your resident witch.
+heroEyebrow: Witchy Portal · with Yulia Moon
+heroTitle: Witchy retreats & everyday magic
+heroSubtitle: Seven-day women's retreats of tarot, ritual, sea ceremonies and dancing under the stars — plus free weekly tips, astrology and Ask a Witch videos from Yulia Moon.
 introTitle: Hello, I'm Yulia
 ---
 I'm a practising witch, spiritual guide and dream interpreter — and the voice behind the Yulia Moon Show. Witchy Portal is my cosmic corner: a safe space to learn, explore and reconnect with your inner power, whether you're simply curious or deep in your practice.

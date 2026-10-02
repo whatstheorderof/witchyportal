@@ -28,7 +28,7 @@ export async function subscribe(_: FormState, fd: FormData): Promise<FormState> 
       .insert(subscribers)
       .values({ email: parsed.data.email, source: parsed.data.source ?? "site" })
       .onConflictDoUpdate({ target: subscribers.email, set: { unsubscribedAt: null, consentAt: new Date() } });
-    return { ok: true, message: "Thank you — you're on the list. Watch your inbox for the next letter." };
+    return { ok: true, message: "You're subscribed — thank you! Look out for Yulia's next letter in your inbox (check your Promotions folder if it doesn't arrive)." };
   } catch (e) {
     console.error("subscribe failed", e);
     return { ok: false, message: "Something went wrong on our side. Please try again in a moment." };
@@ -70,7 +70,7 @@ export async function joinWaitlist(_: FormState, fd: FormData): Promise<FormStat
     })
     .safeParse(values);
   if (!parsed.success) return { ok: false, message: "Please check the highlighted fields.", errors: fieldErrors(parsed.error.issues), values };
-  const [r] = await db.select({ id: retreats.id }).from(retreats).where(eq(retreats.id, parsed.data.retreatId)).limit(1);
+  const [r] = await db.select({ id: retreats.id, title: retreats.title }).from(retreats).where(eq(retreats.id, parsed.data.retreatId)).limit(1);
   if (!r) return { ok: false, message: "That retreat could not be found.", values };
   if (parsed.data.departureId) {
     const [d] = await db.select({ id: departures.id, retreatId: departures.retreatId }).from(departures).where(eq(departures.id, parsed.data.departureId)).limit(1);
@@ -78,7 +78,12 @@ export async function joinWaitlist(_: FormState, fd: FormData): Promise<FormStat
   }
   try {
     await db.insert(waitlist).values({ ...parsed.data, note: parsed.data.note || null });
-    return { ok: true, message: "You're on the waitlist. We'll email you if a place opens up — this is not a booking." };
+    return {
+      ok: true,
+      message: parsed.data.departureId
+        ? `You're on the waitlist for ${r.title}. Yulia will email ${parsed.data.email} if a place opens up. This isn't a booking — there's nothing to pay.`
+        : `You're on the list for ${r.title}. Yulia will email ${parsed.data.email} as soon as dates and prices are announced. This isn't a booking — there's nothing to pay.`,
+    };
   } catch (e) {
     console.error("waitlist failed", e);
     return { ok: false, message: "Something went wrong. Please try again.", values };
