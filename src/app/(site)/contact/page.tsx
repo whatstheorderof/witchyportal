@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { listGeneralFaqs, listRetreats } from "@/lib/queries";
+import { socials } from "@content/socials";
+
+const handle = (url: string) => `@${url.replace(/\/$/, "").split("/").pop()}`;
 import { getSetting } from "@/lib/settings";
 import { PageHero } from "@/components/Section";
 import { EnquiryForm } from "@/components/forms";
@@ -10,6 +13,9 @@ export const metadata: Metadata = { title: "Contact", description: "Get in touch
 export default async function ContactPage({ searchParams }: { searchParams: Promise<{ retreat?: string }> }) {
   const { retreat } = await searchParams;
   const [retreats, faqs, contact] = await Promise.all([listRetreats(), listGeneralFaqs(), getSetting("contact")]);
+  // Yulia's other Instagram accounts, from content/socials.ts
+  const norm = (u: string) => u.replace(/\/$/, "").toLowerCase();
+  const otherInstagram = socials.filter((x) => x.platform === "Instagram" && norm(x.url) !== norm(contact.instagram));
   const defaultRetreat = retreats.find((r) => r.id === retreat)?.id;
   return (
     <>
@@ -30,8 +36,14 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
               {contact.instagram && (
                 <div>
                   <p className="eyebrow">Instagram</p>
-                  <a href={contact.instagram} target="_blank" rel="noopener noreferrer" className="mt-2 block font-display text-2xl text-plum link-underline">@{contact.instagram.replace(/\/$/, "").split("/").pop()}</a>
+                  <a href={contact.instagram} target="_blank" rel="noopener noreferrer" className="mt-2 block font-display text-2xl text-plum link-underline">{handle(contact.instagram)}</a>
                   <p className="mt-1 text-sm text-muted">Send Yulia your Ask a Witch questions by DM.</p>
+                  {otherInstagram.map((o) => (
+                    <div key={o.url} className="mt-4">
+                      <a href={o.url} target="_blank" rel="noopener noreferrer" className="block font-display text-2xl text-plum link-underline">{o.handle}</a>
+                      <p className="mt-1 text-sm text-muted">{o.description}</p>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

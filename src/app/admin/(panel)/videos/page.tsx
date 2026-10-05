@@ -27,7 +27,7 @@ async function ChannelFeed({ channelId, matchWords, showWords, known }: { channe
         {entries.map((e) => {
           const added = known.has(e.youtubeId);
           const series = videoSeries(e, { matchWords, showWords });
-          const match = series !== null;
+          const match = series !== null || e.kind === "short";
           return (
             <li key={e.youtubeId}>
               <label className={`flex items-center gap-4 rounded-2xl p-3 ring-1 ring-line ${added ? "bg-ivory-deep/60 opacity-70" : "bg-white/80 has-[:checked]:ring-2 has-[:checked]:ring-plum"}`}>
@@ -77,7 +77,7 @@ export default async function VideosAdmin({ searchParams }: { searchParams: Prom
       <div className="mb-8 grid gap-6">
         <Panel
           title="From your YouTube channel"
-          intro={<>Reads the latest uploads from <a href={yt.channelUrl} target="_blank" rel="noopener noreferrer" className="link-underline">{yt.channelUrl.replace("https://www.", "")}</a>. Ask a Witch and Yulia Moon Show episodes are ticked for you. Automatic daily import: <strong>{yt.autoImport === "off" ? "off" : yt.autoImport === "all" ? "all new uploads" : "Ask a Witch & Yulia Moon Show episodes"}</strong> (<Link href="/admin/settings#youtube" className="link-underline">change</Link>).</>}
+          intro={<>Reads the latest uploads from <a href={yt.channelUrl} target="_blank" rel="noopener noreferrer" className="link-underline">{yt.channelUrl.replace("https://www.", "")}</a>. Ask a Witch and Yulia Moon Show episodes are ticked for you. Automatic daily import: <strong>{yt.autoImport === "off" ? "off" : yt.autoImport === "all" ? "all new uploads" : "series episodes and every Short"}</strong> (<Link href="/admin/settings#youtube" className="link-underline">change</Link>).</>}
         >
           {sp.feed ? (
             <ChannelFeed channelId={yt.channelId} matchWords={yt.matchWords} showWords={yt.showWords} known={known} />

@@ -12,7 +12,7 @@ import { readdirSync, readFileSync, existsSync } from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
 import { drizzle } from "drizzle-orm/postgres-js";
-import { and, eq, isNull, ne } from "drizzle-orm";
+import { and, eq, inArray, isNull, ne } from "drizzle-orm";
 import postgres from "postgres";
 import * as s from "../src/db/schema";
 
@@ -225,7 +225,17 @@ async function main() {
 
     /* ---------------- Videos (series back catalogue) ---------------- */
     // Each video is added once. If it's later hidden or deleted in /admin it isn't re-added.
-    const { videos: fileVideos } = await import("../content/videos");
+    const { videos: fullVideos } = await import("../content/videos");
+    const shortsFile = path.join(ROOT, "shorts.json");
+    const fileShorts = existsSync(shortsFile)
+      ? (JSON.parse(readFileSync(shortsFile, "utf8")) as { id: string; date: string | null; title: string; description?: string }[]).map((v) => ({ ...v, date: v.date ?? "", kind: "short" as const }))
+      : [];
+    const fileVideos = [...fullVideos, ...fileShorts];
+    // Vertical videos always play as Shorts, whichever way they first reached the site.
+    const shortIds = fileShorts.map((v) => v.id);
+    for (let i = 0; i < shortIds.length; i += 200) {
+      await db.update(s.videos).set({ kind: "short" }).where(and(inArray(s.videos.youtubeId, shortIds.slice(i, i + 200)), ne(s.videos.kind, "short")));
+    }
     const [vRow] = await db.select().from(s.settings).where(eq(s.settings.key, "_sync_videos")).limit(1);
     const doneVideos = new Set(((vRow?.value as { ids?: string[] })?.ids ?? []) as string[]);
     const newVideos = fileVideos.filter((v) => /^[A-Za-z0-9_-]{11}$/.test(v.id) && !doneVideos.has(v.id));
@@ -249,6 +259,31 @@ async function main() {
       const value = { ids: [...doneVideos] };
       await db.insert(s.settings).values({ key: "_sync_videos", value }).onConflictDoUpdate({ target: s.settings.key, set: { value } });
     } else counts.unchanged += fileVideos.length;
+
+    /* ---------------- General FAQs (Contact page) ---------------- */
+    // Replaces the starter placeholder questions, then adds each file question once.
+    // Questions edited or deleted in /admin are left alone.
+    {
+      const { faqs: fileFaqs } = await import("../content/faqs");
+      const [fRow] = await db.select().from(s.settings).where(eq(s.settings.key, "_sync_faqs")).limit(1);
+      const doneFaqs = new Set(((fRow?.value as { questions?: string[] })?.questions ?? []) as string[]);
+      const pending = fileFaqs.filter((f) => f.question && f.answer && !doneFaqs.has(f.question));
+      if (pending.length) {
+        await db.delete(s.faqs).where(and(isNull(s.faqs.retreatId), eq(s.faqs.isPlaceholder, true)));
+        const existingQs = new Set((await db.select({ q: s.faqs.question }).from(s.faqs).where(isNull(s.faqs.retreatId))).map((r) => r.q));
+        const toAdd = pending.filter((f) => !existingQs.has(f.question));
+        if (toAdd.length) {
+          await db.insert(s.faqs).values(toAdd.map((f) => ({
+            retreatId: null, question: f.question, answer: f.answer, status: "published" as const, isPlaceholder: false,
+            sortOrder: fileFaqs.indexOf(f),
+          })));
+        }
+        counts.added += toAdd.length;
+        for (const f of pending) doneFaqs.add(f.question);
+        const value = { questions: [...doneFaqs] };
+        await db.insert(s.settings).values({ key: "_sync_faqs", value }).onConflictDoUpdate({ target: s.settings.key, set: { value } });
+      } else counts.unchanged += fileFaqs.length;
+    }
 
     /* ---------------- Site settings (home, about, contact) ---------------- */
     const [syncRow] = await db.select().from(s.settings).where(eq(s.settings.key, "_sync")).limit(1);

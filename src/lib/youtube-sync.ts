@@ -33,6 +33,6 @@ export async function syncChannel() {
   const yt = await getSetting("youtube");
   if (yt.autoImport === "off" || !yt.channelId) return { skipped: true, added: 0 };
   const entries = await fetchChannelFeed(yt.channelId);
-  const wanted = yt.autoImport === "all" ? entries : entries.filter((e) => videoSeries(e, yt) !== null);
+  const wanted = yt.autoImport === "all" ? entries : entries.filter((e) => e.kind === "short" || videoSeries(e, yt) !== null);
   return { skipped: false, found: entries.length, matched: wanted.length, added: await importEntries(wanted) };
 }

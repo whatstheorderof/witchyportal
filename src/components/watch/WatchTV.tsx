@@ -52,6 +52,8 @@ function loadYouTubeApi(): Promise<void> {
 /** "🔮 The Yulia Moon Show | Ep.23 - Friday 13th…" → "Ep.23 - Friday 13th…" inside the show's own channel */
 const showTitle = (t: string) => t.replace(/^[^A-Za-z]*(the\s+)?yulia moon show[^A-Za-z0-9]*\|?\s*/i, "").trim() || t;
 
+const PAGE = 48;
+
 const thumb = (id: string, q = "mqdefault") => `https://i.ytimg.com/vi/${id}/${q}.jpg`;
 const fmt = (iso: string | null) => (iso ? new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" }).format(new Date(iso)) : "");
 
@@ -62,8 +64,9 @@ export function WatchTV({ videos, uploadsPlaylist, shortsPlaylist, channelUrl, s
     if (videos.some((v) => v.series === "ask")) list.push({ key: "ask", label: "Ask a Witch", filter: (v) => v.series === "ask" });
     if (videos.some((v) => v.series === "show")) list.push({ key: "show", label: "The Yulia Moon Show", filter: (v) => v.series === "show" });
     // Witchy Shorts plays the channel's own Shorts playlist, so every Short is included and new ones appear automatically.
-    if (shortsPlaylist) list.push({ key: "shorts", label: "Witchy Shorts", playlist: shortsPlaylist, vertical: true, note: "Every one of Yulia\u2019s Shorts, newest first. Use the playlist button inside the player to jump around, or choose another channel above." });
-    else if (videos.some((v) => v.kind === "short")) list.push({ key: "shorts", label: "Witchy Shorts", filter: (v) => v.kind === "short" });
+    // Witchy Shorts: every vertical video. Falls back to the channel's own Shorts playlist if none are imported yet.
+    if (videos.some((v) => v.kind === "short")) list.push({ key: "shorts", label: "Witchy Shorts", filter: (v) => v.kind === "short", vertical: true });
+    else if (shortsPlaylist) list.push({ key: "shorts", label: "Witchy Shorts", playlist: shortsPlaylist, vertical: true, note: "Every one of Yulia\u2019s Shorts, newest first. Use the playlist button inside the player to jump around, or choose another channel above." });
     if (videos.some((v) => v.kind === "video")) list.push({ key: "videos", label: "Full episodes", filter: (v) => v.kind === "video" });
     for (const t of [...new Set(videos.map((v) => v.topic).filter(Boolean))].sort()) list.push({ key: `t:${t}`, label: t, filter: (v) => v.topic === t });
     if (uploadsPlaylist) list.push({ key: "channel", label: "Whole channel", playlist: uploadsPlaylist, note: "Playing every upload from the channel, newest first. Use the playlist button inside the player to jump around, or choose another channel above." });
@@ -167,7 +170,12 @@ export function WatchTV({ videos, uploadsPlaylist, shortsPlaylist, channelUrl, s
   function switchChannel(key: string) {
     setChannelKey(key);
     setIndex(0);
+    setShown(PAGE);
   }
+
+  // The guide shows a page at a time — some channels have hundreds of videos.
+  const [shown, setShown] = useState(() => Math.max(PAGE, Math.ceil((Math.max(0, startIndex) + 1) / PAGE) * PAGE));
+  const visible = Math.max(shown, Math.ceil((index + 1) / PAGE) * PAGE);
 
   const posterId = current?.youtubeId ?? videos[0]?.youtubeId;
   const watchUrl = current ? (current.kind === "short" ? `https://www.youtube.com/shorts/${current.youtubeId}` : `https://www.youtube.com/watch?v=${current.youtubeId}`) : channelUrl;
@@ -259,13 +267,13 @@ export function WatchTV({ videos, uploadsPlaylist, shortsPlaylist, channelUrl, s
       ) : (
         <section aria-label="Programme guide">
           <h2 className="mb-4 text-xs font-medium uppercase tracking-[0.22em] text-ivory/60">Up next · {queue.length} video{queue.length === 1 ? "" : "s"}</h2>
-          <ol className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 lg:grid-cols-4">
-            {queue.map((v, i) => {
+          <ol className={`grid gap-x-4 gap-y-6 ${channel?.vertical ? "grid-cols-3 sm:grid-cols-4 lg:grid-cols-6" : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"}`}>
+            {queue.slice(0, visible).map((v, i) => {
               const active = i === index;
               return (
                 <li key={v.youtubeId}>
                   <button type="button" onClick={() => choose(i)} aria-current={active ? "true" : undefined} className="group block w-full text-left">
-                    <span className={`relative block overflow-hidden rounded-xl bg-plum ring-2 transition ${active ? "ring-blush" : "ring-transparent group-hover:ring-ivory/40"} ${v.kind === "short" ? "aspect-[4/5]" : "aspect-video"}`}>
+                    <span className={`relative block overflow-hidden rounded-xl bg-plum ring-2 transition ${active ? "ring-blush" : "ring-transparent group-hover:ring-ivory/40"} ${v.kind === "short" ? (channel?.vertical ? "aspect-[9/16]" : "aspect-[4/5]") : "aspect-video"}`}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={thumb(v.youtubeId, v.kind === "short" ? "hqdefault" : "mqdefault")} alt="" loading="lazy" className="h-full w-full object-cover opacity-90 transition group-hover:scale-[1.03] group-hover:opacity-100" />
                       <span className="absolute left-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-[0.65rem] uppercase tracking-wider text-ivory">{v.kind === "short" ? "Short" : "Episode"}</span>
@@ -278,6 +286,14 @@ export function WatchTV({ videos, uploadsPlaylist, shortsPlaylist, channelUrl, s
               );
             })}
           </ol>
+          {visible < queue.length && (
+            <div className="mt-10 flex flex-col items-center gap-2">
+              <button type="button" onClick={() => setShown(visible + PAGE)} className="min-h-12 rounded-full border border-ivory/30 px-6 text-ivory/90 hover:border-ivory/70">
+                Show more
+              </button>
+              <p className="text-xs text-ivory/55">Showing {visible} of {queue.length}</p>
+            </div>
+          )}
         </section>
       )}
     </div>

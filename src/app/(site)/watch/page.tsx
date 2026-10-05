@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default async function WatchPage({ searchParams }: { searchParams: Promise<{ v?: string; channel?: string }> }) {
   const { v: startId, channel: startChannel } = await searchParams;
-  const [rows, yt] = await Promise.all([listVideos({ limit: 500 }), getSetting("youtube")]);
+  const [rows, yt] = await Promise.all([listVideos({ limit: 3000 }), getSetting("youtube")]);
   const videos: TVVideo[] = rows
     .map((v) => ({
       youtubeId: v.youtubeId,

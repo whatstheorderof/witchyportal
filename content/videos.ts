@@ -1,5 +1,5 @@
 /**
- * Yulia's series episodes from youtube.com/@YuliaMoonPortal.
+ * Yulia's full-length videos from youtube.com/@YuliaMoonPortal (Shorts are in shorts.json).
  *
  * Added to the site on the next deploy (each video once — if you hide or delete
  * one in /admin it stays that way). New uploads after this list are picked up
@@ -57,4 +57,11 @@ export const videos: ContentVideo[] = [
   { id: "6idz3v9MfIs", date: "2025-09-27", kind: "video", title: "🔮 The Yulia Moon Show | Ep.3 – Witchy Q&A: Answering Your Questions & Busting Misconceptions 🌙" },
   { id: "zl6Gw7NNnHs", date: "2025-09-20", kind: "video", title: "🔮 The Yulia Moon Show | Ep.2 – Magical Tools & Tarot Energy Explained 🌙" },
   { id: "BDtBsFXdlXI", date: "2025-09-12", kind: "video", title: "🔮 The Yulia Moon Show | Ep.1 – Beginner’s Guide to Witchcraft – Tarot, Magic & Energy Work 🌙" },
+
+  /* ---------------- Other full videos ---------------- */
+  { id: "aVBU0TtSGG0", date: "2026-05-01", kind: "video", title: "Heal Relationship Patterns: Birth Chart & Moon Sign Secrets", description: "Stuck in painful relationship cycles? Your birth chart, moon, Venus, and Lilith signs hold the key to understanding why. Learn how to embrace your new energy and attract the right connections. #Astrology #RelationshipPatterns #BirthChart #MoonSign #VenusSign #Lilith" },
+  { id: "pcqaBeWCde8", date: "2026-04-30", kind: "video", title: "Break Through Blocks: Crystal & Candle Rituals for Energy", description: "Feeling stuck and low on energy? Discover powerful rituals and crystal work to break through blocks and rediscover your spark. Ignite your inner fire and reclaim your authentic self. #EnergyBoost #SpiritualGrowth #CrystalHealing #SelfCare #Manifestation" },
+  { id: "Y5bR83kSH5k", date: "2026-04-29", kind: "video", title: "Unhappy at Work? Find Your Meaningful Career Path Now!", description: "Stuck in a job that pays the bills but drains your soul? Discover how to explore fulfilling career paths without risking financial stability. Start searching for your passion now. #CareerChange #JobFulfillment #FindYourPassion #LifeAdvice #MeaningfulWork" },
+  { id: "FQd9ECBdPDM", date: "2026-04-28", kind: "video", title: "Stop Comparing: Embrace Your Unique Journey Now!", description: "Feeling behind at 35 or 40? The comparison trap is real, but you have everything you need. Others may envy your simple life. Embrace your unique path and age is just a number. #ComparisonTrap #SelfAcceptance #LifePath #Mindset" },
+  { id: "K5fBi5thC1w", date: "2025-09-06", kind: "video", title: "✨ Meet Yulia Moon | Witchy Portal’s Magical Journey Begins ✨", description: "Welcome to my official YouTube channel! 🌙✨" },
 ];
