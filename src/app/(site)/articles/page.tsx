@@ -19,7 +19,7 @@ export default async function ArticlesPage({ searchParams }: { searchParams: Pro
         {posts.length === 0 ? (
           <EmptyState title="No articles yet" text={topic ? `Nothing about “${topic}” yet.` : "The first articles are being written."} />
         ) : (
-          <div className="grid gap-x-10 gap-y-14 md:grid-cols-2 lg:grid-cols-3">{posts.map((p) => <ArticleCard key={p.id} post={p} />)}</div>
+          <div className="grid gap-x-10 gap-y-14 md:grid-cols-2 lg:grid-cols-3">{posts.map((p, i) => <ArticleCard key={p.id} post={p} index={i} />)}</div>
         )}
       </section>
       <RetreatPromo />

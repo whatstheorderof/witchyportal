@@ -25,6 +25,12 @@ const TYPES: Record<string, (typeof s.postType.enumValues)[number]> = {
   articles: "article",
 };
 
+/** Image fields allowed in content/site/*.md, and the setting each one fills */
+const SITE_IMAGE_FIELDS: Record<string, Record<string, string>> = {
+  home: { heroImage: "heroMediaId", introImage: "introMediaId" },
+  about: { portraitImage: "portraitMediaId", secondaryImage: "secondaryMediaId", meetImage: "meetMediaId" },
+};
+
 const hash = (v: unknown) => createHash("sha256").update(JSON.stringify(v)).digest("hex").slice(0, 16);
 
 type PostFields = { title: string; excerpt: string; body: string; topic: string; period: string | null; status: string; publishAt: string | null };
@@ -250,7 +256,42 @@ async function main() {
     for (const key of ["home", "about", "contact"] as const) {
       const file = path.join(ROOT, "site", `${key}.md`);
       if (!existsSync(file)) continue;
-      const { data, content } = matter(readFileSync(file, "utf8"));
+      const { data: rawData, content } = matter(readFileSync(file, "utf8"));
+      // Image fields (e.g. `introImage: { src, alt }`) are handled separately from the text below.
+      const imageFields = SITE_IMAGE_FIELDS[key] ?? {};
+      const data = Object.fromEntries(Object.entries(rawData).filter(([k]) => !(k in imageFields)));
+      const [row] = await db.select().from(s.settings).where(eq(s.settings.key, key)).limit(1);
+      const existing = (row?.value as Record<string, unknown>) ?? {};
+
+      const imageUpdates: Record<string, string> = {};
+      for (const [field, settingKey] of Object.entries(imageFields)) {
+        const img = rawData[field] as { src?: string; alt?: string } | string | undefined;
+        const src = typeof img === "string" ? img : img?.src;
+        if (!src) continue;
+        const stateKey = `${key}:image:${field}`;
+        if (syncState[stateKey] === src) continue;
+        // Never replace a photo uploaded in /admin — only bundled starter photos (/images/…) or empty slots.
+        const currentId = existing[settingKey];
+        if (typeof currentId === "string" && currentId) {
+          const [cur] = await db.select({ url: s.media.url }).from(s.media).where(eq(s.media.id, currentId)).limit(1);
+          if (cur && !cur.url.startsWith("/images/")) {
+            console.log(`  • kept admin photo: site/${key}.md ${field}`);
+            syncState[stateKey] = src;
+            continue;
+          }
+        }
+        const alt = typeof img === "object" ? String(img.alt ?? "") : "";
+        const [m] = await db.select().from(s.media).where(eq(s.media.url, src)).limit(1);
+        const id = m ? m.id : (await db.insert(s.media).values({ url: src, alt, kind: "image" }).returning())[0].id;
+        imageUpdates[settingKey] = id;
+        syncState[stateKey] = src;
+      }
+      if (Object.keys(imageUpdates).length) {
+        Object.assign(existing, imageUpdates);
+        await db.insert(s.settings).values({ key, value: existing }).onConflictDoUpdate({ target: s.settings.key, set: { value: existing, updatedAt: new Date() } });
+        counts.updated++;
+      }
+
       const fromFile: Record<string, unknown> = { ...data };
       if (content.trim()) fromFile[key === "home" ? "introText" : "story"] = content.trim();
       const fileHash = hash(fromFile);
@@ -258,8 +299,6 @@ async function main() {
         counts.unchanged++;
         continue;
       }
-      const [row] = await db.select().from(s.settings).where(eq(s.settings.key, key)).limit(1);
-      const existing = (row?.value as Record<string, unknown>) ?? {};
       const currentSubset = hash(Object.fromEntries(Object.keys(fromFile).map((k) => [k, existing[k]])));
       const previousFileHash = syncState[`${key}:applied`];
       const untouched = !previousFileHash || currentSubset === previousFileHash || Object.keys(fromFile).every((k) => existing[k] === undefined);

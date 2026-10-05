@@ -45,7 +45,7 @@ export default async function DiscoverPage() {
       {astro.length > 0 && (
         <section className="container-page pb-16 lg:pb-24">
           <SectionHeading eyebrow="Astrology" title="Wisdom from the sky" href="/astrology" />
-          <div className="mt-10 grid gap-5 md:grid-cols-2">{astro.map((p, i) => <AstrologyCard key={p.id} post={p} featured={i === 0} />)}</div>
+          <div className="mt-10 grid gap-5 md:grid-cols-2">{astro.map((p, i) => <AstrologyCard key={p.id} post={p} featured={i === 0} index={i} />)}</div>
         </section>
       )}
       {shorts.length > 0 && (
@@ -57,7 +57,7 @@ export default async function DiscoverPage() {
       {articles.length > 0 && (
         <section className="container-page py-16 lg:py-24">
           <SectionHeading eyebrow="Articles" title="Short reads" href="/articles" />
-          <div className="mt-10 grid gap-10 md:grid-cols-3">{articles.map((a) => <ArticleCard key={a.id} post={a} />)}</div>
+          <div className="mt-10 grid gap-10 md:grid-cols-3">{articles.map((a, i) => <ArticleCard key={a.id} post={a} index={i} />)}</div>
         </section>
       )}
       <RetreatPromo />

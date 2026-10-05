@@ -21,8 +21,8 @@ export default async function AstrologyPage() {
           <EmptyState title="The stars are still aligning" text="The first astrology post is on its way." />
         ) : (
           <div className="grid gap-5 md:grid-cols-2">
-            <div className="md:col-span-2"><AstrologyCard post={first} featured /></div>
-            {rest.map((p) => <AstrologyCard key={p.id} post={p} />)}
+            <div className="md:col-span-2"><AstrologyCard post={first} featured index={0} /></div>
+            {rest.map((p, i) => <AstrologyCard key={p.id} post={p} index={i + 1} />)}
           </div>
         )}
       </section>

@@ -26,7 +26,7 @@ export default function SocialsPage() {
       <div className="relative mx-auto w-full max-w-xl px-5">
         <div className="flex flex-col items-center text-center">
           <div className="relative h-28 w-28 overflow-hidden rounded-full ring-4 ring-ivory shadow-(--shadow-lift)">
-            <MediaImage fallback="veil" sizes="112px" priority />
+            <MediaImage fallback="golden" sizes="112px" priority className="object-[center_20%]" />
           </div>
           <p className="eyebrow mt-6 flex items-center gap-2"><MoonMark className="h-4 w-4" />Find Yulia online</p>
           <h1 className="display-lg mt-2">Socials</h1>

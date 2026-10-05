@@ -35,6 +35,8 @@ export interface AboutSettings {
   videoTitle: string;
   portraitMediaId: string | null;
   secondaryMediaId: string | null;
+  /** Photo shown beside the video in the "Meet Yulia" section */
+  meetMediaId: string | null;
   isPlaceholder: boolean;
 }
 
@@ -94,6 +96,7 @@ export const DEFAULTS = {
     videoTitle: "",
     portraitMediaId: null,
     secondaryMediaId: null,
+    meetMediaId: null,
     isPlaceholder: true,
   } as AboutSettings,
   contact: {

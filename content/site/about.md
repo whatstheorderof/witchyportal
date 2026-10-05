@@ -1,4 +1,13 @@
 ---
+portraitImage:
+  src: /images/crown-dusk-shore.jpg
+  alt: Yulia in a jewelled crown and sheer black sleeves on the shore at dusk
+secondaryImage:
+  src: /images/horns-red-dress.jpg
+  alt: A figure with horns and long hair in a red dress walking across the sand under a deep blue sky
+meetImage:
+  src: /images/yulia-golden-beach.jpg
+  alt: Yulia with long red hair on a sunlit beach in a sheer mesh dress, the sea behind her
 title: About Yulia
 intro: Practising witch, spiritual guide, dream interpreter — and your new resident witch.
 isPlaceholder: false

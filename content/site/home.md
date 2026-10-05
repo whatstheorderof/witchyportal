@@ -1,4 +1,7 @@
 ---
+introImage:
+  src: /images/yulia-golden-beach.jpg
+  alt: Yulia with long red hair on a sunlit beach in a sheer mesh dress, the sea behind her
 heroEyebrow: Witchy Portal · with Yulia Moon
 heroTitle: Witchy retreats & everyday magic
 heroSubtitle: Seven-day women's retreats of tarot, ritual, sea ceremonies and dancing under the stars — plus free weekly tips, astrology and Ask a Witch videos from Yulia Moon.

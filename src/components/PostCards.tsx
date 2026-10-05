@@ -6,13 +6,24 @@ import { YouTubeEmbed } from "./YouTube";
 import { FavouriteButton } from "./ShareFavourite";
 
 type P = Post & { cover: Media | null };
+
+/** Posts without their own cover get one of Yulia's photos, chosen by slug so it stays the same on every visit. */
+const ARTICLE_PHOTOS = ["wade", "dance", "golden", "horizon", "sea", "sand"] as const;
+const ASTRO_PHOTOS = ["crown", "red", "veil", "horns", "horizon"] as const;
+/** In a list, rotate by position so neighbours differ; on its own, choose by slug. */
+function photoFor<T extends readonly string[]>(list: T, slug: string, index?: number): T[number] {
+  if (index != null) return list[index % list.length];
+  let h = 2166136261;
+  for (const c of slug) h = Math.imul(h ^ c.charCodeAt(0), 16777619) >>> 0;
+  return list[h % list.length];
+}
 const when = (p: Post) => p.publishAt ?? p.createdAt;
 
-export function ArticleCard({ post }: { post: P }) {
+export function ArticleCard({ post, index }: { post: P; index?: number }) {
   return (
     <article className="group relative flex flex-col">
       <div className="relative aspect-[3/2] overflow-hidden rounded-(--radius-card) bg-sand">
-        <MediaImage media={post.cover} fallback="sand" sizes="(min-width:1024px) 30vw, 92vw" className="transition duration-700 group-hover:scale-[1.04]" />
+        <MediaImage media={post.cover} fallback={photoFor(ARTICLE_PHOTOS, post.slug, index)} sizes="(min-width:1024px) 30vw, 92vw" className="object-[center_25%] transition duration-700 group-hover:scale-[1.04]" />
       </div>
       <p className="mt-4 flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.18em] text-muted">
         {post.topic && <span className="text-plum-soft">{post.topic}</span>}
@@ -64,10 +75,10 @@ export function TipCard({ post, index = 0 }: { post: P; index?: number }) {
   );
 }
 
-export function AstrologyCard({ post, featured = false }: { post: P; featured?: boolean }) {
+export function AstrologyCard({ post, featured = false, index }: { post: P; featured?: boolean; index?: number }) {
   return (
     <article className={`group relative overflow-hidden rounded-(--radius-card) bg-plum-deep text-ivory ${featured ? "min-h-[420px]" : "min-h-[320px]"}`}>
-      <MediaImage media={post.cover} fallback="veil" sizes="(min-width:1024px) 45vw, 92vw" className="opacity-60 transition duration-700 group-hover:scale-[1.03]" />
+      <MediaImage media={post.cover} fallback={photoFor(ASTRO_PHOTOS, post.slug, index)} sizes="(min-width:1024px) 45vw, 92vw" className="opacity-60 transition duration-700 group-hover:scale-[1.03]" />
       <div className="scrim-card absolute inset-0" />
       <div className="relative flex h-full min-h-[inherit] flex-col justify-end p-6 sm:p-8">
         <p className="text-[0.7rem] font-medium uppercase tracking-[0.22em] text-blush">{post.period || post.topic || "Astrology"}</p>

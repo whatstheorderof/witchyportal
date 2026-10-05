@@ -11,7 +11,8 @@ export const metadata: Metadata = { title: "About Yulia", description: "Yulia Mo
 
 export default async function AboutPage() {
   const about = await getSetting("about");
-  const m = await getMediaMap([about.portraitMediaId, about.secondaryMediaId]);
+  const m = await getMediaMap([about.portraitMediaId, about.secondaryMediaId, about.meetMediaId]);
+  const meet = about.meetMediaId ? m.get(about.meetMediaId) : null;
   const portrait = about.portraitMediaId ? m.get(about.portraitMediaId) : null;
   const secondary = about.secondaryMediaId ? m.get(about.secondaryMediaId) : null;
   const videoId = about.videoUrl ? parseYouTubeId(about.videoUrl) : null;
@@ -26,7 +27,7 @@ export default async function AboutPage() {
     <>
       <section className="relative isolate flex min-h-[80svh] items-end overflow-hidden bg-plum-deep text-ivory">
         <div className="absolute inset-0 -z-10">
-          <MediaImage media={portrait} fallback="sea" priority sizes="100vw" className="object-[center_35%]" />
+          <MediaImage media={portrait} fallback="crown" priority sizes="100vw" className="object-[center_35%]" />
           <div className="scrim-hero absolute inset-0" />
         </div>
         <div className="container-page pb-14 pt-32">
@@ -38,13 +39,18 @@ export default async function AboutPage() {
 
       {videoId && (
         <section aria-labelledby="about-video" className="container-page pt-16 lg:pt-24">
-          <div className="mx-auto max-w-4xl">
-            <p className="eyebrow">Meet Yulia</p>
-            <h2 id="about-video" className="display-md mt-3">Hear it from Yulia</h2>
-            <div className="mt-8 overflow-hidden rounded-(--radius-card) shadow-[0_30px_60px_-30px_rgb(74_31_64/0.45)]">
-              <YouTubeEmbed id={videoId} title={about.videoTitle || "Meet Yulia Moon"} />
+          <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-14">
+            <div className="relative mx-auto aspect-[4/5] w-full max-w-sm overflow-hidden rounded-[2rem] rounded-tl-[7rem] lg:max-w-none">
+              <MediaImage media={meet} fallback="golden" sizes="(min-width:1024px) 40vw, 92vw" className="object-[center_25%]" />
             </div>
-            {about.videoTitle && <p className="mt-3 text-sm text-muted">{about.videoTitle}</p>}
+            <div>
+              <p className="eyebrow">Meet Yulia</p>
+              <h2 id="about-video" className="display-md mt-3">Hear it from Yulia</h2>
+              <div className="mt-8 overflow-hidden rounded-(--radius-card) shadow-[0_30px_60px_-30px_rgb(74_31_64/0.45)]">
+                <YouTubeEmbed id={videoId} title={about.videoTitle || "Meet Yulia Moon"} />
+              </div>
+              {about.videoTitle && <p className="mt-3 text-sm text-muted">{about.videoTitle}</p>}
+            </div>
           </div>
         </section>
       )}
@@ -64,7 +70,7 @@ export default async function AboutPage() {
           <aside className="lg:pt-4">
             <div className="sticky top-28 grid gap-6">
               <div className="relative aspect-[3/4] overflow-hidden rounded-[2rem] rounded-br-[7rem]">
-                <MediaImage media={secondary} fallback="veil" sizes="(min-width:1024px) 380px, 92vw" />
+                <MediaImage media={secondary} fallback="red" sizes="(min-width:1024px) 380px, 92vw" />
               </div>
               <Link href="/retreats" className="btn-primary">Explore retreats <ArrowRight /></Link>
             </div>

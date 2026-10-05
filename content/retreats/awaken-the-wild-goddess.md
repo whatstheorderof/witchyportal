@@ -34,6 +34,18 @@ heroImage:
   src: /images/horned-dusk-beach.jpg
   alt: A figure with long red hair and horns walks towards the sea at dusk, black chiffon sleeves billowing
 gallery:
+  - src: /images/beach-dance-sky.jpg
+    alt: Yulia dancing on the beach, arms raised to a clear blue sky
+  - src: /images/sea-arms-raised.jpg
+    alt: Yulia standing waist-deep in a calm blue sea with her arms raised above her head
+  - src: /images/horns-red-dress.jpg
+    alt: A figure with horns and long hair in a red dress walking across the sand under a deep blue sky
+  - src: /images/crown-dusk-shore.jpg
+    alt: Yulia in a jewelled crown and sheer black sleeves on the shore at dusk
+  - src: /images/sea-arms-raised-back.jpg
+    alt: Yulia seen from behind, waist-deep in the sea with both arms raised to the sky
+  - src: /images/yulia-golden-beach.jpg
+    alt: Yulia with long red hair on a sunlit beach in a sheer mesh dress, the sea behind her
   - src: /images/sea-joy.jpg
     alt: A woman with red hair raising her arms in joy, waist-deep in a calm blue sea
   - src: /images/veiled-crown-shore.jpg

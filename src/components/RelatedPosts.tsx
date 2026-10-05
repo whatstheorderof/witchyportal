@@ -11,7 +11,7 @@ export function RelatedPosts({ posts, title = "Keep reading" }: { posts: P[]; ti
       <h2 id="related-heading" className="display-md">{title}</h2>
       <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {posts.map((p, i) =>
-          p.type === "article" ? <ArticleCard key={p.id} post={p} /> : p.type === "astrology" ? <AstrologyCard key={p.id} post={p} /> : <TipCard key={p.id} post={p} index={i} />,
+          p.type === "article" ? <ArticleCard key={p.id} post={p} index={i + 1} /> : p.type === "astrology" ? <AstrologyCard key={p.id} post={p} index={i + 1} /> : <TipCard key={p.id} post={p} index={i} />,
         )}
       </div>
     </section>

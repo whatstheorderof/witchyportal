@@ -65,6 +65,7 @@ export default async function SettingsAdmin() {
             <F label="What she hopes guests will gain" name="hopes" defaultValue={about.hopes} textarea rows={6} />
             <MediaPicker name="portraitMediaId" label="Main portrait" media={media} defaultValue={about.portraitMediaId} />
             <MediaPicker name="secondaryMediaId" label="Secondary image" media={media} defaultValue={about.secondaryMediaId} />
+            <MediaPicker name="meetMediaId" label="“Meet Yulia” photo (beside the video)" media={media} defaultValue={about.meetMediaId} />
             <Check label="Still placeholder text" name="isPlaceholder" defaultChecked={about.isPlaceholder} hint="Shows a placeholder badge on the page." />
           </AdminForm>
         </Panel>

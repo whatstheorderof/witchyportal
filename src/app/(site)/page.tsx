@@ -119,7 +119,7 @@ export default async function HomePage() {
               </figure>
             ) : (
               <div className="relative aspect-[5/4] overflow-hidden rounded-[2rem] rounded-tl-[8rem]">
-                <MediaImage media={introImg} fallback="sea" sizes="(min-width:1024px) 50vw, 92vw" />
+                <MediaImage media={introImg} fallback="golden" sizes="(min-width:1024px) 50vw, 92vw" className="object-[center_25%]" />
               </div>
             )}
           </div>
@@ -143,7 +143,7 @@ export default async function HomePage() {
             {weekArticle && (
               <div>
                 <p className="mb-3 text-xs uppercase tracking-[0.18em] text-plum-soft">Read</p>
-                <ArticleCard post={weekArticle} />
+                <ArticleCard post={weekArticle} index={0} />
               </div>
             )}
             {weekTip && (
@@ -206,8 +206,8 @@ export default async function HomePage() {
         <section className="container-page pb-20 lg:pb-28">
           <SectionHeading eyebrow="Read" title="From the stars & the sea" href="/articles" linkLabel="All articles" />
           <div className="mt-10 grid gap-8 lg:grid-cols-[1.2fr_2fr]">
-            {astro[0] && <AstrologyCard post={astro[0]} featured />}
-            <div className="grid gap-8 sm:grid-cols-2">{moreArticles.slice(0, 2).map((a) => <ArticleCard key={a.id} post={a} />)}</div>
+            {astro[0] && <AstrologyCard post={astro[0]} featured index={0} />}
+            <div className="grid gap-8 sm:grid-cols-2">{moreArticles.slice(0, 2).map((a, i) => <ArticleCard key={a.id} post={a} index={i + 1} />)}</div>
           </div>
         </section>
       )}
@@ -236,7 +236,7 @@ export default async function HomePage() {
       {/* CTA */}
       <section className="relative isolate overflow-hidden bg-plum-deep py-24 text-ivory lg:py-32">
         <div className="absolute inset-0 -z-10">
-          <MediaImage fallback="sand" sizes="100vw" className="opacity-40" />
+          <MediaImage fallback="dance" sizes="100vw" className="opacity-45 object-[center_30%]" />
           <div className="absolute inset-0 bg-gradient-to-t from-plum-deep via-plum-deep/60 to-plum-deep/30" />
         </div>
         <div className="container-page text-center">
