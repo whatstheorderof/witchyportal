@@ -54,6 +54,19 @@ export function matchesWords(entry: Pick<FeedEntry, "title" | "description">, wo
   return list.some((w) => hay.includes(w));
 }
 
+export type Series = "ask" | "show" | null;
+
+/**
+ * Which of Yulia's series a video belongs to. The Yulia Moon Show is matched on
+ * the title only (its descriptions can mention other series); Ask a Witch on
+ * title or description.
+ */
+export function videoSeries(v: Pick<FeedEntry, "title" | "description">, yt: { matchWords: string; showWords?: string }): Series {
+  if (yt.showWords?.trim() && matchesWords({ title: v.title, description: "" }, yt.showWords)) return "show";
+  if (yt.matchWords.trim() && matchesWords(v, yt.matchWords)) return "ask";
+  return null;
+}
+
 export async function fetchChannelFeed(channelId: string): Promise<FeedEntry[]> {
   if (process.env.YOUTUBE_FETCH_DISABLED === "1") throw new Error("YouTube access is disabled in this environment");
   if (!/^UC[A-Za-z0-9_-]{22}$/.test(channelId)) throw new Error("That doesn't look like a YouTube channel id (it starts with UC).");

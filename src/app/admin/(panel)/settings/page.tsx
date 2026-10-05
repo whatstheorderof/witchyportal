@@ -84,8 +84,9 @@ export default async function SettingsAdmin() {
               <F label="Channel link" name="channelUrl" defaultValue={yt.channelUrl} mono />
               <F label="Channel id" name="channelId" defaultValue={yt.channelId} mono hint="Starts with UC. Found in YouTube Studio → Settings → Channel → Advanced." />
             </div>
-            <Select label="Automatic daily import" name="autoImport" defaultValue={yt.autoImport} options={[{ value: "ask-a-witch", label: "Ask a Witch videos only (matching words below)" }, { value: "all", label: "Every new upload" }, { value: "off", label: "Off — I'll add videos myself" }]} />
+            <Select label="Automatic daily import" name="autoImport" defaultValue={yt.autoImport} options={[{ value: "ask-a-witch", label: "Ask a Witch and Yulia Moon Show episodes (matching words below)" }, { value: "all", label: "Every new upload" }, { value: "off", label: "Off — I'll add videos myself" }]} />
             <F label="Ask a Witch matching words" name="matchWords" defaultValue={yt.matchWords} hint="Comma separated. A new upload is imported if its title or description contains any of these." />
+            <F label="Yulia Moon Show matching words" name="showWords" defaultValue={yt.showWords} hint="Comma separated, matched on the title. These episodes get their own channel on the Watch page and stay off the Ask a Witch page." />
           </AdminForm>
         </Panel>
         <Panel title="Newsletter" id="site">

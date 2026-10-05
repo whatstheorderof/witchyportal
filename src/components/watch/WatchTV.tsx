@@ -10,7 +10,8 @@ export interface TVVideo {
   kind: "short" | "video";
   topic: string;
   published: string | null;
-  askAWitch: boolean;
+  /** Which of Yulia's series this belongs to, if any */
+  series: "ask" | "show" | null;
 }
 
 type Channel = { key: string; label: string; filter?: (v: TVVideo) => boolean; playlist?: boolean };
@@ -48,14 +49,18 @@ function loadYouTubeApi(): Promise<void> {
   return apiPromise;
 }
 
+/** "🔮 The Yulia Moon Show | Ep.23 - Friday 13th…" → "Ep.23 - Friday 13th…" inside the show's own channel */
+const showTitle = (t: string) => t.replace(/^[^A-Za-z]*(the\s+)?yulia moon show[^A-Za-z0-9]*\|?\s*/i, "").trim() || t;
+
 const thumb = (id: string, q = "mqdefault") => `https://i.ytimg.com/vi/${id}/${q}.jpg`;
 const fmt = (iso: string | null) => (iso ? new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" }).format(new Date(iso)) : "");
 
-export function WatchTV({ videos, uploadsPlaylist, channelUrl, startId }: { videos: TVVideo[]; uploadsPlaylist: string | null; channelUrl: string; startId?: string }) {
+export function WatchTV({ videos, uploadsPlaylist, channelUrl, startId, startChannel }: { videos: TVVideo[]; uploadsPlaylist: string | null; channelUrl: string; startId?: string; startChannel?: string }) {
   const channels = useMemo<Channel[]>(() => {
     const list: Channel[] = [];
     if (videos.length) list.push({ key: "all", label: "Everything" });
-    if (videos.some((v) => v.askAWitch)) list.push({ key: "ask", label: "Ask a Witch", filter: (v) => v.askAWitch });
+    if (videos.some((v) => v.series === "ask")) list.push({ key: "ask", label: "Ask a Witch", filter: (v) => v.series === "ask" });
+    if (videos.some((v) => v.series === "show")) list.push({ key: "show", label: "The Yulia Moon Show", filter: (v) => v.series === "show" });
     if (videos.some((v) => v.kind === "short")) list.push({ key: "shorts", label: "Shorts", filter: (v) => v.kind === "short" });
     if (videos.some((v) => v.kind === "video")) list.push({ key: "videos", label: "Full episodes", filter: (v) => v.kind === "video" });
     for (const t of [...new Set(videos.map((v) => v.topic).filter(Boolean))].sort()) list.push({ key: `t:${t}`, label: t, filter: (v) => v.topic === t });
@@ -64,7 +69,9 @@ export function WatchTV({ videos, uploadsPlaylist, channelUrl, startId }: { vide
   }, [videos, uploadsPlaylist]);
 
   const startIndex = startId ? videos.findIndex((v) => v.youtubeId === startId) : -1;
-  const [channelKey, setChannelKey] = useState(startIndex >= 0 ? "all" : channels[0]?.key ?? "channel");
+  const [channelKey, setChannelKey] = useState(
+    startIndex >= 0 ? "all" : channels.some((c) => c.key === startChannel) ? startChannel! : channels[0]?.key ?? "channel",
+  );
   const channel = channels.find((c) => c.key === channelKey) ?? channels[0];
   const queue = useMemo(() => (channel?.playlist ? [] : videos.filter(channel?.filter ?? (() => true))), [channel, videos]);
   const [index, setIndex] = useState(Math.max(0, startIndex));
@@ -254,7 +261,7 @@ export function WatchTV({ videos, uploadsPlaylist, channelUrl, startId }: { vide
                       <span className="absolute left-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-[0.65rem] uppercase tracking-wider text-ivory">{v.kind === "short" ? "Short" : "Episode"}</span>
                       {active && on && <span className="absolute inset-x-0 bottom-0 bg-blush px-2 py-1 text-xs font-medium text-plum-deep">Now playing</span>}
                     </span>
-                    <span className="mt-2 line-clamp-2 block text-sm leading-snug text-ivory">{v.title}</span>
+                    <span className="mt-2 line-clamp-2 block text-sm leading-snug text-ivory">{channel?.key === "show" ? showTitle(v.title) : v.title}</span>
                     {v.published && <span className="mt-0.5 block text-xs text-ivory/55">{fmt(v.published)}</span>}
                   </button>
                 </li>

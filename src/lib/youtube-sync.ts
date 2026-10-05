@@ -3,7 +3,7 @@ import { inArray } from "drizzle-orm";
 import { db } from "@/db";
 import { videos } from "@/db/schema";
 import { getSetting } from "./settings";
-import { fetchChannelFeed, matchesWords, type FeedEntry } from "./youtube";
+import { fetchChannelFeed, videoSeries, type FeedEntry } from "./youtube";
 
 /** Adds feed entries that aren't in the database yet. Returns how many were added. */
 export async function importEntries(entries: FeedEntry[], status: "published" | "draft" = "published") {
@@ -33,6 +33,6 @@ export async function syncChannel() {
   const yt = await getSetting("youtube");
   if (yt.autoImport === "off" || !yt.channelId) return { skipped: true, added: 0 };
   const entries = await fetchChannelFeed(yt.channelId);
-  const wanted = yt.autoImport === "all" ? entries : entries.filter((e) => matchesWords(e, yt.matchWords));
+  const wanted = yt.autoImport === "all" ? entries : entries.filter((e) => videoSeries(e, yt) !== null);
   return { skipped: false, found: entries.length, matched: wanted.length, added: await importEntries(wanted) };
 }

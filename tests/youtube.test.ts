@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { matchesWords, parseChannelFeed } from "../src/lib/youtube";
+import { matchesWords, parseChannelFeed, videoSeries } from "../src/lib/youtube";
 import { parseYouTubeId } from "../src/lib/validation";
 
 const FEED = `<?xml version="1.0" encoding="UTF-8"?>
@@ -37,5 +37,23 @@ describe("YouTube channel feed", () => {
     expect(parseYouTubeId("https://youtube.com/shorts/AAAAAAAAAAA?si=x")).toBe("AAAAAAAAAAA");
     expect(parseYouTubeId("https://youtu.be/BBBBBBBBBBB")).toBe("BBBBBBBBBBB");
     expect(parseYouTubeId("https://www.youtube.com/@YuliaMoonPortal")).toBeNull();
+  });
+});
+
+describe("videoSeries", () => {
+  const yt = { matchWords: "ask a witch, askawitch, #askawitch", showWords: "yulia moon show" };
+  it("recognises Yulia Moon Show episodes by title, including the older naming", () => {
+    expect(videoSeries({ title: "🔮 The Yulia Moon Show | Ep.23 - Friday 13th Magic", description: "" }, yt)).toBe("show");
+    expect(videoSeries({ title: "🌜Yulia Moon Show🌙 Full Moon in Aries🔥", description: "" }, yt)).toBe("show");
+  });
+  it("keeps a show episode that mentions Ask a Witch in its description in the show", () => {
+    expect(videoSeries({ title: "The Yulia Moon Show | Ep.3 – Witchy Q&A", description: "Send questions for Ask a Witch!" }, yt)).toBe("show");
+  });
+  it("recognises Ask a Witch episodes and Shorts", () => {
+    expect(videoSeries({ title: "Ask A Witch Episode 🖤 1 ❤️", description: "" }, yt)).toBe("ask");
+    expect(videoSeries({ title: "Overcome Fear & Doubt with Crystals | Ask a Witch #shorts", description: "" }, yt)).toBe("ask");
+  });
+  it("returns null for other uploads", () => {
+    expect(videoSeries({ title: "Lavender Magic: Everyday Spells #shorts", description: "" }, yt)).toBeNull();
   });
 });

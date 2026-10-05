@@ -217,6 +217,33 @@ async function main() {
       }
     }
 
+    /* ---------------- Videos (series back catalogue) ---------------- */
+    // Each video is added once. If it's later hidden or deleted in /admin it isn't re-added.
+    const { videos: fileVideos } = await import("../content/videos");
+    const [vRow] = await db.select().from(s.settings).where(eq(s.settings.key, "_sync_videos")).limit(1);
+    const doneVideos = new Set(((vRow?.value as { ids?: string[] })?.ids ?? []) as string[]);
+    const newVideos = fileVideos.filter((v) => /^[A-Za-z0-9_-]{11}$/.test(v.id) && !doneVideos.has(v.id));
+    if (newVideos.length) {
+      const inserted = await db
+        .insert(s.videos)
+        .values(newVideos.map((v) => ({
+          youtubeId: v.id,
+          kind: v.kind,
+          title: v.title,
+          description: v.description ?? "",
+          source: "content",
+          status: "published" as const,
+          publishAt: toDate(v.date) ?? new Date(),
+        })))
+        .onConflictDoNothing()
+        .returning({ id: s.videos.id });
+      counts.added += inserted.length;
+      counts.unchanged += newVideos.length - inserted.length;
+      for (const v of newVideos) doneVideos.add(v.id);
+      const value = { ids: [...doneVideos] };
+      await db.insert(s.settings).values({ key: "_sync_videos", value }).onConflictDoUpdate({ target: s.settings.key, set: { value } });
+    } else counts.unchanged += fileVideos.length;
+
     /* ---------------- Site settings (home, about, contact) ---------------- */
     const [syncRow] = await db.select().from(s.settings).where(eq(s.settings.key, "_sync")).limit(1);
     const syncState = ((syncRow?.value as Record<string, string>) ?? {}) as Record<string, string>;

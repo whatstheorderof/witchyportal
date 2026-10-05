@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { listVideos } from "@/lib/queries";
 import { getSetting } from "@/lib/settings";
+import { videoSeries } from "@/lib/youtube";
 import { formatDate } from "@/lib/dates";
 import { PageHero, EmptyState, SectionHeading } from "@/components/Section";
 import { ShortCard, VideoCard } from "@/components/PostCards";
@@ -14,7 +15,10 @@ export const metadata: Metadata = { title: "Ask a Witch", description: "Yulia Mo
 
 export default async function AskAWitchPage({ searchParams }: { searchParams: Promise<{ topic?: string }> }) {
   const { topic } = await searchParams;
-  const [all, yt, contact] = await Promise.all([listVideos(), getSetting("youtube"), getSetting("contact")]);
+  const [everything, yt, contact] = await Promise.all([listVideos({ limit: 500 }), getSetting("youtube"), getSetting("contact")]);
+  // The Yulia Moon Show has its own channel on the Watch page.
+  const all = everything.filter((v) => videoSeries(v, yt) !== "show");
+  const showCount = everything.length - all.length;
   const topics = [...new Set(all.map((v) => v.topic).filter(Boolean))].sort();
   const list = topic ? all.filter((v) => v.topic === topic) : all;
   const byDate = [...list].sort((a, b) => +(b.publishAt ?? b.createdAt) - +(a.publishAt ?? a.createdAt));
@@ -28,7 +32,8 @@ export default async function AskAWitchPage({ searchParams }: { searchParams: Pr
     <>
       <PageHero eyebrow="Ask a Witch" title="Your questions, answered" intro="Yulia's Ask a Witch videos and Shorts, all in one place. Press play to watch right here — nothing loads from YouTube until you do.">
         <div className="mt-8 flex flex-wrap items-center gap-3">
-          <Link href="/watch" className="btn-primary">Watch on Witchy TV</Link>
+          <Link href="/watch?channel=ask" className="btn-primary">Watch on Witchy TV</Link>
+          {showCount > 0 && <Link href="/watch?channel=show" className="btn-outline">The Yulia Moon Show</Link>}
           {subscribe && (
             <a href={subscribe} target="_blank" rel="noopener noreferrer" className="btn-outline">
               Subscribe on YouTube <ExternalIcon />

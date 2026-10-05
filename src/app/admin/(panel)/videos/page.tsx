@@ -7,13 +7,13 @@ import { AdminForm } from "@/components/admin/AdminForm";
 import { addVideoLinks, importChannelVideos, saveVideo } from "../../actions";
 import { F } from "@/components/admin/AdminForm";
 import { getSetting } from "@/lib/settings";
-import { fetchChannelFeed, matchesWords, type FeedEntry } from "@/lib/youtube";
+import { fetchChannelFeed, videoSeries, type FeedEntry } from "@/lib/youtube";
 import { formatDate } from "@/lib/dates";
 import { VideoFields } from "./fields";
 
 export const metadata = { title: "Ask a Witch videos" };
 
-async function ChannelFeed({ channelId, matchWords, known }: { channelId: string; matchWords: string; known: Set<string> }) {
+async function ChannelFeed({ channelId, matchWords, showWords, known }: { channelId: string; matchWords: string; showWords: string; known: Set<string> }) {
   let entries: FeedEntry[] = [];
   try {
     entries = await fetchChannelFeed(channelId);
@@ -26,7 +26,8 @@ async function ChannelFeed({ channelId, matchWords, known }: { channelId: string
       <ul className="grid gap-2">
         {entries.map((e) => {
           const added = known.has(e.youtubeId);
-          const match = matchesWords(e, matchWords);
+          const series = videoSeries(e, { matchWords, showWords });
+          const match = series !== null;
           return (
             <li key={e.youtubeId}>
               <label className={`flex items-center gap-4 rounded-2xl p-3 ring-1 ring-line ${added ? "bg-ivory-deep/60 opacity-70" : "bg-white/80 has-[:checked]:ring-2 has-[:checked]:ring-plum"}`}>
@@ -37,6 +38,7 @@ async function ChannelFeed({ channelId, matchWords, known }: { channelId: string
                   <span className="block font-medium">{e.title}</span>
                   <span className="mt-1 flex flex-wrap gap-2 text-xs text-muted">
                     <span>{e.kind === "short" ? "Short" : "Video"}</span>
+                    {series && <span className="text-plum">{series === "show" ? "Yulia Moon Show" : "Ask a Witch"}</span>}
                     {e.published && <span>{formatDate(e.published)}</span>}
                     {match && <span className="rounded-full bg-lavender px-2 text-plum">Ask a Witch</span>}
                     {added && <span className="rounded-full bg-success/15 px-2 text-success">Already on the site</span>}
@@ -75,10 +77,10 @@ export default async function VideosAdmin({ searchParams }: { searchParams: Prom
       <div className="mb-8 grid gap-6">
         <Panel
           title="From your YouTube channel"
-          intro={<>Reads the latest uploads from <a href={yt.channelUrl} target="_blank" rel="noopener noreferrer" className="link-underline">{yt.channelUrl.replace("https://www.", "")}</a>. Videos whose title or description mention {yt.matchWords.split(",")[0]} are ticked for you. Automatic daily import: <strong>{yt.autoImport === "off" ? "off" : yt.autoImport === "all" ? "all new uploads" : "Ask a Witch videos only"}</strong> (<Link href="/admin/settings#youtube" className="link-underline">change</Link>).</>}
+          intro={<>Reads the latest uploads from <a href={yt.channelUrl} target="_blank" rel="noopener noreferrer" className="link-underline">{yt.channelUrl.replace("https://www.", "")}</a>. Ask a Witch and Yulia Moon Show episodes are ticked for you. Automatic daily import: <strong>{yt.autoImport === "off" ? "off" : yt.autoImport === "all" ? "all new uploads" : "Ask a Witch & Yulia Moon Show episodes"}</strong> (<Link href="/admin/settings#youtube" className="link-underline">change</Link>).</>}
         >
           {sp.feed ? (
-            <ChannelFeed channelId={yt.channelId} matchWords={yt.matchWords} known={known} />
+            <ChannelFeed channelId={yt.channelId} matchWords={yt.matchWords} showWords={yt.showWords} known={known} />
           ) : (
             <Link href="/admin/videos?feed=1" className="btn-primary min-h-11">Check channel for videos</Link>
           )}

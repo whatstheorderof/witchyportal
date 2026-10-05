@@ -50,6 +50,8 @@ export interface YouTubeSettings {
   channelUrl: string;
   /** Daily automatic import: off | ask-a-witch (matching titles only) | all */
   autoImport: string;
+  /** Words in a title that mark a video as The Yulia Moon Show (comma separated) */
+  showWords: string;
   /** Words that mark a video as Ask a Witch (comma separated, case-insensitive) */
   matchWords: string;
 }
@@ -102,6 +104,7 @@ export const DEFAULTS = {
     channelUrl: "https://www.youtube.com/@YuliaMoonPortal",
     autoImport: "ask-a-witch",
     matchWords: "ask a witch, askawitch, #askawitch",
+    showWords: "yulia moon show",
   } as YouTubeSettings,
   site: {
     announcement: "",

@@ -9,6 +9,7 @@ Everything in this folder is published to the website automatically when it's de
 | `site/contact.md` | Contact details and social links (footer, Contact, Ask a Witch) |
 | `retreats/` | Retreat pages — description, activities, benefits, images (dates, prices and payment links are managed in /admin) |
 | `socials.ts` | Socials page links (Instagram, YouTube, Etsy…) |
+| `videos.ts` | Back catalogue of Ask a Witch and Yulia Moon Show episodes (Watch and Ask a Witch pages). New uploads are picked up automatically each day. |
 | `tips/` | Witchy Tips page (tip cards) |
 | `affirmations/` | Witchy Tips page (affirmation cards) |
 | `motivations/` | Witchy Tips page (motivation cards) |
