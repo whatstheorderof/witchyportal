@@ -1,5 +1,5 @@
 /** Draws the Moon's current phase. angle: 0 = new, 90 = first quarter, 180 = full, 270 = last quarter. */
-export function MoonGlyph({ angle, size = 96, className = "" }: { angle: number; size?: number; className?: string }) {
+export function MoonGlyph({ angle, size = 96, className = "", glow = true }: { angle: number; size?: number; className?: string; glow?: boolean }) {
   const r = 50;
   const a = ((angle % 360) + 360) % 360;
   const waxing = a < 180;
@@ -13,13 +13,17 @@ export function MoonGlyph({ angle, size = 96, className = "" }: { angle: number;
   }
   return (
     <svg viewBox="-56 -56 112 112" width={size} height={size} className={className} aria-hidden="true">
-      <defs>
-        <radialGradient id="moonglow" cx="50%" cy="50%" r="50%">
-          <stop offset="70%" stopColor="#f1d3cb" stopOpacity=".35" />
-          <stop offset="100%" stopColor="#f1d3cb" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-      <circle r="56" fill="url(#moonglow)" />
+      {glow && (
+        <>
+          <defs>
+            <radialGradient id="moonglow" cx="50%" cy="50%" r="50%">
+              <stop offset="70%" stopColor="#f1d3cb" stopOpacity=".35" />
+              <stop offset="100%" stopColor="#f1d3cb" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          <circle r="56" fill="url(#moonglow)" />
+        </>
+      )}
       <circle r={r} fill="#3a1833" />
       <path d={lit} fill="#fbf6ef" />
       <circle r={r} fill="none" stroke="#d9cdea" strokeOpacity=".5" />
