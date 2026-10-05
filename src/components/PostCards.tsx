@@ -9,7 +9,7 @@ type P = Post & { cover: Media | null };
 
 /** Posts without their own cover get one of Yulia's photos, chosen by slug so it stays the same on every visit. */
 const ARTICLE_PHOTOS = ["wade", "dance", "golden", "horizon", "sea", "sand"] as const;
-const ASTRO_PHOTOS = ["crown", "red", "veil", "horns", "horizon"] as const;
+const ASTRO_PHOTOS = ["crown", "veilWings", "red", "crownPortrait", "veil", "horns", "veiledSea", "horizon"] as const;
 /** In a list, rotate by position so neighbours differ; on its own, choose by slug. */
 function photoFor<T extends readonly string[]>(list: T, slug: string, index?: number): T[number] {
   if (index != null) return list[index % list.length];

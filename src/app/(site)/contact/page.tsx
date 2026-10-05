@@ -13,7 +13,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
   const defaultRetreat = retreats.find((r) => r.id === retreat)?.id;
   return (
     <>
-      <PageHero eyebrow="Contact" title="Send Yulia a message" intro={contact.responseTime} />
+      <PageHero image="cape" eyebrow="Contact" title="Send Yulia a message" intro={contact.responseTime} />
       <div className="container-page grid gap-16 py-14 lg:grid-cols-[1.3fr_1fr] lg:py-20">
         <section aria-label="Enquiry form" className="card p-6 sm:p-10">
           <EnquiryForm retreats={retreats.map((r) => ({ id: r.id, title: r.title }))} defaultRetreatId={defaultRetreat} />

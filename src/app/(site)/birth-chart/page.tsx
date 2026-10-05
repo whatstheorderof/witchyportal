@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function BirthChartPage() {
   return (
     <>
-      <PageHero eyebrow="Birth chart" title="The sky on the day you arrived" intro="Enter your birth date, time and place to see your Sun, Moon and rising sign, every planet's position, your houses and key aspects." />
+      <PageHero image="hornsPortrait" eyebrow="Birth chart" title="The sky on the day you arrived" intro="Enter your birth date, time and place to see your Sun, Moon and rising sign, every planet's position, your houses and key aspects." />
       <div className="container-page py-12 lg:py-20">
         <BirthChart />
       </div>

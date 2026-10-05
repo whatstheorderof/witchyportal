@@ -11,6 +11,12 @@ export const FALLBACK_IMAGES = {
   wade: { url: "/images/sea-arms-raised.jpg", alt: "Yulia standing waist-deep in a calm blue sea with her arms raised above her head", width: 2400, height: 1603 },
   horizon: { url: "/images/sea-arms-raised-back.jpg", alt: "Yulia seen from behind, waist-deep in the sea with both arms raised to the sky", width: 2400, height: 1603 },
   red: { url: "/images/horns-red-dress.jpg", alt: "A figure with horns and long hair in a red dress walking across the sand under a deep blue sky", width: 1603, height: 2400 },
+  crownPortrait: { url: "/images/crown-portrait-dusk.jpg", alt: "Yulia in a jewelled crown at dusk, hands framing her face", width: 1603, height: 2400 },
+  wings: { url: "/images/horns-veil-wings.jpg", alt: "A horned figure seen from behind on the beach, sheer black sleeves spread like wings", width: 2400, height: 1603 },
+  veilWings: { url: "/images/veil-wings-back.jpg", alt: "A horned figure seen from behind, a sheer black veil billowing out like wings against a pale sky", width: 2400, height: 1603 },
+  veiledSea: { url: "/images/veiled-crown-sea.jpg", alt: "A figure in a jewelled crown and star-flecked black veil, hands raised, in front of the sea", width: 2400, height: 1603 },
+  hornsPortrait: { url: "/images/horns-portrait-beach.jpg", alt: "Yulia wearing horns and sheer black sleeves on the beach, one hand raised", width: 1603, height: 2400 },
+  cape: { url: "/images/cape-walk-sea.jpg", alt: "A horned figure walking towards the sea in a long sheer black cape", width: 2400, height: 1603 },
   crown: { url: "/images/crown-dusk-shore.jpg", alt: "Yulia in a jewelled crown and sheer black sleeves on the shore at dusk", width: 2400, height: 1603 },
 } as const;
 

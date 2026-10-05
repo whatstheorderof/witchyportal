@@ -19,7 +19,7 @@ export default async function TarotPage() {
   const today = cardOfTheDay();
   return (
     <>
-      <PageHero eyebrow="Tarot" title="Card of the day" intro="One card from the Major Arcana for everyone today — and a deck to draw your own. For reflection, intuition and a little magic." />
+      <PageHero image="crownPortrait" eyebrow="Tarot" title="Card of the day" intro="One card from the Major Arcana for everyone today — and a deck to draw your own. For reflection, intuition and a little magic." />
 
       <section className="container-page py-14 lg:py-20" aria-labelledby="today">
         <div className="grid items-center gap-10 sm:grid-cols-[260px_1fr] sm:gap-14">

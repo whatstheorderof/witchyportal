@@ -46,6 +46,12 @@ gallery:
     alt: Yulia seen from behind, waist-deep in the sea with both arms raised to the sky
   - src: /images/yulia-golden-beach.jpg
     alt: Yulia with long red hair on a sunlit beach in a sheer mesh dress, the sea behind her
+  - src: /images/horns-veil-wings.jpg
+    alt: A horned figure seen from behind on the beach, sheer black sleeves spread like wings
+  - src: /images/veil-wings-back.jpg
+    alt: A horned figure seen from behind, a sheer black veil billowing out like wings against a pale sky
+  - src: /images/cape-walk-sea.jpg
+    alt: A horned figure walking towards the sea in a long sheer black cape
   - src: /images/sea-joy.jpg
     alt: A woman with red hair raising her arms in joy, waist-deep in a calm blue sea
   - src: /images/veiled-crown-shore.jpg

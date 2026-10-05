@@ -25,7 +25,7 @@ export default async function MoonPage() {
 
   return (
     <>
-      <PageHero eyebrow="Moon calendar" title="Live by the moon" intro="Where the Moon is tonight, what each phase is good for, and every new and full moon for the next six months." />
+      <PageHero image="veiledSea" eyebrow="Moon calendar" title="Live by the moon" intro="Where the Moon is tonight, what each phase is good for, and every new and full moon for the next six months." />
 
       <section className="container-page py-14 lg:py-20" aria-labelledby="tonight">
         <div className="grid items-center gap-10 overflow-hidden rounded-[2rem] bg-plum-deep p-8 text-ivory sm:p-12 lg:grid-cols-[auto_1fr] lg:gap-16">

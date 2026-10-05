@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "./Icons";
+import { MediaImage, FALLBACK_IMAGES } from "./MediaImage";
 
 export function SectionHeading({
   eyebrow, title, intro, href, linkLabel, as: As = "h2", className = "",
@@ -20,16 +21,36 @@ export function SectionHeading({
   );
 }
 
-export function PageHero({ eyebrow, title, intro, children }: { eyebrow?: string; title: string; intro?: string; children?: React.ReactNode }) {
+/** Where to crop each photo in the short phone banner (portraits need a lower point to keep the face). */
+const STRIP_FOCUS: Partial<Record<keyof typeof FALLBACK_IMAGES, string>> = {
+  crownPortrait: "object-[center_40%]",
+  hornsPortrait: "object-[center_47%]",
+  golden: "object-[center_22%]",
+  red: "object-[center_45%]",
+};
+
+export function PageHero({ eyebrow, title, intro, children, image }: { eyebrow?: string; title: string; intro?: string; children?: React.ReactNode; image?: keyof typeof FALLBACK_IMAGES }) {
   return (
     <section className="relative overflow-hidden border-b border-line/70 bg-ivory-deep pt-28 pb-12 lg:pt-40 lg:pb-16">
       <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-lavender/50 blur-3xl" />
       <div aria-hidden className="pointer-events-none absolute -bottom-32 left-10 h-72 w-72 rounded-full bg-blush/60 blur-3xl" />
-      <div className="container-page relative">
-        {eyebrow && <p className="eyebrow reveal">{eyebrow}</p>}
-        <h1 className="display-lg reveal mt-3 max-w-3xl">{title}</h1>
-        {intro && <p className="reveal mt-5 max-w-2xl text-lg text-muted">{intro}</p>}
-        {children}
+      <div className={`container-page relative ${image ? "lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:items-end lg:gap-16" : ""}`}>
+        <div className="min-w-0">
+          {eyebrow && <p className="eyebrow reveal">{eyebrow}</p>}
+          <h1 className="display-lg reveal mt-3 max-w-3xl">{title}</h1>
+          {intro && <p className="reveal mt-5 max-w-2xl text-lg text-muted">{intro}</p>}
+          {image && (
+            <div className="relative mt-7 aspect-[5/2] overflow-hidden rounded-[1.5rem] lg:hidden">
+              <MediaImage fallback={image} sizes="92vw" className={STRIP_FOCUS[image] ?? "object-[center_30%]"} />
+            </div>
+          )}
+          {children}
+        </div>
+        {image && (
+          <div className="relative hidden aspect-[4/5] overflow-hidden rounded-t-[11rem] rounded-b-[2rem] shadow-[0_30px_60px_-30px_rgb(74_31_64/0.45)] lg:block">
+            <MediaImage fallback={image} sizes="340px" priority className="object-[center_25%]" />
+          </div>
+        )}
       </div>
     </section>
   );

@@ -30,7 +30,7 @@ export default async function AskAWitchPage({ searchParams }: { searchParams: Pr
 
   return (
     <>
-      <PageHero eyebrow="Ask a Witch" title="Your questions, answered" intro="Yulia's Ask a Witch videos and Shorts, all in one place. Press play to watch right here — nothing loads from YouTube until you do.">
+      <PageHero image="wings" eyebrow="Ask a Witch" title="Your questions, answered" intro="Yulia's Ask a Witch videos and Shorts, all in one place. Press play to watch right here — nothing loads from YouTube until you do.">
         <div className="mt-8 flex flex-wrap items-center gap-3">
           <Link href="/watch?channel=ask" className="btn-primary">Watch on Witchy TV</Link>
           {showCount > 0 && <Link href="/watch?channel=show" className="btn-outline">The Yulia Moon Show</Link>}
