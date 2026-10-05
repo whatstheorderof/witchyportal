@@ -14,7 +14,7 @@ export interface TVVideo {
   series: "ask" | "show" | null;
 }
 
-type Channel = { key: string; label: string; filter?: (v: TVVideo) => boolean; playlist?: boolean };
+type Channel = { key: string; label: string; filter?: (v: TVVideo) => boolean; /** YouTube playlist id to play instead of a list of videos */ playlist?: string; vertical?: boolean; note?: string };
 
 /* Minimal typing for the YouTube IFrame Player API */
 interface YTPlayer {
@@ -55,18 +55,20 @@ const showTitle = (t: string) => t.replace(/^[^A-Za-z]*(the\s+)?yulia moon show[
 const thumb = (id: string, q = "mqdefault") => `https://i.ytimg.com/vi/${id}/${q}.jpg`;
 const fmt = (iso: string | null) => (iso ? new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" }).format(new Date(iso)) : "");
 
-export function WatchTV({ videos, uploadsPlaylist, channelUrl, startId, startChannel }: { videos: TVVideo[]; uploadsPlaylist: string | null; channelUrl: string; startId?: string; startChannel?: string }) {
+export function WatchTV({ videos, uploadsPlaylist, shortsPlaylist, channelUrl, startId, startChannel }: { videos: TVVideo[]; uploadsPlaylist: string | null; shortsPlaylist?: string | null; channelUrl: string; startId?: string; startChannel?: string }) {
   const channels = useMemo<Channel[]>(() => {
     const list: Channel[] = [];
     if (videos.length) list.push({ key: "all", label: "Everything" });
     if (videos.some((v) => v.series === "ask")) list.push({ key: "ask", label: "Ask a Witch", filter: (v) => v.series === "ask" });
     if (videos.some((v) => v.series === "show")) list.push({ key: "show", label: "The Yulia Moon Show", filter: (v) => v.series === "show" });
-    if (videos.some((v) => v.kind === "short")) list.push({ key: "shorts", label: "Shorts", filter: (v) => v.kind === "short" });
+    // Witchy Shorts plays the channel's own Shorts playlist, so every Short is included and new ones appear automatically.
+    if (shortsPlaylist) list.push({ key: "shorts", label: "Witchy Shorts", playlist: shortsPlaylist, vertical: true, note: "Every one of Yulia\u2019s Shorts, newest first. Use the playlist button inside the player to jump around, or choose another channel above." });
+    else if (videos.some((v) => v.kind === "short")) list.push({ key: "shorts", label: "Witchy Shorts", filter: (v) => v.kind === "short" });
     if (videos.some((v) => v.kind === "video")) list.push({ key: "videos", label: "Full episodes", filter: (v) => v.kind === "video" });
     for (const t of [...new Set(videos.map((v) => v.topic).filter(Boolean))].sort()) list.push({ key: `t:${t}`, label: t, filter: (v) => v.topic === t });
-    if (uploadsPlaylist) list.push({ key: "channel", label: "Whole channel", playlist: true });
+    if (uploadsPlaylist) list.push({ key: "channel", label: "Whole channel", playlist: uploadsPlaylist, note: "Playing every upload from the channel, newest first. Use the playlist button inside the player to jump around, or choose another channel above." });
     return list;
-  }, [videos, uploadsPlaylist]);
+  }, [videos, uploadsPlaylist, shortsPlaylist]);
 
   const startIndex = startId ? videos.findIndex((v) => v.youtubeId === startId) : -1;
   const [channelKey, setChannelKey] = useState(
@@ -81,13 +83,13 @@ export function WatchTV({ videos, uploadsPlaylist, channelUrl, startId, startCha
   const host = useRef<HTMLDivElement>(null);
   const player = useRef<YTPlayer | null>(null);
   const stageRef = useRef<HTMLDivElement>(null);
-  const state = useRef({ queue, index, autoplay, playlist: Boolean(channel?.playlist) });
+  const state = useRef({ queue, index, autoplay, playlist: channel?.playlist ?? null });
   useEffect(() => {
-    state.current = { queue, index, autoplay, playlist: Boolean(channel?.playlist) };
+    state.current = { queue, index, autoplay, playlist: channel?.playlist ?? null };
   });
 
   const current = channel?.playlist ? null : queue[index] ?? null;
-  const isShort = current?.kind === "short";
+  const isShort = channel?.vertical || current?.kind === "short";
 
   const next = useCallback((step = 1) => {
     const { queue: q } = state.current;
@@ -98,7 +100,7 @@ export function WatchTV({ videos, uploadsPlaylist, channelUrl, startId, startCha
   // Create the player the first time the viewer turns the TV on.
   useEffect(() => {
     if (!on || player.current || !host.current) return;
-    track("watch_start", { channel: state.current.playlist ? "channel" : "list" });
+    track("watch_start", { channel: state.current.playlist ? "playlist" : "list" });
     let cancelled = false;
     loadYouTubeApi().then(() => {
       if (cancelled || !host.current || !window.YT) return;
@@ -110,7 +112,7 @@ export function WatchTV({ videos, uploadsPlaylist, channelUrl, startId, startCha
         videoId: playlist ? undefined : q[i]?.youtubeId,
         playerVars: {
           autoplay: 1, playsinline: 1, rel: 0, modestbranding: 1, origin: window.location.origin,
-          ...(playlist && uploadsPlaylist ? { listType: "playlist", list: uploadsPlaylist } : {}),
+          ...(playlist ? { listType: "playlist", list: playlist } : {}),
         },
         events: {
           onStateChange: (e: { data: number }) => {
@@ -123,24 +125,32 @@ export function WatchTV({ videos, uploadsPlaylist, channelUrl, startId, startCha
     return () => {
       cancelled = true;
     };
-  }, [on, next, uploadsPlaylist]);
+  }, [on, next]);
 
   // Switch what's playing when the channel or position changes.
   const loaded = useRef<string>("");
   useEffect(() => {
     if (!on || !player.current) return;
-    const key = channel?.playlist ? `pl:${uploadsPlaylist}` : `v:${current?.youtubeId}`;
+    const key = channel?.playlist ? `pl:${channel.playlist}` : `v:${current?.youtubeId}`;
     if (loaded.current === key) return;
     loaded.current = key;
     try {
-      if (channel?.playlist && uploadsPlaylist) player.current.loadPlaylist({ list: uploadsPlaylist, listType: "playlist" });
+      if (channel?.playlist) player.current.loadPlaylist({ list: channel.playlist, listType: "playlist" });
       else if (current) player.current.loadVideoById(current.youtubeId);
     } catch {
       /* player not ready yet — it will start with the right video */
     }
-  }, [on, channel, current, uploadsPlaylist]);
+  }, [on, channel, current]);
 
   useEffect(() => () => player.current?.destroy(), []);
+
+  // Keep the selected channel chip visible in the scrolling row (phones)
+  const chipsRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const nav = chipsRef.current;
+    const chip = nav?.querySelector<HTMLElement>("[aria-pressed=true]");
+    if (nav && chip) nav.scrollLeft = Math.max(0, chip.offsetLeft - nav.offsetLeft - 20);
+  }, [channelKey]);
 
   // Keyboard: ← / → to change programme when the TV has focus
   const onKeyDown = (e: React.KeyboardEvent) => {
@@ -196,7 +206,7 @@ export function WatchTV({ videos, uploadsPlaylist, channelUrl, startId, startCha
             <span className={`h-2 w-2 rounded-full bg-blush ${on ? "animate-pulse" : ""}`} aria-hidden /> {on ? "On air" : "Off air"}
           </span>
           <p className="min-w-0 flex-1 truncate font-display text-xl text-ivory sm:text-2xl" aria-live="polite">
-            {channel?.playlist ? nowTitle || "Whole channel — every upload in order" : current?.title ?? "No videos yet"}
+            {channel?.playlist ? nowTitle || `${channel.label} — playing in order` : current?.title ?? "No videos yet"}
           </p>
           <div className="flex items-center gap-2">
             {!channel?.playlist && (
@@ -222,7 +232,7 @@ export function WatchTV({ videos, uploadsPlaylist, channelUrl, startId, startCha
       </div>
 
       {/* CHANNELS */}
-      <nav aria-label="Channels" className="no-scrollbar -mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
+      <nav ref={chipsRef} aria-label="Channels" className="no-scrollbar -mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
         <ul className="flex gap-2">
           {channels.map((c) => (
             <li key={c.key}>
@@ -242,7 +252,7 @@ export function WatchTV({ videos, uploadsPlaylist, channelUrl, startId, startCha
       {/* GUIDE */}
       {channel?.playlist ? (
         <p className="rounded-2xl bg-ivory/5 p-5 text-ivory/75">
-          Playing every upload from the channel in order. Use the playlist button inside the player to jump around, or choose another channel above.
+          {channel.note}
         </p>
       ) : queue.length === 0 ? (
         <p className="rounded-2xl bg-ivory/5 p-5 text-ivory/75">No videos in this channel yet.</p>

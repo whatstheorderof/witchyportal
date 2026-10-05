@@ -26,7 +26,10 @@ export default async function WatchPage({ searchParams }: { searchParams: Promis
     }))
     .sort((a, b) => (b.published ?? "").localeCompare(a.published ?? ""));
   // A channel's uploads playlist is its id with "UC" swapped for "UU".
-  const uploadsPlaylist = /^UC[A-Za-z0-9_-]{22}$/.test(yt.channelId) ? `UU${yt.channelId.slice(2)}` : null;
+  const validChannel = /^UC[A-Za-z0-9_-]{22}$/.test(yt.channelId);
+  const uploadsPlaylist = validChannel ? `UU${yt.channelId.slice(2)}` : null;
+  // …and its Shorts-only playlist uses "UUSH".
+  const shortsPlaylist = validChannel ? `UUSH${yt.channelId.slice(2)}` : null;
 
   return (
     <div className="min-h-dvh bg-[#14070f] pb-24 pt-20 text-ivory lg:pt-24">
@@ -42,7 +45,7 @@ export default async function WatchPage({ searchParams }: { searchParams: Promis
             {yt.channelUrl && <a href={`${yt.channelUrl}?sub_confirmation=1`} target="_blank" rel="noopener noreferrer" className="rounded-full bg-ivory px-4 py-2.5 font-medium text-plum hover:bg-white">Subscribe ↗</a>}
           </div>
         </header>
-        <WatchTV videos={videos} uploadsPlaylist={uploadsPlaylist} channelUrl={yt.channelUrl} startId={startId} startChannel={startChannel} />
+        <WatchTV videos={videos} uploadsPlaylist={uploadsPlaylist} shortsPlaylist={shortsPlaylist} channelUrl={yt.channelUrl} startId={startId} startChannel={startChannel} />
       </div>
     </div>
   );

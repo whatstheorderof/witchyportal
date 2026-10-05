@@ -50,7 +50,7 @@ Tip: put "Ask a Witch" in the title or description of those uploads so they're p
 
 ## Watch (Witchy TV)
 
-`/watch` plays every video the site knows about, one after another, like a TV channel: Everything, Ask a Witch, The Yulia Moon Show, Shorts, Full episodes and one channel per topic. Episodes are sorted into the series by their titles — keep "Ask a Witch" or "Yulia Moon Show" in the title of new uploads (the matching words are in *Settings → YouTube*). Link straight to a channel with `/watch?channel=show` or `/watch?channel=ask`.
+`/watch` plays every video the site knows about, one after another, like a TV channel: Everything, Ask a Witch, The Yulia Moon Show, Witchy Shorts, Full episodes and one channel per topic. **Witchy Shorts** plays the YouTube channel's own Shorts playlist, so every Short is included and new ones appear without any work (`/watch?channel=shorts`). Episodes are sorted into the series by their titles — keep "Ask a Witch" or "Yulia Moon Show" in the title of new uploads (the matching words are in *Settings → YouTube*). Link straight to a channel with `/watch?channel=show` or `/watch?channel=ask`.
 
 YouTube's public feed only lists a channel's latest 15 uploads, so older episodes are listed in `content/videos.ts`; the daily check adds anything new. **Whole channel** plays the YouTube uploads playlist directly, so it works even before videos are imported. Nothing loads from YouTube until the visitor presses play. Videos added under *Ask a Witch videos* appear here automatically.
 
