@@ -30,6 +30,9 @@ export interface AboutSettings {
   views: string;
   why: string;
   hopes: string;
+  /** YouTube link shown in the "Meet Yulia" section near the top of the page */
+  videoUrl: string;
+  videoTitle: string;
   portraitMediaId: string | null;
   secondaryMediaId: string | null;
   isPlaceholder: boolean;
@@ -87,6 +90,8 @@ export const DEFAULTS = {
     views: "[Placeholder — Yulia's views on retreats: what makes time away meaningful, and how she approaches ritual, movement and rest.]",
     why: "[Placeholder — why Yulia hosts retreats.]",
     hopes: "[Placeholder — what Yulia hopes guests take home with them.]",
+    videoUrl: "",
+    videoTitle: "",
     portraitMediaId: null,
     secondaryMediaId: null,
     isPlaceholder: true,

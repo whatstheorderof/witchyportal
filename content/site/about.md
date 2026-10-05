@@ -2,6 +2,8 @@
 title: About Yulia
 intro: Practising witch, spiritual guide, dream interpreter — and your new resident witch.
 isPlaceholder: false
+videoUrl: https://www.youtube.com/watch?v=K5fBi5thC1w
+videoTitle: "✨ Meet Yulia Moon | Witchy Portal’s Magical Journey Begins ✨"
 views: |
   Yulia's work is built on one belief: **the real magic begins when you trust your own energy.** Her retreats take that idea off the screen and onto the sand — time away from everyday noise to slow down, listen inwards and practise the rituals that help you feel like yourself again.
 

@@ -509,6 +509,9 @@ export async function saveSettings(_: FormState, fd: FormData): Promise<FormStat
       if (v && !/^https:\/\//.test(v)) return fail("Social links must start with https://", { [k]: "Must start with https://" });
     }
   }
+  if (key === "about" && value.videoUrl && !parseYouTubeId(String(value.videoUrl))) {
+    return fail("The About video must be a YouTube link", { videoUrl: "Paste a YouTube link" });
+  }
   if (key === "home" && value.welcomeVideoUrl && !parseYouTubeId(String(value.welcomeVideoUrl))) {
     return fail("The welcome video must be a YouTube link", { welcomeVideoUrl: "Paste a YouTube link" });
   }

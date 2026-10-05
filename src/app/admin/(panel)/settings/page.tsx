@@ -55,6 +55,10 @@ export default async function SettingsAdmin() {
             <input type="hidden" name="key" value="about" />
             <F label="Page title" name="title" defaultValue={about.title} />
             <F label="Intro line" name="intro" defaultValue={about.intro} />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <F label="Video (YouTube link)" name="videoUrl" defaultValue={about.videoUrl} mono hint="Shown as “Meet Yulia” near the top of the page. Leave empty to hide." />
+              <F label="Video title" name="videoTitle" defaultValue={about.videoTitle} />
+            </div>
             <F label="Her story" name="story" defaultValue={about.story} textarea rows={8} hint="Markdown supported." />
             <F label="Her views on retreats" name="views" defaultValue={about.views} textarea rows={6} />
             <F label="Why she hosts them" name="why" defaultValue={about.why} textarea rows={6} />

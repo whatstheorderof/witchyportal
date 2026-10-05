@@ -4,6 +4,8 @@ import { getMediaMap, getSetting } from "@/lib/settings";
 import { MediaImage } from "@/components/MediaImage";
 import { Markdown, PlaceholderNote } from "@/components/Markdown";
 import { ArrowRight } from "@/components/Icons";
+import { YouTubeEmbed } from "@/components/YouTube";
+import { parseYouTubeId } from "@/lib/validation";
 
 export const metadata: Metadata = { title: "About Yulia", description: "Yulia Moon's story, and why she hosts retreats." };
 
@@ -12,6 +14,7 @@ export default async function AboutPage() {
   const m = await getMediaMap([about.portraitMediaId, about.secondaryMediaId]);
   const portrait = about.portraitMediaId ? m.get(about.portraitMediaId) : null;
   const secondary = about.secondaryMediaId ? m.get(about.secondaryMediaId) : null;
+  const videoId = about.videoUrl ? parseYouTubeId(about.videoUrl) : null;
   const blocks = [
     { id: "story", eyebrow: "Her story", title: "Where it began", body: about.story },
     { id: "views", eyebrow: "On retreats", title: "Why time away matters", body: about.views },
@@ -32,6 +35,19 @@ export default async function AboutPage() {
           <p className="mt-4 max-w-xl text-lg text-ivory/85">{about.intro}</p>
         </div>
       </section>
+
+      {videoId && (
+        <section aria-labelledby="about-video" className="container-page pt-16 lg:pt-24">
+          <div className="mx-auto max-w-4xl">
+            <p className="eyebrow">Meet Yulia</p>
+            <h2 id="about-video" className="display-md mt-3">Hear it from Yulia</h2>
+            <div className="mt-8 overflow-hidden rounded-(--radius-card) shadow-[0_30px_60px_-30px_rgb(74_31_64/0.45)]">
+              <YouTubeEmbed id={videoId} title={about.videoTitle || "Meet Yulia Moon"} />
+            </div>
+            {about.videoTitle && <p className="mt-3 text-sm text-muted">{about.videoTitle}</p>}
+          </div>
+        </section>
+      )}
 
       <div className="container-page py-16 lg:py-24">
         {about.isPlaceholder && <div className="mb-10"><PlaceholderNote>This page uses placeholder text — Yulia to write her story in Admin → Settings → About</PlaceholderNote></div>}
