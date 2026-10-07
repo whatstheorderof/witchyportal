@@ -51,7 +51,7 @@ export default async function DiscoverPage() {
       {shorts.length > 0 && (
         <section className="bg-ivory-deep py-16 lg:py-24">
           <div className="container-page"><SectionHeading eyebrow="Ask a Witch" title="Watch & listen" href="/ask-a-witch" /></div>
-          <div className="no-scrollbar mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 sm:px-8 lg:mx-auto lg:max-w-[1320px] lg:px-12">{shorts.map((v) => <ShortCard key={v.id} video={v} />)}</div>
+          <div className="no-scrollbar mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-px-5 px-5 pb-2 sm:scroll-px-8 sm:px-8 lg:mx-auto lg:grid lg:max-w-[1320px] lg:grid-cols-5 lg:gap-6 lg:overflow-visible lg:px-12 lg:[&>*:nth-child(n+6)]:hidden">{shorts.map((v) => <ShortCard key={v.id} video={v} />)}</div>
         </section>
       )}
       {articles.length > 0 && (

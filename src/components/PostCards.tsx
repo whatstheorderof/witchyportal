@@ -94,10 +94,10 @@ export function AstrologyCard({ post, featured = false, index }: { post: P; feat
 
 export function ShortCard({ video }: { video: Video }) {
   return (
-    <figure className="w-[68vw] max-w-[260px] shrink-0 snap-start sm:w-[240px] lg:w-auto lg:max-w-none">
+    <figure className="w-[60vw] max-w-[230px] shrink-0 snap-start sm:w-[210px] lg:w-auto lg:min-w-0 lg:max-w-none">
       <YouTubeEmbed id={video.youtubeId} title={video.title} vertical />
       <figcaption className="mt-3 flex items-start justify-between gap-2 text-[0.95rem] leading-snug text-ink">
-        <span>
+        <span className="line-clamp-2 min-w-0">
           {video.title}
           {video.isPlaceholder && <span className="placeholder-flag ml-2 align-middle">Sample</span>}
         </span>

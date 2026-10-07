@@ -9,7 +9,8 @@ import { PlayIcon } from "./Icons";
  */
 export function YouTubeEmbed({ id, title, vertical = false }: { id: string; title: string; vertical?: boolean }) {
   const [active, setActive] = useState(false);
-  const thumb = `https://i.ytimg.com/vi/${id}/${vertical ? "oar2" : "hqdefault"}.jpg`;
+  // hqdefault always exists. For Shorts it holds the vertical frame centred in 4:3, so a 9:16 cover crop shows it edge to edge.
+  const thumb = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
   return (
     <div className={`relative w-full overflow-hidden rounded-(--radius-card) bg-plum-deep ${vertical ? "aspect-[9/16]" : "aspect-video"}`}>
       {active ? (
@@ -26,7 +27,7 @@ export function YouTubeEmbed({ id, title, vertical = false }: { id: string; titl
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={thumb}
-            onError={(e) => { const img = e.currentTarget; if (!img.dataset.fallback) { img.dataset.fallback = "1"; img.src = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`; } else { img.style.visibility = "hidden"; } }}
+            onError={(e) => { e.currentTarget.style.visibility = "hidden"; }}
             alt=""
             loading="lazy"
             className="absolute inset-0 h-full w-full object-cover opacity-90 transition duration-500 group-hover:scale-[1.03] group-hover:opacity-100"

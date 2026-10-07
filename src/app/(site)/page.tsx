@@ -13,6 +13,7 @@ import { formatDate } from "@/lib/dates";
 import { parseYouTubeId } from "@/lib/validation";
 import { FULL_MOON_NAMES, moonNow, upcomingMoons } from "@/lib/astro/moon";
 import { cardOfTheDay } from "@/lib/tarot";
+import { CardSymbol } from "@/components/TarotCardView";
 import { MoonGlyph } from "@/components/MoonGlyph";
 
 const dated = (d: Date | null | undefined) => (d ? formatDate(d, { day: "numeric", month: "long", year: undefined }) : "");
@@ -89,7 +90,7 @@ export default async function HomePage() {
           <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-plum transition group-hover:translate-x-1" />
         </Link>
         <Link href="/tarot" className="group flex items-center gap-4 rounded-2xl bg-ivory-deep p-4 ring-1 ring-line transition hover:bg-white">
-          <span aria-hidden className="grid h-14 w-10 shrink-0 place-items-center rounded-md border-2 border-ivory bg-plum font-display text-2xl text-ivory shadow-(--shadow-soft)">{card.symbol}</span>
+          <span aria-hidden className="grid h-14 w-10 shrink-0 place-items-center rounded-md border-2 border-ivory bg-plum font-display text-2xl text-ivory shadow-(--shadow-soft)"><CardSymbol card={card} /></span>
           <span className="min-w-0">
             <span className="block text-[0.7rem] uppercase tracking-[0.2em] text-plum-soft">Card of the day</span>
             <span className="block font-display text-xl leading-tight text-plum">{card.name}</span>
@@ -219,7 +220,7 @@ export default async function HomePage() {
             <SectionHeading eyebrow="Ask a Witch" title="Little answers, big magic" href="/watch" linkLabel="Open Witchy TV" />
             <h2 id="shorts-title" className="sr-only">Ask a Witch shorts</h2>
           </div>
-          <div className="no-scrollbar mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-px-5 px-5 pb-2 sm:scroll-px-8 sm:px-8 lg:mx-auto lg:max-w-[1320px] lg:px-12">
+          <div className="no-scrollbar mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-px-5 px-5 pb-2 sm:scroll-px-8 sm:px-8 lg:mx-auto lg:grid lg:max-w-[1320px] lg:grid-cols-5 lg:gap-6 lg:overflow-visible lg:px-12 lg:[&>*:nth-child(n+6)]:hidden">
             {shorts.map((v) => <ShortCard key={v.id} video={v} />)}
           </div>
         </section>

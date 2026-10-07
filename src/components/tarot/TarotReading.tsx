@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { MAJOR_ARCANA, SPREADS, TAROT_DEPTH, type TarotCard } from "@/lib/tarot";
+import { FULL_DECK, SPREADS, TAROT_DEPTH, isMajor, type TarotCard } from "@/lib/tarot";
 import { FlipCard, ShufflingDeck, prefersReducedMotion, wait } from "./TarotAnimated";
 import { track } from "@/components/Track";
 
@@ -11,7 +11,7 @@ type SpreadKey = (typeof SPREADS)[number]["key"];
 
 /** Draw `n` different cards, each with a 1-in-4 chance of being reversed. */
 function drawCards(n: number): Pull[] {
-  const deck = [...MAJOR_ARCANA];
+  const deck = [...FULL_DECK];
   const rand = new Uint32Array(deck.length + n);
   crypto.getRandomValues(rand);
   for (let i = deck.length - 1; i > 0; i--) {
@@ -20,6 +20,13 @@ function drawCards(n: number): Pull[] {
   }
   return deck.slice(0, n).map((card, i) => ({ card, reversed: rand[deck.length + i] % 4 === 0 }));
 }
+
+const SUIT_NOTE: Record<string, string> = {
+  Wands: "this is all about passion, creativity and taking action.",
+  Cups: "this is a matter of the heart, feelings and relationships.",
+  Swords: "your thoughts, words and decisions are at the centre of this.",
+  Pentacles: "this is about money, work, home and your body.",
+};
 
 function themeOf(p: Pull) {
   const t = TAROT_DEPTH[p.card.n].theme;
@@ -131,6 +138,12 @@ export function TarotReading() {
             <div className="mx-auto max-w-3xl rounded-[2rem] bg-plum-deep p-7 text-ivory sm:p-10">
               <p className="eyebrow text-blush">Your reading</p>
               <p className="mt-3 font-display text-2xl leading-snug sm:text-3xl">{summary(spreadKey, pulls)}</p>
+              {pulls.length > 1 && pulls.filter((p) => isMajor(p.card)).length >= 2 && (
+                <p className="mt-4 text-ivory/80">With {pulls.filter((p) => isMajor(p.card)).length} Major Arcana cards, this reading points to a significant chapter — the big themes of your life are at play, not just day-to-day details.</p>
+              )}
+              {pulls.length > 1 && pulls.every((p) => p.card.suit && p.card.suit === pulls[0].card.suit) && (
+                <p className="mt-4 text-ivory/80">Every card is from the suit of {pulls[0].card.suit} — {SUIT_NOTE[pulls[0].card.suit!]}</p>
+              )}
               {pulls.filter((p) => p.reversed).length >= 2 && (
                 <p className="mt-4 text-ivory/80">With more than one card reversed, some of this energy is blocked or turned inward. Be gentle with yourself and look within before you act.</p>
               )}
@@ -150,7 +163,7 @@ export function TarotReading() {
                 );
               })}
             </ol>
-            <p className="mt-6 text-center text-xs text-muted">This deck uses the 22 cards of the Major Arcana, so readings speak to the bigger themes in your life. For reflection and entertainment.</p>
+            <p className="mt-6 text-center text-xs text-muted">Drawn from the full 78-card deck: Major Arcana cards speak to big life themes, Minor Arcana cards to everyday situations. For reflection and entertainment.</p>
           </div>
         )}
       </div>

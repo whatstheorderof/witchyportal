@@ -1,7 +1,9 @@
 /**
- * The 22 cards of the Major Arcana with short, original interpretations.
- * For reflection and entertainment.
+ * The tarot deck: 22 Major Arcana cards here, 56 Minor Arcana in tarot-minor.ts,
+ * all with short, original interpretations. For reflection and entertainment.
  */
+import { MINOR_ARCANA, MINOR_DEPTH, type Suit } from "./tarot-minor";
+
 export interface TarotCard {
   n: number;
   numeral: string;
@@ -11,6 +13,8 @@ export interface TarotCard {
   upright: string;
   reversed: string;
   prompt: string;
+  /** Minor Arcana only */
+  suit?: Suit;
 }
 
 export const MAJOR_ARCANA: TarotCard[] = [
@@ -38,12 +42,16 @@ export const MAJOR_ARCANA: TarotCard[] = [
   { n: 21, numeral: "XXI", name: "The World", symbol: "◯", keywords: "completion · wholeness · celebration", upright: "A cycle completes beautifully. Celebrate — you've arrived.", reversed: "Almost there. Tie up the loose ends before you begin again.", prompt: "What are you ready to celebrate completing?" },
 ];
 
-/** Same card for everyone on a given UK date. */
+/** All 78 cards */
+export const FULL_DECK: TarotCard[] = [...MAJOR_ARCANA, ...MINOR_ARCANA];
+export const isMajor = (c: TarotCard) => c.n < 22;
+
+/** Same card for everyone on a given UK date, from the full deck. */
 export function cardOfTheDay(date = new Date()): TarotCard {
   const key = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/London" }).format(date);
   let h = 2166136261;
   for (const c of key) h = Math.imul(h ^ c.charCodeAt(0), 16777619);
-  return MAJOR_ARCANA[Math.abs(h) % MAJOR_ARCANA.length];
+  return FULL_DECK[Math.abs(h) % FULL_DECK.length];
 }
 
 /** Deeper readings for each card — original text, for reflection. */
@@ -212,6 +220,8 @@ export const TAROT_DEPTH: Record<number, TarotDepth> = {
     spirit: "You are whole. Travel, expansion and a feeling of oneness with life.",
   },
 };
+
+Object.assign(TAROT_DEPTH, MINOR_DEPTH);
 
 /** Spreads for a reading */
 export const SPREADS = [
