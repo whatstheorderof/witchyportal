@@ -7,7 +7,7 @@ import { events } from "@/db/schema";
  * event names and short string properties are kept — never personal data,
  * IP addresses or birth details.
  */
-const ALLOWED = new Set(["retreat_view", "option_select", "review_view", "waitlist_view", "watch_start"]);
+const ALLOWED = new Set(["retreat_view", "option_select", "review_view", "waitlist_view", "watch_start", "tarot_reading"]);
 const BOTS = /bot|crawl|spider|slurp|preview|headless|lighthouse/i;
 
 export async function POST(req: NextRequest) {

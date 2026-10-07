@@ -45,3 +45,178 @@ export function cardOfTheDay(date = new Date()): TarotCard {
   for (const c of key) h = Math.imul(h ^ c.charCodeAt(0), 16777619);
   return MAJOR_ARCANA[Math.abs(h) % MAJOR_ARCANA.length];
 }
+
+/** Deeper readings for each card — original text, for reflection. */
+export interface TarotDepth {
+  /** short phrase used when combining cards in a spread */
+  theme: string;
+  meaning: string;
+  love: string;
+  work: string;
+  spirit: string;
+}
+
+export const TAROT_DEPTH: Record<number, TarotDepth> = {
+  0: {
+    theme: "a leap of faith",
+    meaning: "The Fool stands at the edge of the cliff with a light bag and a lighter heart. This card is the very beginning of the journey — pure potential before experience has taught you to be careful. It asks you to trust life enough to take the first step, even if you can't see where the path leads. Bring your curiosity, not your fear. Mistakes made with an open heart are how magic is learned.",
+    love: "Let love be playful and new. Say yes to the unexpected date or the fresh start.",
+    work: "A new path, project or idea wants to begin. Start before you feel ready.",
+    spirit: "Beginner's mind is a gift. Approach your practice as if for the very first time.",
+  },
+  1: {
+    theme: "focused will",
+    meaning: "The Magician has every tool on the table — the cup, the wand, the sword and the coin — and knows how to use them. One hand reaches up to the heavens, the other points to the earth: as above, so below. This is the card of manifestation. Your thoughts, words and actions are lining up, and what you focus on now will grow. Be clear about what you want, then act on it.",
+    love: "Speak your desires out loud. Confidence is magnetic right now.",
+    work: "You have the skills. Pitch the idea, send the email, make the thing.",
+    spirit: "Spellwork is especially potent. Set a clear intention and back it with action.",
+  },
+  2: {
+    theme: "inner knowing",
+    meaning: "The High Priestess sits between the pillars of light and dark, guarding the veil to the unseen. She doesn't speak — she knows. This card asks you to stop searching outside yourself for answers and to listen to the quiet voice within: your dreams, your gut feelings, the little synchronicities. Not everything needs to be explained yet. Trust what you sense, even before you can prove it.",
+    love: "Your intuition about this person is right. Watch what isn't said.",
+    work: "Hold your cards close for now. Gather information before you act.",
+    spirit: "Keep a dream journal and spend time in silence. Your psychic senses are open.",
+  },
+  3: {
+    theme: "abundance and nurture",
+    meaning: "The Empress is Mother Earth herself — lush, sensual and overflowing. She reminds you that growth is natural when it's nourished. This is a card of creativity, fertility in every sense, beauty and pleasure. Slow down and enjoy your body, good food, nature and the people you love. Anything you plant now with care has every chance to flourish. Receiving is as sacred as giving.",
+    love: "Tenderness and affection are blossoming. Let yourself be cared for, too.",
+    work: "Creative projects thrive. Make it beautiful, and let it take the time it needs.",
+    spirit: "Ground yourself in nature. Walk barefoot, tend plants, honour the seasons.",
+  },
+  4: {
+    theme: "structure and self-leadership",
+    meaning: "The Emperor sits on his stone throne, steady and sure. Where the Empress grows, the Emperor builds the walls that protect what has grown. This card asks you to take responsibility, set clear boundaries and create structure that supports your dreams. Leadership here isn't about control — it's about being the calm, reliable presence in your own life. Make the plan and keep the promise you made to yourself.",
+    love: "Stability matters. Be clear about what you need and what you won't accept.",
+    work: "Take the lead. Organise, plan and claim your authority.",
+    spirit: "Create a regular practice. Discipline is a form of devotion.",
+  },
+  5: {
+    theme: "wisdom and tradition",
+    meaning: "The Hierophant is the keeper of sacred knowledge passed down through generations. This card speaks of learning, teachers, rituals and belonging to something bigger than yourself. It may be time to study, to find a mentor or community, or to honour traditions that ground you. If the old rules feel too tight, it can also ask you to examine which beliefs are truly yours.",
+    love: "Shared values matter. Commitment, ceremony or meeting the family may be in the air.",
+    work: "Learn from those who have walked the path. A course or mentor will help.",
+    spirit: "Study your craft. Old practices hold real wisdom when they resonate.",
+  },
+  6: {
+    theme: "a heartfelt choice",
+    meaning: "The Lovers shows two people beneath an angel's blessing, but this card is about more than romance. It's about alignment — choosing what you truly value and letting your choices reflect who you are. A meaningful connection or an important decision is before you. Choose from the heart, not from fear or habit. When you're honest with yourself, the right path becomes clear.",
+    love: "Deep connection and soul-level attraction. A relationship may reach a new level.",
+    work: "Choose the opportunity that fits your values, not just your wallet.",
+    spirit: "Integrate the parts of yourself that feel opposed. Self-love comes first.",
+  },
+  7: {
+    theme: "determined momentum",
+    meaning: "The Chariot rides forward pulled by two creatures pulling in different directions — and still moves ahead, because the driver holds the reins with will alone. This is a card of victory through focus and self-discipline. You can get where you want to go if you stop scattering your energy. Decide on your direction, keep your eyes on the horizon and don't let doubts steer.",
+    love: "Go after what you want, but don't try to control the other person.",
+    work: "Push forward — success comes from consistent effort and a clear goal.",
+    spirit: "Harness opposing feelings rather than fighting them. Both can carry you.",
+  },
+  8: {
+    theme: "gentle courage",
+    meaning: "Strength shows a woman calmly closing the jaws of a lion — not with force, but with patience and love. Your real power is soft and steady. This card asks you to meet challenges, and your own wild emotions, with compassion rather than control. You're braver than you think. Taming fear doesn't mean silencing it; it means holding it kindly while you keep going.",
+    love: "Patience and kindness heal. Lead with an open heart.",
+    work: "Quiet confidence wins. Stay calm under pressure and you'll earn respect.",
+    spirit: "Befriend your inner beast — your desires, anger and passion are sacred too.",
+  },
+  9: {
+    theme: "solitude and reflection",
+    meaning: "The Hermit climbs the mountain alone, holding up a lantern with a single star inside. He has stepped away from the noise to find his own light. This card invites a pause: time alone, rest and honest reflection. The answer you're looking for won't be found in more advice or more scrolling. It's already glowing inside you — you just need enough quiet to see it.",
+    love: "Time alone isn't loneliness. Know yourself first, and love follows clearly.",
+    work: "Step back to think strategically. Deep, focused work beats busy work.",
+    spirit: "Meditation, journaling and long walks bring real insight now.",
+  },
+  10: {
+    theme: "a turning point",
+    meaning: "The Wheel of Fortune is always turning — what goes up comes down, and what is down rises again. This card marks a shift: luck, timing and destiny are in motion. Something is changing whether you planned it or not. Rather than gripping tightly, move with the turn. Notice the cycles in your life; they hold the lesson, and this one is turning in your favour.",
+    love: "Fate is playing its part. An unexpected meeting or change is possible.",
+    work: "A lucky break or sudden change. Be ready to say yes.",
+    spirit: "Trust divine timing. Everything moves in cycles, just like the moon.",
+  },
+  11: {
+    theme: "truth and balance",
+    meaning: "Justice holds the scales in one hand and the sword of truth in the other. This card asks for honesty — with others, and especially with yourself. Every action has consequences, and fairness is being restored. If you've acted with integrity, you'll be rewarded. If something is out of balance, now is the time to take responsibility and set it right. Clear thinking cuts through confusion.",
+    love: "Be honest about what's fair in your relationship. Balance giving and receiving.",
+    work: "Contracts, agreements and decisions go well when you're clear and fair.",
+    spirit: "Karma is at work. Act in line with your values and trust the outcome.",
+  },
+  12: {
+    theme: "surrender and a new perspective",
+    meaning: "The Hanged One hangs upside down, calm and even glowing. This isn't punishment — it's a chosen pause. Sometimes progress means stopping, letting go of control and seeing things from a completely different angle. What looked like a dead end may be an invitation to surrender. When you stop forcing, the insight you need can finally arrive.",
+    love: "Stop pushing for an answer. Let things unfold without forcing them.",
+    work: "A delay is useful. Use the pause to rethink your approach.",
+    spirit: "Surrender is a spiritual practice. Let go and let the universe work.",
+  },
+  13: {
+    theme: "transformation",
+    meaning: "Death is the most misunderstood card in the deck. It rarely means a physical death — it means an ending that makes space for new life. A chapter, a relationship, a belief or an old version of you is complete. Grieving is natural, but holding on only prolongs the pain. Like the snake shedding its skin, you're becoming something new. Let the old self go with gratitude.",
+    love: "A relationship transforms or ends so that something truer can begin.",
+    work: "One door closes for a reason. Clear the way for what's next.",
+    spirit: "Rebirth is underway. Release old patterns in a ritual of letting go.",
+  },
+  14: {
+    theme: "balance and healing",
+    meaning: "Temperance pours water between two cups, blending opposites into something new and harmonious. This card is about moderation, patience and healing that happens slowly. Not too much, not too little. It's a reminder that the middle path is often the magical one, and that real change comes from small, steady steps. Mix your energies wisely and give things time.",
+    love: "Harmony and compromise bring you closer. Healing after difficulty.",
+    work: "Find the balance between ambition and rest. Steady wins.",
+    spirit: "Alchemy is happening within. Tend your body, mind and spirit equally.",
+  },
+  15: {
+    theme: "freedom from attachment",
+    meaning: "The Devil shows two figures chained to a pedestal — yet the chains are loose enough to slip off. This card shines a light on what has a hold on you: a habit, a craving, a toxic pattern or a fear that keeps you small. Naming your shadow takes away its power. You hold the key. It can also point to desire and passion — enjoy them, just don't let them own you.",
+    love: "Notice obsession or unhealthy patterns. Passion is wonderful; control isn't.",
+    work: "Are you trapped by money worries or a job you've outgrown? You have more choice than you think.",
+    spirit: "Shadow work is powerful now. Face what you've been avoiding.",
+  },
+  16: {
+    theme: "sudden revelation",
+    meaning: "The Tower is struck by lightning and its crown is blown away. Sudden change shakes foundations that weren't strong enough. It can feel frightening, but what falls now was built on illusion, and the truth sets you free. After the storm comes clarity. If you've felt something wasn't right, this card confirms it. Let the walls come down — you'll build something more honest in their place.",
+    love: "A truth comes out. Painful, perhaps, but it clears the air.",
+    work: "Unexpected change or upheaval. It's making room for a better fit.",
+    spirit: "A spiritual awakening. Old beliefs crumble and your vision widens.",
+  },
+  17: {
+    theme: "hope and renewal",
+    meaning: "After the Tower comes the Star: a woman kneeling under a sky full of stars, pouring water back into the earth and the pool. This is one of the most healing cards in the deck. Hope returns, faith is restored and you're being gently renewed. Keep your dreams alive and trust that you are guided. You are exactly where you need to be to begin again.",
+    love: "Healing and hope. Love feels possible again.",
+    work: "Your vision is inspired. Share your gifts — the right people will notice.",
+    spirit: "You are guided. Make wishes on the stars and trust they're heard.",
+  },
+  18: {
+    theme: "dreams and the unseen",
+    meaning: "The Moon lights a winding path between two towers, with a dog and a wolf howling and a creature crawling from the water. Things are not as they seem. This is the realm of dreams, intuition, illusion and the subconscious. Feelings may be heightened and the way ahead unclear. Don't rush to decide. Pay attention to your dreams and instincts — they see what logic can't.",
+    love: "Something's hidden or unclear. Trust your instincts but check the facts.",
+    work: "Avoid big decisions while things are foggy. More will be revealed.",
+    spirit: "Your intuition and psychic gifts are strong. Work with the moon.",
+  },
+  19: {
+    theme: "joy and vitality",
+    meaning: "The Sun shines on a child riding a white horse beneath sunflowers. This is pure joy — success, warmth, confidence and the freedom to be fully yourself. Whatever you've been working towards is blessed with light. Celebrate! Let yourself be seen, play, and soak up the good things. This card brings optimism and energy to everything around it.",
+    love: "Happiness, warmth and celebration. Love in full bloom.",
+    work: "Success and recognition. Your efforts are paying off.",
+    spirit: "Reconnect with your inner child. Joy is a spiritual practice too.",
+  },
+  20: {
+    theme: "an awakening call",
+    meaning: "Judgement shows an angel's trumpet waking people from their graves. This is a calling — a moment of awakening when you see your life clearly and rise to meet who you're becoming. Forgive yourself and others for the past; it was part of the path. An important decision or a powerful sense of purpose is arriving. Answer it.",
+    love: "A reckoning or a fresh start. Forgive and rise together, or rise alone.",
+    work: "Your true calling is knocking. Listen to it.",
+    spirit: "Rebirth and purpose. You're ready to step into a higher version of yourself.",
+  },
+  21: {
+    theme: "completion and celebration",
+    meaning: "The World shows a dancer inside a laurel wreath, held by the four elements. A cycle is complete — you've learned the lessons, done the work and arrived. This card brings wholeness, accomplishment and a sense of belonging to the whole universe. Celebrate how far you've come and honour the journey. Soon, a new cycle will begin, and you'll start it whole.",
+    love: "Fulfilment and commitment. A relationship reaches a beautiful milestone.",
+    work: "Goals achieved. Celebrate, then decide what's next.",
+    spirit: "You are whole. Travel, expansion and a feeling of oneness with life.",
+  },
+};
+
+/** Spreads for a reading */
+export const SPREADS = [
+  { key: "one", label: "One card", positions: [{ name: "Your message", hint: "What you most need to hear right now" }] },
+  { key: "ppf", label: "Past · Present · Future", positions: [{ name: "Past", hint: "What's behind you and still shaping things" }, { name: "Present", hint: "Where you are now" }, { name: "Future", hint: "Where this is heading if nothing changes" }] },
+  { key: "mbs", label: "Mind · Body · Spirit", positions: [{ name: "Mind", hint: "Your thoughts and focus" }, { name: "Body", hint: "Your physical world and energy" }, { name: "Spirit", hint: "Your soul's message" }] },
+  { key: "sao", label: "Situation · Action · Outcome", positions: [{ name: "Situation", hint: "What you're facing" }, { name: "Action", hint: "What would help" }, { name: "Outcome", hint: "What can come of it" }] },
+] as const;

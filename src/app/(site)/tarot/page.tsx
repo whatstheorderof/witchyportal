@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
-import { MAJOR_ARCANA, cardOfTheDay } from "@/lib/tarot";
+import { MAJOR_ARCANA, TAROT_DEPTH, cardOfTheDay } from "@/lib/tarot";
 import { formatDate } from "@/lib/dates";
 import { PageHero } from "@/components/Section";
-import { TarotFace } from "@/components/TarotCardView";
-import { TarotPull } from "@/components/TarotPull";
+import { DailyCard } from "@/components/tarot/DailyCard";
+import { TarotReading } from "@/components/tarot/TarotReading";
 import { RetreatPromo } from "@/components/RetreatPromo";
 import { ArrowRight } from "@/components/Icons";
 
 export const metadata: Metadata = {
   title: "Tarot card of the day",
-  description: "Today's tarot card from the Major Arcana, plus draw your own card for a moment of reflection.",
+  description: "Today's tarot card from the Major Arcana with its full meaning, plus a free three-card reading: past, present and future.",
 };
 
 export default async function TarotPage() {
@@ -19,26 +19,12 @@ export default async function TarotPage() {
   const today = cardOfTheDay();
   return (
     <>
-      <PageHero image="crownPortrait" eyebrow="Tarot" title="Card of the day" intro="One card from the Major Arcana for everyone today — and a deck to draw your own. For reflection, intuition and a little magic." />
+      <PageHero image="crownPortrait" eyebrow="Tarot" title="Card of the day" intro="One card from the Major Arcana for everyone today — and a three-card reading of your own. For reflection, intuition and a little magic.">
+        <a href="#reading" className="btn-outline mt-7">Get a three-card reading ↓</a>
+      </PageHero>
 
       <section className="container-page py-14 lg:py-20" aria-labelledby="today">
-        <div className="grid items-center gap-10 sm:grid-cols-[260px_1fr] sm:gap-14">
-          <div className="mx-auto w-full max-w-[260px]"><TarotFace card={today} /></div>
-          <div>
-            <p className="eyebrow">{formatDate(new Date(), { weekday: "long", day: "numeric", month: "long", year: undefined })}</p>
-            <h2 id="today" className="display-lg mt-2">{today.name}</h2>
-            <p className="mt-2 text-sm uppercase tracking-[0.15em] text-plum-soft">{today.keywords}</p>
-            <p className="mt-5 text-xl leading-relaxed text-ink/85">{today.upright}</p>
-            <p className="mt-5 rounded-2xl bg-blush/60 p-5 font-display text-2xl italic text-plum">{today.prompt}</p>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-ivory-deep py-14 lg:py-20" aria-labelledby="draw">
-        <div className="container-page">
-          <h2 id="draw" className="sr-only">Draw your own card</h2>
-          <TarotPull />
-        </div>
+        <DailyCard card={today} depth={TAROT_DEPTH[today.n]} dateLabel={formatDate(new Date(), { weekday: "long", day: "numeric", month: "long", year: undefined })} />
       </section>
 
       <section className="container-page py-14 lg:py-20" aria-labelledby="arcana">
@@ -54,6 +40,7 @@ export default async function TarotPage() {
                 <span aria-hidden className="ml-auto text-2xl text-plum transition group-open:rotate-45">+</span>
               </summary>
               <div className="grid gap-2 pb-5 pl-14 text-[0.97rem]">
+                <p className="text-ink/80">{TAROT_DEPTH[c.n].meaning}</p>
                 <p><strong className="font-medium text-plum">Upright:</strong> {c.upright}</p>
                 <p><strong className="font-medium text-plum">Reversed:</strong> {c.reversed}</p>
                 <p className="text-muted">Reflect: {c.prompt}</p>
@@ -66,6 +53,17 @@ export default async function TarotPage() {
           <Link href="/ask-a-witch" className="btn-outline">Watch Yulia&rsquo;s readings</Link>
         </div>
         <p className="mt-6 text-xs text-muted">Tarot is offered for reflection and entertainment.</p>
+      </section>
+
+      <section id="reading" className="scroll-mt-24 bg-ivory-deep py-14 lg:py-20" aria-labelledby="reading-title">
+        <div className="container-page">
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="eyebrow">Your reading</p>
+            <h2 id="reading-title" className="display-md mt-2">A three-card reading</h2>
+            <p className="mt-3 text-muted">Choose a spread, shuffle the deck and turn over your cards. Each one is read for its place in the spread, then together.</p>
+          </div>
+          <div className="mt-10"><TarotReading /></div>
+        </div>
       </section>
       <RetreatPromo eyebrow="Readings in person" title="Powerful tarot readings are part of every retreat" />
     </>

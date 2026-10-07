@@ -60,16 +60,18 @@ const fmt = (iso: string | null) => (iso ? new Intl.DateTimeFormat("en-GB", { da
 export function WatchTV({ videos, uploadsPlaylist, shortsPlaylist, channelUrl, startId, startChannel }: { videos: TVVideo[]; uploadsPlaylist: string | null; shortsPlaylist?: string | null; channelUrl: string; startId?: string; startChannel?: string }) {
   const channels = useMemo<Channel[]>(() => {
     const list: Channel[] = [];
-    if (videos.length) list.push({ key: "all", label: "Everything" });
-    if (videos.some((v) => v.series === "ask")) list.push({ key: "ask", label: "Ask a Witch", filter: (v) => v.series === "ask" });
-    if (videos.some((v) => v.series === "show")) list.push({ key: "show", label: "The Yulia Moon Show", filter: (v) => v.series === "show" });
-    // Witchy Shorts plays the channel's own Shorts playlist, so every Short is included and new ones appear automatically.
+    // Series channels are full-length episodes only; every vertical video lives in Witchy Shorts.
+    const ep = (v: TVVideo) => v.kind === "video";
+    if (videos.some((v) => v.series === "ask" && ep(v))) list.push({ key: "ask", label: "Ask a Witch", filter: (v) => v.series === "ask" && ep(v) });
+    if (videos.some((v) => v.series === "show" && ep(v))) list.push({ key: "show", label: "The Yulia Moon Show", filter: (v) => v.series === "show" && ep(v) });
     // Witchy Shorts: every vertical video. Falls back to the channel's own Shorts playlist if none are imported yet.
     if (videos.some((v) => v.kind === "short")) list.push({ key: "shorts", label: "Witchy Shorts", filter: (v) => v.kind === "short", vertical: true });
     else if (shortsPlaylist) list.push({ key: "shorts", label: "Witchy Shorts", playlist: shortsPlaylist, vertical: true, note: "Every one of Yulia\u2019s Shorts, newest first. Use the playlist button inside the player to jump around, or choose another channel above." });
-    if (videos.some((v) => v.kind === "video")) list.push({ key: "videos", label: "Full episodes", filter: (v) => v.kind === "video" });
+    if (videos.some(ep)) list.push({ key: "videos", label: "Full episodes", filter: ep });
     for (const t of [...new Set(videos.map((v) => v.topic).filter(Boolean))].sort()) list.push({ key: `t:${t}`, label: t, filter: (v) => v.topic === t });
-    if (uploadsPlaylist) list.push({ key: "channel", label: "Whole channel", playlist: uploadsPlaylist, note: "Playing every upload from the channel, newest first. Use the playlist button inside the player to jump around, or choose another channel above." });
+    if (videos.length) list.push({ key: "all", label: "Everything" });
+    // Nothing imported yet: play the whole channel straight from YouTube.
+    else if (uploadsPlaylist) list.push({ key: "channel", label: "Everything", playlist: uploadsPlaylist, note: "Playing every upload from the channel, newest first. Use the playlist button inside the player to jump around." });
     return list;
   }, [videos, uploadsPlaylist, shortsPlaylist]);
 

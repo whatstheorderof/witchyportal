@@ -18,7 +18,8 @@ export default async function AskAWitchPage({ searchParams }: { searchParams: Pr
   const [everything, yt, contact] = await Promise.all([listVideos({ limit: 3000 }), getSetting("youtube"), getSetting("contact")]);
   // The Yulia Moon Show has its own channel on the Watch page.
   // Only Ask a Witch here — the show, Shorts and other videos have their own channels on the Watch page.
-  const all = everything.filter((v) => videoSeries(v, yt) === "ask");
+  // Full Ask a Witch episodes only — short vertical clips live in Witchy Shorts on the Watch page.
+  const all = everything.filter((v) => v.kind === "video" && videoSeries(v, yt) === "ask");
   const showCount = everything.filter((v) => videoSeries(v, yt) === "show").length;
   const topics = [...new Set(all.map((v) => v.topic).filter(Boolean))].sort();
   const list = topic ? all.filter((v) => v.topic === topic) : all;
@@ -35,6 +36,7 @@ export default async function AskAWitchPage({ searchParams }: { searchParams: Pr
         <div className="mt-8 flex flex-wrap items-center gap-3">
           <Link href="/watch?channel=ask" className="btn-primary">Watch on Witchy TV</Link>
           {showCount > 0 && <Link href="/watch?channel=show" className="btn-outline">The Yulia Moon Show</Link>}
+          <Link href="/watch?channel=shorts" className="btn-outline">Witchy Shorts</Link>
           {subscribe && (
             <a href={subscribe} target="_blank" rel="noopener noreferrer" className="btn-outline">
               Subscribe on YouTube <ExternalIcon />
