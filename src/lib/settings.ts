@@ -42,7 +42,7 @@ export interface AboutSettings {
 
 export interface ContactSettings {
   email: string;
-  /** WhatsApp number in international format, e.g. +447830960050 */
+  /** WhatsApp number in international format, e.g. +447899034140 */
   whatsapp: string;
   instagram: string;
   youtube: string;

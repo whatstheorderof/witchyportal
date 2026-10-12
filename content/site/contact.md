@@ -1,6 +1,6 @@
 ---
 email: witchyportal@gmail.com
-whatsapp: "+447830960050"
+whatsapp: "+447899034140"
 instagram: https://www.instagram.com/witchyportal
 youtube: https://www.youtube.com/@YuliaMoonPortal
 etsy: https://witchyportal.etsy.com/
