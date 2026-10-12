@@ -35,7 +35,7 @@ How the site matches the 24-point priority list. **Done** = built and tested. **
 | 17 | Verify chart calculations | Done | Checked against a published reference chart; covered by unit tests. |
 | 18 | Favourites on the device | Done | Heart button on tips, posts and videos; `/favourites` page; nothing stored on the server. |
 | 19 | Focused email signup + waitlist | Improved | Clear "what you'll get" list and specific confirmations. **Waiting:** automatic emails need a newsletter/email service. |
-| 20 | Genuine guest feedback | **Waiting** | Deliberately empty — no invented testimonials. Collect real ones after the first retreat. |
+| 20 | Genuine guest feedback | Partly done | Nine real client testimonials from the original witchyportal.com are on /testimonials (spells, readings, workshops). Retreat-specific feedback still to collect after the first retreat — never invented. |
 
 ## 4 · Polish
 

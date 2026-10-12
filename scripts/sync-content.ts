@@ -334,9 +334,15 @@ async function main() {
         counts.unchanged++;
         continue;
       }
-      const currentSubset = hash(Object.fromEntries(Object.keys(fromFile).map((k) => [k, existing[k]])));
+      const subsetHash = (keys: string[]) => hash(Object.fromEntries(keys.map((k) => [k, existing[k]])));
       const previousFileHash = syncState[`${key}:applied`];
-      const untouched = !previousFileHash || currentSubset === previousFileHash || Object.keys(fromFile).every((k) => existing[k] === undefined);
+      // Fields newly added to the file are blank on the site (never set), so compare only fields that already had values.
+      const filled = Object.keys(fromFile).filter((k) => existing[k] !== undefined && existing[k] !== "" && existing[k] !== null);
+      const untouched =
+        !previousFileHash ||
+        subsetHash(Object.keys(fromFile)) === previousFileHash ||
+        subsetHash(filled) === previousFileHash ||
+        Object.keys(fromFile).every((k) => existing[k] === undefined);
       if (!untouched) {
         console.log(`  • kept admin edits: site/${key}.md`);
         counts.keptAdminEdits++;

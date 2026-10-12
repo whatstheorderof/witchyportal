@@ -42,6 +42,8 @@ export interface AboutSettings {
 
 export interface ContactSettings {
   email: string;
+  /** WhatsApp number in international format, e.g. +447830960050 */
+  whatsapp: string;
   instagram: string;
   youtube: string;
   tiktok: string;
@@ -101,6 +103,7 @@ export const DEFAULTS = {
   } as AboutSettings,
   contact: {
     email: "",
+    whatsapp: "",
     instagram: "",
     youtube: "https://www.youtube.com/@YuliaMoonPortal",
     tiktok: "",

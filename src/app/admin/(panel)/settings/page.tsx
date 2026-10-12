@@ -73,6 +73,7 @@ export default async function SettingsAdmin() {
           <AdminForm action={saveSettings}>
             <input type="hidden" name="key" value="contact" />
             <F label="Public email" name="email" type="email" defaultValue={contact.email} hint="Leave empty to hide it — people can still use the contact form." />
+            <F label="WhatsApp number" name="whatsapp" defaultValue={contact.whatsapp} mono hint="International format, e.g. +447830960050. Leave empty to hide." />
             <F label="Response time note" name="responseTime" defaultValue={contact.responseTime} />
             <div className="grid gap-4 sm:grid-cols-2">
               <F label="Etsy shop URL" name="etsy" defaultValue={contact.etsy} mono />

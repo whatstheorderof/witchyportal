@@ -9,6 +9,11 @@ Everything in this folder is published to the website automatically when it's de
 | `site/contact.md` | Contact details and social links (footer, Contact, Ask a Witch) |
 | `retreats/` | Retreat pages — description, activities, benefits, images (dates, prices and payment links are managed in /admin) |
 | `socials.ts` | Socials page links (Instagram, YouTube, Etsy…) |
+| `services.ts` | Work with Yulia page (/services) — what you can book, astrology reports, favourable dates (£30), party hire |
+| `courses.ts` | Courses page (/courses) — each course links to its page on Yulia's course platform |
+| `testimonials.ts` | Testimonials page, plus the three marked `featured` on the homepage, About and Services. Real messages only, exactly as received |
+| `craft.ts` | "My craft" photo gallery on the About page |
+| `faqs.ts` | Contact page FAQs |
 | `videos.ts` | Back catalogue of Ask a Witch and Yulia Moon Show episodes (Watch and Ask a Witch pages). New uploads are picked up automatically each day. |
 | `tips/` | Witchy Tips page (tip cards) |
 | `affirmations/` | Witchy Tips page (affirmation cards) |

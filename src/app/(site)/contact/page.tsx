@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { listGeneralFaqs, listRetreats } from "@/lib/queries";
 import { socials } from "@content/socials";
+import { prettyPhone, whatsappLink } from "@/lib/contact-links";
 
 const handle = (url: string) => `@${url.replace(/\/$/, "").split("/").pop()}`;
 import { getSetting } from "@/lib/settings";
@@ -25,8 +26,15 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
           <EnquiryForm retreats={retreats.map((r) => ({ id: r.id, title: r.title }))} defaultRetreatId={defaultRetreat} />
         </section>
         <aside className="grid content-start gap-10">
-          {(contact.email || contact.instagram) && (
+          {(contact.email || contact.instagram || contact.whatsapp) && (
             <div className="grid gap-6">
+              {contact.whatsapp && (
+                <div>
+                  <p className="eyebrow">WhatsApp</p>
+                  <a href={whatsappLink(contact.whatsapp, "Hi Yulia, ")!} target="_blank" rel="noopener noreferrer" className="mt-2 block font-display text-2xl text-plum link-underline">{prettyPhone(contact.whatsapp)}</a>
+                  <p className="mt-1 text-sm text-muted">The quickest way to ask about spells, readings and events.</p>
+                </div>
+              )}
               {contact.email && (
                 <div>
                   <p className="eyebrow">Email</p>

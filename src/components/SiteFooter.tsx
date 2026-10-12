@@ -1,3 +1,4 @@
+import { whatsappLink } from "@/lib/contact-links";
 import Link from "next/link";
 import { getSetting } from "@/lib/settings";
 import { Wordmark } from "./Logo";
@@ -32,6 +33,8 @@ export async function SiteFooter() {
             <p className="eyebrow text-blush/90">Visit</p>
             <ul className="mt-4 grid gap-2.5">
               {primaryNav.map((i) => <li key={i.href}><Link className="text-ivory/80 hover:text-ivory" href={i.href}>{i.label}</Link></li>)}
+              <li><Link className="text-ivory/80 hover:text-ivory" href="/courses">Courses</Link></li>
+              <li><Link className="text-ivory/80 hover:text-ivory" href="/testimonials">Testimonials</Link></li>
               <li><Link className="text-ivory/80 hover:text-ivory" href="/socials">Socials</Link></li>
               <li><Link className="text-ivory/80 hover:text-ivory" href="/favourites">Your favourites</Link></li>
             </ul>
@@ -58,6 +61,7 @@ export async function SiteFooter() {
           <Wordmark light />
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
             {socials.map((s) => <a key={s.label} href={s.href} className="hover:text-ivory" rel="noopener noreferrer" target="_blank">{s.label}</a>)}
+            {contact.whatsapp && <a href={whatsappLink(contact.whatsapp)!} className="hover:text-ivory" rel="noopener noreferrer" target="_blank">WhatsApp</a>}
             {contact.email && <a href={`mailto:${contact.email}`} className="hover:text-ivory">{contact.email}</a>}
             <span>© {new Date().getFullYear()} Yulia Moon</span>
           </div>

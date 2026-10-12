@@ -9,6 +9,8 @@ import { SectionHeading } from "@/components/Section";
 import { ArticleCard, AstrologyCard, ShortCard, TipCard } from "@/components/PostCards";
 import { YouTubeEmbed } from "@/components/YouTube";
 import { ArrowRight } from "@/components/Icons";
+import { TestimonialsStrip } from "@/components/Testimonials";
+import { testimonials } from "@content/testimonials";
 import { formatDate } from "@/lib/dates";
 import { parseYouTubeId } from "@/lib/validation";
 import { FULL_MOON_NAMES, moonNow, upcomingMoons } from "@/lib/astro/moon";
@@ -182,6 +184,29 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+
+      {/* WORK WITH YULIA — services from the original witchyportal.com */}
+      <section className="container-page pt-20 lg:pt-28" aria-labelledby="work-with">
+        <div className="grid items-center gap-10 overflow-hidden rounded-[2rem] bg-ivory-deep lg:grid-cols-[1fr_1.2fr]">
+          <div className="relative aspect-square lg:aspect-auto lg:h-full lg:min-h-[420px]">
+            <MediaImage fallback="redSmoke" sizes="(min-width:1024px) 45vw, 92vw" className="object-[center_20%]" />
+          </div>
+          <div className="p-7 sm:p-10 lg:py-14 lg:pr-14 lg:pl-0">
+            <p className="eyebrow">Work with Yulia</p>
+            <h2 id="work-with" className="display-md mt-2">Spells, readings &amp; guidance</h2>
+            <p className="mt-4 text-lg text-ink/85">Spellwork from all paths of witchcraft, tarot and oracle readings, dream interpretation, astrology reports, favourable dates and party hire — every piece of work tailored to you.</p>
+            <ul className="mt-5 flex flex-wrap gap-2">
+              {["Spells", "Tarot readings", "Dreams", "Astrology reports", "Favourable dates", "Party hire"].map((x) => <li key={x} className="chip">{x}</li>)}
+            </ul>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link href="/services" className="btn-primary">See what you can book <ArrowRight /></Link>
+              <Link href="/courses" className="btn-outline">Courses</Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <TestimonialsStrip items={testimonials.filter((t) => t.featured)} />
 
       {/* HIGHLIGHTS */}
       {highlights.length > 0 && (

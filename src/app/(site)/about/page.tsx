@@ -4,6 +4,10 @@ import { getMediaMap, getSetting } from "@/lib/settings";
 import { MediaImage } from "@/components/MediaImage";
 import { Markdown, PlaceholderNote } from "@/components/Markdown";
 import { ArrowRight } from "@/components/Icons";
+import { craft } from "@content/craft";
+import { testimonials } from "@content/testimonials";
+import { TestimonialsStrip } from "@/components/Testimonials";
+import Image from "next/image";
 import { YouTubeEmbed } from "@/components/YouTube";
 import { parseYouTubeId } from "@/lib/validation";
 
@@ -72,11 +76,29 @@ export default async function AboutPage() {
               <div className="relative aspect-[3/4] overflow-hidden rounded-[2rem] rounded-br-[7rem]">
                 <MediaImage media={secondary} fallback="red" sizes="(min-width:1024px) 380px, 92vw" />
               </div>
-              <Link href="/retreats" className="btn-primary">Explore retreats <ArrowRight /></Link>
+              <Link href="/services" className="btn-primary">Work with Yulia <ArrowRight /></Link>
+              <Link href="/retreats" className="btn-outline">Explore retreats</Link>
             </div>
           </aside>
         </div>
       </div>
+
+      <section id="craft" className="scroll-mt-24 bg-plum-deep py-16 text-ivory lg:py-24" aria-labelledby="craft-title">
+        <div className="container-page">
+          <p className="eyebrow text-blush">My craft</p>
+          <h2 id="craft-title" className="display-md mt-2 text-ivory">At Yulia&rsquo;s altar</h2>
+          <p className="mt-3 max-w-2xl text-ivory/80">Candles, moonlight and fire — a glimpse of the rituals and spellwork behind Witchy Portal.</p>
+          <ul className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+            {craft.map((c) => (
+              <li key={c.src} className="relative aspect-square overflow-hidden rounded-2xl">
+                <Image src={c.src} alt={c.alt} fill sizes="(min-width:1024px) 25vw, 46vw" className="object-cover" />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <TestimonialsStrip items={testimonials.filter((t) => t.featured)} />
     </>
   );
 }

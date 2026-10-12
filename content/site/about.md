@@ -25,7 +25,13 @@ hopes: |
   - A better understanding of your chart, your cycles and your dreams
   - A circle of kindred spirits, and a safe space to be exactly who you are
 ---
-Yulia Moon is a practising witch, spiritual guide and dream interpreter, and the winner of **Miss Generation 2025**. She hosts the **Yulia Moon Show** on YouTube — her cosmic corner for tarot readings, spellwork, astrology and all things mystical.
+*"Welcome to the world of witchcraft!"*
+
+Yulia Moon is the creator of Witchy Portal — a **Slavic witch based in London**. Her spells come from all paths of witchcraft: she isn't tied to one tradition, so her way is simply *the witchy way*. She loves to learn and practise everything, so she can share her knowledge with people who are seeking the magic within themselves and aren't afraid to follow their true path.
+
+Spells and tarot readings are the heart of her work, but she also guides people as they uncover the mysteries of the Universe and their own power. Her clients often stay with her for years — she values their trust, takes care of them and gives spiritual and personal advice. As she puts it: *"Witches have always been known for their wisdom, and see the world differently — in details that very few people can see."*
+
+She is also a spiritual guide and dream interpreter, and the winner of **Miss Generation 2025**. She hosts the **Yulia Moon Show** on YouTube — her cosmic corner for tarot readings, spellwork, astrology and all things mystical.
 
 Each week she shares:
 

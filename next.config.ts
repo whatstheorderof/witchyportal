@@ -20,6 +20,22 @@ const nextConfig: NextConfig = {
   experimental: {
     serverActions: { bodySizeLimit: "25mb" },
   },
+  // Addresses from the original WordPress witchyportal.com, so old links and bookmarks still work.
+  async redirects() {
+    const old: [string, string][] = [
+      ["what-i-do", "/services"],
+      ["new-service", "/services#dates"],
+      ["courses", "/courses"],
+      ["party-hire", "/services#events"],
+      ["my-craft", "/about#craft"],
+      ["contact", "/contact"],
+    ];
+    return [
+      // Next.js removes the trailing slash first, so /index.php/what-i-do/ is covered too.
+      ...old.map(([from, to]) => ({ source: `/index.php/${from}`, destination: to, permanent: true })),
+      { source: "/index.php", destination: "/", permanent: true },
+    ];
+  },
   async headers() {
     return [
       {
