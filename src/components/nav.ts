@@ -38,7 +38,6 @@ export const shortcutGroups = [
     title: "Connect",
     items: [
       { href: "/testimonials", label: "Testimonials", blurb: "Kind words from clients." },
-      { href: "/courses", label: "Courses", blurb: "Learn the craft online." },
       { href: "/socials", label: "Socials", blurb: "Instagram, YouTube and Etsy." },
       { href: "/contact", label: "Contact", blurb: "Questions, enquiries and collaborations." },
       { href: "/favourites", label: "Your favourites", blurb: "Everything you've saved on this device." },

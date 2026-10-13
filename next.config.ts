@@ -25,7 +25,7 @@ const nextConfig: NextConfig = {
     const old: [string, string][] = [
       ["what-i-do", "/services"],
       ["new-service", "/services#dates"],
-      ["courses", "/courses"],
+      ["courses", "/services"],
       ["party-hire", "/services#events"],
       ["my-craft", "/about#craft"],
       ["contact", "/contact"],
@@ -34,6 +34,8 @@ const nextConfig: NextConfig = {
       // Next.js removes the trailing slash first, so /index.php/what-i-do/ is covered too.
       ...old.map(([from, to]) => ({ source: `/index.php/${from}`, destination: to, permanent: true })),
       { source: "/index.php", destination: "/", permanent: true },
+      // Courses are no longer offered.
+      { source: "/courses", destination: "/services", permanent: true },
     ];
   },
   async headers() {

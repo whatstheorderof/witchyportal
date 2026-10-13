@@ -139,8 +139,8 @@ export default async function ServicesPage() {
 
       <section className="container-page pb-6">
         <div className="grid gap-4 sm:grid-cols-2">
-          <Link href="/courses" className="card group flex items-center justify-between gap-4 p-6">
-            <span><span className="block font-display text-2xl text-plum">Online courses</span><span className="text-ink/75">Moon magic, love magic and pagan roots.</span></span>
+          <Link href="/testimonials" className="card group flex items-center justify-between gap-4 p-6">
+            <span><span className="block font-display text-2xl text-plum">Testimonials</span><span className="text-ink/75">Kind words from Yulia&rsquo;s clients.</span></span>
             <ArrowRight />
           </Link>
           <Link href="/retreats" className="card group flex items-center justify-between gap-4 p-6">

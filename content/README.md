@@ -10,7 +10,6 @@ Everything in this folder is published to the website automatically when it's de
 | `retreats/` | Retreat pages — description, activities, benefits, images (dates, prices and payment links are managed in /admin) |
 | `socials.ts` | Socials page links (Instagram, YouTube, Etsy…) |
 | `services.ts` | Work with Yulia page (/services) — what you can book, astrology reports, favourable dates (£30), party hire |
-| `courses.ts` | Courses page (/courses) — each course links to its page on Yulia's course platform |
 | `testimonials.ts` | Testimonials page, plus the three marked `featured` on the homepage, About and Services. Real messages only, exactly as received |
 | `craft.ts` | "My craft" photo gallery on the About page |
 | `faqs.ts` | Contact page FAQs |

@@ -4,7 +4,7 @@ import { listPosts, listRetreats } from "@/lib/queries";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = siteUrl();
-  const staticPaths = ["", "/retreats", "/about", "/discover", "/tips", "/articles", "/astrology", "/ask-a-witch", "/birth-chart", "/contact", "/socials", "/tarot", "/moon", "/watch", "/services", "/courses", "/testimonials", "/policies/privacy", "/policies/booking-terms", "/policies/terms", "/policies/cookies"];
+  const staticPaths = ["", "/retreats", "/about", "/discover", "/tips", "/articles", "/astrology", "/ask-a-witch", "/birth-chart", "/contact", "/socials", "/tarot", "/moon", "/watch", "/services", "/testimonials", "/policies/privacy", "/policies/booking-terms", "/policies/terms", "/policies/cookies"];
   try {
     const [retreats, articles, astro, tips, affs, mots] = await Promise.all([listRetreats(), listPosts("article"), listPosts("astrology"), listPosts("tip"), listPosts("affirmation"), listPosts("motivation")]);
     return [

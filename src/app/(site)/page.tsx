@@ -200,7 +200,6 @@ export default async function HomePage() {
             </ul>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link href="/services" className="btn-primary">See what you can book <ArrowRight /></Link>
-              <Link href="/courses" className="btn-outline">Courses</Link>
             </div>
           </div>
         </div>

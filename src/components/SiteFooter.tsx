@@ -33,7 +33,6 @@ export async function SiteFooter() {
             <p className="eyebrow text-blush/90">Visit</p>
             <ul className="mt-4 grid gap-2.5">
               {primaryNav.map((i) => <li key={i.href}><Link className="text-ivory/80 hover:text-ivory" href={i.href}>{i.label}</Link></li>)}
-              <li><Link className="text-ivory/80 hover:text-ivory" href="/courses">Courses</Link></li>
               <li><Link className="text-ivory/80 hover:text-ivory" href="/testimonials">Testimonials</Link></li>
               <li><Link className="text-ivory/80 hover:text-ivory" href="/socials">Socials</Link></li>
               <li><Link className="text-ivory/80 hover:text-ivory" href="/favourites">Your favourites</Link></li>

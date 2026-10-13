@@ -58,6 +58,52 @@ gallery:
     alt: A figure in a black star-flecked veil lifting a jewelled crown at the shoreline at dusk
   - src: /images/sand-texture-golden.jpg
     alt: Close-up of wind-sculpted sand and a small shell in golden evening light
+itinerary:
+  - day: Day 1
+    title: Arrival & Sacred Landing
+    description: |
+      Afternoon/evening: Welcome circle, grounding meditation by the sea, crystal cleansing ritual. Light dinner and rest.
+  - day: Day 2
+    title: Reclaiming the Authentic Self
+    description: |
+      Morning: Sunrise yoga/movement and breathwork to awaken the senses.
+      Main session: "Unmasking" workshop — journaling and sharing what the feral self craves.
+      Afternoon: Beach nature ritual — a sea ceremony focused on shedding old skins.
+      Evening: Intuitive tarot and a candle spell for clarity.
+  - day: Day 3
+    title: Igniting Inner Power
+    description: |
+      Morning: Dynamic movement to raise energy.
+      Workshop: Crystal and candle magic to amplify your personal power.
+      Afternoon: Free beach time, or an optional snorkel/light adventure.
+      Evening: Ecstatic dance on the sand — sensual, wild expression.
+  - day: Day 4
+    title: Island Sea Ritual
+    description: |
+      Day: Boat ride to the islands — a private beach landing for a powerful group sea ritual (invoking the elements and a feral invocation).
+      Evening: Fire and dance ritual — full unleashing with music and movement.
+  - day: Day 5
+    title: Deepening Magic & Intuition
+    description: |
+      Morning: Restorative, intuitive flow.
+      Workshop: Tarot mastery session and group readings.
+      Afternoon: Nature/sea ritual — solo time in nature, followed by sharing.
+      Workshop: Shadow and desire work to unleash suppressed energy.
+      Evening: Candlelit ritual for healing wounds around authenticity.
+  - day: Day 6
+    title: Expansion & Manifestation
+    description: |
+      Morning: Visioning and energy work to expand your potential.
+      Workshop: Spellwork — crafting personalised rituals with your tools.
+      Afternoon: Another island boat adventure, or beach exploration.
+      Evening: Celebratory sand dance and a manifestation party atmosphere.
+  - day: Day 7
+    title: Empowerment & Return
+    description: |
+      Morning: Final integration circle and blessings with crystals, tarot and Yulia's energy.
+      Workshop: "Tools for Real Life" — how to take your feral energy home.
+      Afternoon: Relaxed beach time.
+      Evening: Closing feast, then a gentle moonlight dance or reflective circle.
 seoTitle: "Awaken the Wild Goddess — 7-day witchy retreat with Yulia Moon"
 seoDescription: "A 7-day retreat of tarot, candle rituals, sea ceremonies, island boat trips and dancing under the stars. Join the waitlist."
 ---

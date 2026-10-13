@@ -266,8 +266,8 @@ export default async function RetreatPage(props: Props) {
 
           {/* ITINERARY */}
           {retreat.itinerary.length > 0 && (
-            <Detail id="itinerary" eyebrow="Sample itinerary" title="Day by day">
-              <p className="-mt-3 mb-6 text-muted">A sample rhythm — the exact schedule may shift with the weather, the tides and the group.</p>
+            <Detail id="itinerary" eyebrow="Approximate schedule" title="Day by day">
+              <p className="-mt-3 mb-6 text-muted">An approximate rhythm — the exact schedule may shift with the weather, the tides and the group.</p>
               <ol className="border-l border-line">
                 {retreat.itinerary.map((d, i) => (
                   <li key={i} className="relative pb-8 pl-8 last:pb-0">
@@ -278,7 +278,7 @@ export default async function RetreatPage(props: Props) {
                         <span className="font-display text-2xl text-plum">{d.title}</span>
                         <span aria-hidden className="ml-auto text-plum transition group-open:rotate-45">+</span>
                       </summary>
-                      <p className="mt-2 whitespace-pre-line text-ink/80">{d.description}</p>
+                      <ItineraryText text={d.description} />
                     </details>
                   </li>
                 ))}
@@ -400,5 +400,22 @@ export default async function RetreatPage(props: Props) {
         bookable={f.bookable}
       />
     </>
+  );
+}
+
+/** Lines written as "Morning: …" become a labelled list; anything else stays as plain text. */
+function ItineraryText({ text }: { text: string }) {
+  const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
+  const parsed = lines.map((l) => /^([A-Z][A-Za-z /&-]{1,30}):\s+(.+)$/.exec(l));
+  if (!parsed.every(Boolean)) return <p className="mt-2 whitespace-pre-line text-ink/80">{text}</p>;
+  return (
+    <dl className="mt-3 grid gap-3">
+      {parsed.map((m, i) => (
+        <div key={i} className="grid gap-0.5 sm:grid-cols-[9.5rem_1fr] sm:gap-4">
+          <dt className="text-xs font-medium uppercase tracking-[0.15em] text-plum-soft sm:pt-1">{m![1]}</dt>
+          <dd className="text-ink/80">{m![2]}</dd>
+        </div>
+      ))}
+    </dl>
   );
 }
