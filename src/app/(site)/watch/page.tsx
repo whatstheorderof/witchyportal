@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { listVideos } from "@/lib/queries";
 import { getSetting } from "@/lib/settings";
@@ -6,10 +7,11 @@ import { videoSeries } from "@/lib/youtube";
 import { WatchTV, type TVVideo } from "@/components/watch/WatchTV";
 import { MoonMark } from "@/components/Logo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "Watch — Witchy TV",
   description: "Watch every Yulia Moon video in one place: Ask a Witch, The Yulia Moon Show, tarot readings, moon rituals and Shorts, playing one after another.",
-};
+  path: "/watch",
+});
 
 export default async function WatchPage({ searchParams }: { searchParams: Promise<{ v?: string; channel?: string }> }) {
   const { v: startId, channel: startChannel } = await searchParams;

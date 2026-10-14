@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { listPosts, listTopics } from "@/lib/queries";
 import { PageHero, EmptyState } from "@/components/Section";
 import { ArticleCard } from "@/components/PostCards";
 import { TopicFilter } from "@/components/TopicFilter";
 import { RetreatPromo } from "@/components/RetreatPromo";
 
-export const metadata: Metadata = { title: "Articles", description: "Short articles on ritual, movement and living by the moon." };
+export const metadata: Metadata = pageMeta({
+  title: "Witchy articles",
+  description: "Short articles from Yulia Moon on ritual, tarot, astrology, dreams and living by the moon.",
+  path: "/articles",
+});
 
 export default async function ArticlesPage({ searchParams }: { searchParams: Promise<{ topic?: string }> }) {
   const { topic } = await searchParams;

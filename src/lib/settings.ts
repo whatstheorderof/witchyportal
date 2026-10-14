@@ -42,6 +42,8 @@ export interface AboutSettings {
 
 export interface ContactSettings {
   email: string;
+  /** Email for retreat questions and bookings (shown on retreat pages) — falls back to `email` */
+  retreatEmail: string;
   /** WhatsApp number in international format, e.g. +447899034140 */
   whatsapp: string;
   instagram: string;
@@ -103,6 +105,7 @@ export const DEFAULTS = {
   } as AboutSettings,
   contact: {
     email: "",
+    retreatEmail: "",
     whatsapp: "",
     instagram: "",
     youtube: "https://www.youtube.com/@YuliaMoonPortal",

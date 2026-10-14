@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { pageMeta } from "@/lib/seo";
 import { getPage } from "@/lib/queries";
 import { formatDate } from "@/lib/dates";
 import { Markdown } from "@/components/Markdown";
@@ -7,8 +8,10 @@ import { Markdown } from "@/components/Markdown";
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const page = await getPage((await params).slug);
-  return { title: page?.title ?? "Not found" };
+  const { slug } = await params;
+  const page = await getPage(slug);
+  if (!page) return { title: "Not found" };
+  return pageMeta({ title: page.title, description: `${page.title} for Witchy Portal and Yulia Moon's retreats and services. ${page.body}`, path: `/policies/${slug}` });
 }
 
 export default async function PolicyPage({ params }: Props) {

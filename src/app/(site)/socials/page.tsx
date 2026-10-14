@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { socials } from "@content/socials";
 import { MediaImage } from "@/components/MediaImage";
 import { MoonMark } from "@/components/Logo";
 import { ArrowRight, ExternalIcon, PlayIcon } from "@/components/Icons";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "Socials",
   description: "Follow Yulia Moon and Witchy Portal on Instagram, YouTube and Etsy.",
-};
+  path: "/socials",
+});
 
 const iconBase = { fill: "none", stroke: "currentColor", strokeWidth: 1.5, strokeLinecap: "round" as const, strokeLinejoin: "round" as const, viewBox: "0 0 24 24", "aria-hidden": true, className: "h-6 w-6" };
 const ICONS: Record<string, React.ReactNode> = {

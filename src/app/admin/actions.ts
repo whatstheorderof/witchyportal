@@ -504,6 +504,8 @@ export async function saveSettings(_: FormState, fd: FormData): Promise<FormStat
   if (key === "contact") {
     const email = String(value.email);
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return fail("Enter a valid contact email", { email: "Invalid email" });
+    const retreatEmail = String(value.retreatEmail ?? "");
+    if (retreatEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(retreatEmail)) return fail("Enter a valid retreat email", { retreatEmail: "Invalid email" });
     const wa = String(value.whatsapp ?? "").replace(/[\s()-]/g, "");
     if (wa && !/^\+[1-9]\d{7,14}$/.test(wa)) return fail("Enter the WhatsApp number in international format, e.g. +447899034140", { whatsapp: "Use +44… format" });
     value.whatsapp = wa;

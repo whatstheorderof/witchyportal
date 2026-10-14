@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { listPosts, listVideos } from "@/lib/queries";
 import { PageHero, SectionHeading } from "@/components/Section";
@@ -7,7 +8,11 @@ import { discoverNav } from "@/components/nav";
 import { ArrowRight } from "@/components/Icons";
 import { RetreatPromo } from "@/components/RetreatPromo";
 
-export const metadata: Metadata = { title: "Discover", description: "Witchy tips, affirmations, astrology, articles and Ask a Witch videos." };
+export const metadata: Metadata = pageMeta({
+  title: "Discover — witchy tips, astrology & videos",
+  description: "Witchy tips, affirmations, astrology, articles, tarot and Ask a Witch videos from Yulia Moon — a little everyday magic in one place.",
+  path: "/discover",
+});
 
 export default async function DiscoverPage() {
   const [tips, affirmations, motivations, astro, articles, shorts] = await Promise.all([

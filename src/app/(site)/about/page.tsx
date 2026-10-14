@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { breadcrumbLd, pageMeta, personLd } from "@/lib/seo";
+import { JsonLd } from "@/components/JsonLd";
 import Link from "next/link";
 import { getMediaMap, getSetting } from "@/lib/settings";
 import { MediaImage } from "@/components/MediaImage";
@@ -11,7 +13,11 @@ import Image from "next/image";
 import { YouTubeEmbed } from "@/components/YouTube";
 import { parseYouTubeId } from "@/lib/validation";
 
-export const metadata: Metadata = { title: "About Yulia", description: "Yulia Moon's story, and why she hosts retreats." };
+export const metadata: Metadata = pageMeta({
+  title: "About Yulia Moon",
+  description: "Meet Yulia Moon, a Slavic witch in London who works across all paths of witchcraft — her story, her craft, and why she hosts witchy retreats by the sea.",
+  path: "/about",
+});
 
 export default async function AboutPage() {
   const about = await getSetting("about");
@@ -29,6 +35,7 @@ export default async function AboutPage() {
 
   return (
     <>
+      <JsonLd data={[personLd({ description: about.intro, image: portrait?.url ?? null }), breadcrumbLd([["About Yulia", "/about"]])]} />
       <section className="relative isolate flex min-h-[80svh] items-end overflow-hidden bg-plum-deep text-ivory">
         <div className="absolute inset-0 -z-10">
           <MediaImage media={portrait} fallback="crown" priority sizes="100vw" className="object-[center_35%]" />

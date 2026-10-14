@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { listPosts } from "@/lib/queries";
 import { PageHero, EmptyState } from "@/components/Section";
 import { AstrologyCard } from "@/components/PostCards";
@@ -6,7 +7,11 @@ import Link from "next/link";
 import { ArrowRight } from "@/components/Icons";
 import { RetreatPromo } from "@/components/RetreatPromo";
 
-export const metadata: Metadata = { title: "Astrology", description: "Short weekly and seasonal astrology wisdom from Yulia Moon." };
+export const metadata: Metadata = pageMeta({
+  title: "Astrology forecasts & seasonal wisdom",
+  description: "Weekly and seasonal astrology from Yulia Moon — what each sign season and moon phase brings, and how to work with it.",
+  path: "/astrology",
+});
 
 export default async function AstrologyPage() {
   const posts = await listPosts("astrology");

@@ -18,6 +18,11 @@ import { WaitlistForm } from "@/components/forms";
 import { YouTubeEmbed } from "@/components/YouTube";
 import { CheckIcon, MinusIcon, PinIcon } from "@/components/Icons";
 import { PreviewBanner } from "@/components/PreviewBanner";
+import { RetreatEmailNote } from "@/components/RetreatEmail";
+import { getSetting } from "@/lib/settings";
+import { absoluteUrl, breadcrumbLd, faqLd, pageMeta } from "@/lib/seo";
+import { JsonLd } from "@/components/JsonLd";
+import { mailto, retreatEmailOf } from "@/lib/contact-links";
 
 type Props = { params: Promise<{ slug: string }>; searchParams: Promise<{ preview?: string }> };
 
@@ -30,11 +35,15 @@ async function load(props: Props) {
 }
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
-  const { retreat } = await load(props);
+  const { retreat, isPreview } = await load(props);
   if (!retreat) return { title: "Retreat not found" };
-  const title = retreat.seoTitle || retreat.title;
-  const description = retreat.seoDescription || retreat.summary;
-  return { title, description, openGraph: { title, description, type: "website" }, twitter: { card: "summary_large_image", title, description } };
+  return pageMeta({
+    ownImage: true,
+    title: retreat.seoTitle || retreat.title,
+    description: retreat.seoDescription || retreat.summary,
+    path: `/retreats/${retreat.slug}`,
+    noindex: isPreview || retreat.status !== "published",
+  });
 }
 
 function Fact({ label, value, muted }: { label: string; value: React.ReactNode; muted?: boolean }) {
@@ -60,6 +69,8 @@ export default async function RetreatPage(props: Props) {
   const { retreat, isPreview } = await load(props);
   if (!retreat) notFound();
   const f = retreatFacts(retreat);
+  const email = retreatEmailOf(await getSetting("contact"));
+  const subject = `${retreat.title} — question`;
 
   const departures: SelectorDeparture[] = retreat.departures.map((d) => {
     const n = nightsBetween(d.startDate, d.endDate);
@@ -116,22 +127,53 @@ export default async function RetreatPage(props: Props) {
     { id: "faq", label: "FAQs", show: retreat.faqs.length > 0 },
   ].filter((s) => s.show);
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Event",
-    name: retreat.title,
-    description: retreat.summary,
-    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
-    location: { "@type": "Place", name: retreat.location, address: retreat.country },
-    ...(retreat.nextDeparture ? { startDate: retreat.nextDeparture.startDate, endDate: retreat.nextDeparture.endDate } : {}),
-    ...(retreat.fromPrice ? { offers: { "@type": "Offer", price: (retreat.fromPrice.amount / 100).toFixed(2), priceCurrency: retreat.fromPrice.currency } } : {}),
-    organizer: { "@type": "Person", name: "Yulia Moon" },
-  };
+  // Structured data: an Event once dates are set; until then a TouristTrip (an Event needs a start date).
+  const url = absoluteUrl(`/retreats/${retreat.slug}`);
+  const images = [retreat.hero?.url, ...retreat.gallery.map((g) => g.url)].filter(Boolean).slice(0, 6).map((u) => absoluteUrl(u!));
+  const organizer = { "@type": "Person", "@id": absoluteUrl("/about#yulia"), name: "Yulia Moon", url: absoluteUrl("/about"), ...(email ? { email } : {}) };
+  const offer = retreat.fromPrice
+    ? { "@type": "Offer", url, price: (retreat.fromPrice.amount / 100).toFixed(2), priceCurrency: retreat.fromPrice.currency, availability: f.bookable ? "https://schema.org/InStock" : "https://schema.org/SoldOut" }
+    : null;
+  const itineraryLd = retreat.itinerary.length
+    ? { "@type": "ItemList", name: "Approximate schedule", itemListElement: retreat.itinerary.map((d, i) => ({ "@type": "ListItem", position: i + 1, name: [d.day, d.title].filter(Boolean).join(": "), description: d.description })) }
+    : undefined;
+  const retreatLd = retreat.nextDeparture
+    ? {
+        "@type": "Event",
+        name: retreat.title,
+        description: retreat.summary,
+        url,
+        image: images,
+        startDate: retreat.nextDeparture.startDate,
+        endDate: retreat.nextDeparture.endDate,
+        eventStatus: "https://schema.org/EventScheduled",
+        eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+        location: { "@type": "Place", name: retreat.location, address: [retreat.location, retreat.country].filter(Boolean).join(", ") },
+        organizer,
+        performer: organizer,
+        ...(offer ? { offers: offer } : {}),
+      }
+    : {
+        "@type": "TouristTrip",
+        name: retreat.title,
+        description: retreat.summary,
+        url,
+        image: images,
+        touristType: "Retreat guests",
+        provider: organizer,
+        ...(itineraryLd ? { itinerary: itineraryLd } : {}),
+        ...(offer ? { offers: offer } : {}),
+      };
+  const jsonLd = [
+    retreatLd,
+    faqLd([...retreat.forMe, ...retreat.faqs.map((q) => ({ question: q.question, answer: q.answer }))]),
+    breadcrumbLd([["Retreats", "/retreats"], [retreat.title, `/retreats/${retreat.slug}`]]),
+  ];
 
   return (
     <>
       {isPreview && <PreviewBanner status={retreat.status} editHref={`/admin/retreats/${retreat.id}`} />}
-      {!isPreview && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />}
+      {!isPreview && <JsonLd data={jsonLd} />}
       {!isPreview && <TrackView name="retreat_view" props={{ retreat: retreat.slug }} />}
 
       {/* HERO */}
@@ -211,6 +253,7 @@ export default async function RetreatPage(props: Props) {
           <div className="sticky top-40">
             <RetreatBookingCard retreat={retreat} layout="stacked" showImage={false} />
             <Link href={`/contact?retreat=${retreat.id}`} className="mt-4 block text-center text-sm text-plum link-underline">Ask Yulia a question</Link>
+            {email && <a href={mailto(email, subject)} className="mt-2 block break-all text-center text-sm text-muted hover:text-plum">or email {email}</a>}
           </div>
         </aside>
 
@@ -335,7 +378,7 @@ export default async function RetreatPage(props: Props) {
               </ul>
               <div className="mt-5 flex flex-wrap gap-3">
                 <a href="#waitlist" className="btn-primary min-h-11">Join the waitlist</a>
-                <Link href={`/contact?retreat=${retreat.id}`} className="btn-outline min-h-11">Ask Yulia</Link>
+                {email ? <a href={mailto(email, subject)} className="btn-outline min-h-11">Email Yulia</a> : <Link href={`/contact?retreat=${retreat.id}`} className="btn-outline min-h-11">Ask Yulia</Link>}
               </div>
             </section>
           )}
@@ -360,6 +403,7 @@ export default async function RetreatPage(props: Props) {
                 </div>
               </div>
             )}
+            <RetreatEmailNote email={email} subject={subject} className="mt-8 border-t border-line pt-6" />
           </section>
 
           {/* FAQ */}

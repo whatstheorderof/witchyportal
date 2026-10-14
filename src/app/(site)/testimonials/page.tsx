@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { testimonials } from "@content/testimonials";
 import { PageHero } from "@/components/Section";
 import { TestimonialCard } from "@/components/Testimonials";
 import { ArrowRight } from "@/components/Icons";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "Testimonials",
   description: "Kind words from Yulia Moon's clients and community — on her spells, tarot readings, workshops and guidance.",
-};
+  path: "/testimonials",
+});
 
 export default function TestimonialsPage() {
   return (

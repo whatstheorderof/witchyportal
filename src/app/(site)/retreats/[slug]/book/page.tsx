@@ -20,6 +20,10 @@ const ERRORS: Record<string, string> = {
   nolink: "Online payment isn't set up for this option yet. Please contact us to book.",
 };
 
+import { getSetting } from "@/lib/settings";
+import { retreatEmailOf } from "@/lib/contact-links";
+import { RetreatEmailNote } from "@/components/RetreatEmail";
+
 export default async function BookPage(props: Props) {
   const { slug } = await props.params;
   const { option: optionId, error } = await props.searchParams;
@@ -31,6 +35,7 @@ export default async function BookPage(props: Props) {
   const mode = paymentMode();
   const link = mode === "live" ? option.paymentUrl : option.testPaymentUrl;
   const nights = nightsBetween(departure.startDate, departure.endDate);
+  const email = retreatEmailOf(await getSetting("contact"));
   const balance = option.paymentType === "deposit" && option.totalPrice ? option.totalPrice - option.amount : null;
 
   return (
@@ -101,6 +106,7 @@ export default async function BookPage(props: Props) {
       <div className="mt-10 grid gap-3 text-sm text-muted">
         <p className="flex gap-2"><LockIcon className="mt-0.5 h-4 w-4 shrink-0" />Payment is taken securely by our payment provider on their own page. We never see your card details.</p>
         <p>Your place is confirmed once Yulia has received your payment and emailed you. Returning to this website after paying does not by itself confirm a booking.</p>
+        <RetreatEmailNote email={email} subject={`${retreat.title} — booking question`} lead="Questions before you pay?" className="text-sm" />
       </div>
     </div>
   );

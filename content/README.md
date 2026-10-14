@@ -6,7 +6,7 @@ Everything in this folder is published to the website automatically when it's de
 | --- | --- |
 | `site/home.md` | Homepage hero and "Hello, I'm Yulia" introduction |
 | `site/about.md` | About Yulia page |
-| `site/contact.md` | Contact details and social links (footer, Contact, Ask a Witch) |
+| `site/contact.md` | Contact details and social links (footer, Contact, Ask a Witch). `retreatEmail` is shown on retreat and booking pages; `email` everywhere else |
 | `retreats/` | Retreat pages — description, activities, benefits, images (dates, prices and payment links are managed in /admin) |
 | `socials.ts` | Socials page links (Instagram, YouTube, Etsy…) |
 | `services.ts` | Work with Yulia page (/services) — what you can book, astrology reports, favourable dates (£30), party hire |

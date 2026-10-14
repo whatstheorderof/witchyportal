@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { listPosts } from "@/lib/queries";
 import { PageHero, EmptyState } from "@/components/Section";
 import { TipCard } from "@/components/PostCards";
 import { TopicFilter } from "@/components/TopicFilter";
 import { RetreatPromo } from "@/components/RetreatPromo";
 
-export const metadata: Metadata = { title: "Witchy Tips", description: "Short witchy tips, affirmations and motivations from Yulia Moon." };
+export const metadata: Metadata = pageMeta({
+  title: "Witchy tips, affirmations & motivations",
+  description: "Short witchy tips, affirmations and motivations from Yulia Moon — simple spells, rituals and words to carry with you, filtered by topic.",
+  path: "/tips",
+});
 
 type Props = { searchParams: Promise<{ topic?: string; kind?: string }> };
 

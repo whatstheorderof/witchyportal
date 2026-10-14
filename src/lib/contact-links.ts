@@ -10,3 +10,13 @@ export function prettyPhone(number: string) {
   const m = number.replace(/\s/g, "").match(/^\+44(\d{4})(\d{6})$/);
   return m ? `+44 ${m[1]} ${m[2]}` : number;
 }
+
+/** The address for retreat questions and bookings — the retreat email if set, otherwise the public email. */
+export function retreatEmailOf(contact: { email: string; retreatEmail?: string }) {
+  return (contact.retreatEmail || contact.email || "").trim();
+}
+
+/** mailto: link with an optional subject line. */
+export function mailto(email: string, subject?: string) {
+  return `mailto:${email}${subject ? `?subject=${encodeURIComponent(subject)}` : ""}`;
+}

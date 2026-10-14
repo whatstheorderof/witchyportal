@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { PageHero } from "@/components/Section";
 import { BirthChart } from "@/components/birth-chart/BirthChart";
 import { RetreatPromo } from "@/components/RetreatPromo";
 
-export const metadata: Metadata = {
-  title: "Birth Chart",
-  description: "Calculate your natal chart — Sun, Moon, rising sign, planets and houses — from your birth date, time and place.",
-};
+export const metadata: Metadata = pageMeta({
+  title: "Free birth chart calculator",
+  description: "Free birth chart calculator: enter your birth date, time and place to see your Sun, Moon and rising sign, planets and houses, with what each one means. Nothing is stored.",
+  path: "/birth-chart",
+});
 
 export default function BirthChartPage() {
   return (

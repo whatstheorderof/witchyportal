@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { breadcrumbLd, pageMeta, videoLd } from "@/lib/seo";
+import { JsonLd } from "@/components/JsonLd";
 import Link from "next/link";
 import { listVideos } from "@/lib/queries";
 import { getSetting } from "@/lib/settings";
@@ -11,7 +13,11 @@ import { YouTubeEmbed } from "@/components/YouTube";
 import { ExternalIcon } from "@/components/Icons";
 import { RetreatPromo } from "@/components/RetreatPromo";
 
-export const metadata: Metadata = { title: "Ask a Witch", description: "Yulia Moon answers your questions — watch her Ask a Witch videos and Shorts." };
+export const metadata: Metadata = pageMeta({
+  title: "Ask a Witch — Yulia Moon answers your questions",
+  description: "Yulia Moon answers your questions about spells, tarot, dreams, love and the craft. Watch every Ask a Witch episode, and send her your own question.",
+  path: "/ask-a-witch",
+});
 
 export default async function AskAWitchPage({ searchParams }: { searchParams: Promise<{ topic?: string }> }) {
   const { topic } = await searchParams;
@@ -32,6 +38,10 @@ export default async function AskAWitchPage({ searchParams }: { searchParams: Pr
 
   return (
     <>
+      <JsonLd data={[
+        { "@type": "ItemList", name: "Ask a Witch episodes", itemListElement: byDate.slice(0, 20).map((v, i) => ({ "@type": "ListItem", position: i + 1, item: videoLd({ youtubeId: v.youtubeId, title: v.title, description: v.description, uploaded: v.publishAt ?? v.createdAt }) })) },
+        breadcrumbLd([["Ask a Witch", "/ask-a-witch"]]),
+      ]} />
       <PageHero image="wings" eyebrow="Ask a Witch" title="Your questions, answered" intro="Yulia's Ask a Witch videos and Shorts, all in one place. Press play to watch right here — nothing loads from YouTube until you do.">
         <div className="mt-8 flex flex-wrap items-center gap-3">
           <Link href="/watch?channel=ask" className="btn-primary">Watch on Witchy TV</Link>

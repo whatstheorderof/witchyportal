@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getSetting } from "@/lib/settings";
+import { retreatEmailOf } from "@/lib/contact-links";
+import { RetreatEmailNote } from "@/components/RetreatEmail";
 
 export const metadata: Metadata = { title: "Thank you", robots: { index: false } };
 
@@ -8,7 +11,8 @@ export const metadata: Metadata = { title: "Thank you", robots: { index: false }
  *   https://YOUR-DOMAIN/booking/return
  * It deliberately does NOT confirm a booking — a redirect is not proof of payment.
  */
-export default function BookingReturnPage() {
+export default async function BookingReturnPage() {
+  const email = retreatEmailOf(await getSetting("contact"));
   return (
     <div className="container-prose flex min-h-[70vh] flex-col justify-center pt-28 pb-20">
       <span aria-hidden className="font-display text-6xl text-blush-deep">☾</span>
@@ -18,6 +22,7 @@ export default function BookingReturnPage() {
         <p><strong>Your place is confirmed once Yulia has checked your payment and emailed you personally</strong> — usually within a couple of working days. This page on its own isn&rsquo;t a booking confirmation.</p>
         <p>If you didn&rsquo;t finish paying, nothing has been charged and you can return to the retreat to try again.</p>
       </div>
+      <RetreatEmailNote email={email} subject="Retreat booking" lead="Haven't heard back, or have a question about your booking?" className="mt-6" />
       <div className="mt-8 flex flex-col gap-3 sm:flex-row">
         <Link href="/retreats" className="btn-primary">Back to retreats</Link>
         <Link href="/contact" className="btn-outline">Contact Yulia</Link>

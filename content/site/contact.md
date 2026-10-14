@@ -1,5 +1,6 @@
 ---
 email: witchyportal@gmail.com
+retreatEmail: feralgoddessrising@gmail.com
 whatsapp: "+447899034140"
 instagram: https://www.instagram.com/witchyportal
 youtube: https://www.youtube.com/@YuliaMoonPortal

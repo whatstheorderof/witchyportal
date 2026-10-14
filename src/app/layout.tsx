@@ -4,6 +4,7 @@ import "@fontsource-variable/cormorant-garamond/wght-italic.css";
 import "@fontsource-variable/jost";
 import "./globals.css";
 import { siteUrl } from "@/lib/env";
+import { SITE_DESCRIPTION } from "@/lib/seo";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
@@ -11,12 +12,19 @@ export const metadata: Metadata = {
     default: "Witchy Portal — Retreats & rituals with Yulia Moon",
     template: "%s · Witchy Portal",
   },
-  description:
-    "Seaside retreats, witchy tips, astrology and gentle rituals with Yulia Moon.",
+  description: SITE_DESCRIPTION,
   applicationName: "Witchy Portal",
+  authors: [{ name: "Yulia Moon", url: "/about" }],
+  creator: "Yulia Moon",
   openGraph: {
     type: "website",
     siteName: "Witchy Portal",
+    locale: "en_GB",
+  },
+  // Search Console / Bing ownership checks — set these in Vercel, no code change needed.
+  verification: {
+    ...(process.env.GOOGLE_SITE_VERIFICATION ? { google: process.env.GOOGLE_SITE_VERIFICATION } : {}),
+    ...(process.env.BING_SITE_VERIFICATION ? { other: { "msvalidate.01": process.env.BING_SITE_VERIFICATION } } : {}),
   },
   twitter: { card: "summary_large_image" },
   appleWebApp: { capable: true, title: "Witchy Portal", statusBarStyle: "black-translucent" },

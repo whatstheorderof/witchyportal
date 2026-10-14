@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { breadcrumbLd, faqLd, pageMeta } from "@/lib/seo";
+import { JsonLd } from "@/components/JsonLd";
 import { listGeneralFaqs, listRetreats } from "@/lib/queries";
 import { socials } from "@content/socials";
 import { prettyPhone, whatsappLink } from "@/lib/contact-links";
@@ -9,7 +11,11 @@ import { PageHero } from "@/components/Section";
 import { EnquiryForm } from "@/components/forms";
 import { Markdown } from "@/components/Markdown";
 
-export const metadata: Metadata = { title: "Contact", description: "Get in touch with Yulia Moon about retreats, collaborations and questions." };
+export const metadata: Metadata = pageMeta({
+  title: "Contact Yulia Moon",
+  description: "Contact Yulia Moon about spells, readings, retreats, events and collaborations — by WhatsApp, email or the enquiry form.",
+  path: "/contact",
+});
 
 export default async function ContactPage({ searchParams }: { searchParams: Promise<{ retreat?: string }> }) {
   const { retreat } = await searchParams;
@@ -20,6 +26,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
   const defaultRetreat = retreats.find((r) => r.id === retreat)?.id;
   return (
     <>
+      <JsonLd data={[faqLd(faqs.map((f) => ({ question: f.question, answer: f.answer }))), breadcrumbLd([["Contact", "/contact"]])]} />
       <PageHero image="cape" eyebrow="Contact" title="Send Yulia a message" intro={contact.responseTime} />
       <div className="container-page grid gap-16 py-14 lg:grid-cols-[1.3fr_1fr] lg:py-20">
         <section aria-label="Enquiry form" className="card p-6 sm:p-10">
@@ -39,6 +46,9 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
                 <div>
                   <p className="eyebrow">Email</p>
                   <a href={`mailto:${contact.email}`} className="mt-2 block font-display text-2xl text-plum link-underline">{contact.email}</a>
+                  {contact.retreatEmail && contact.retreatEmail !== contact.email && (
+                    <p className="mt-2 text-sm text-muted">Retreat questions and bookings: <a href={`mailto:${contact.retreatEmail}`} className="break-all text-plum link-underline">{contact.retreatEmail}</a></p>
+                  )}
                 </div>
               )}
               {contact.instagram && (

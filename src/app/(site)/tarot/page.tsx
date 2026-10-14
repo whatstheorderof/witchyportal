@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { connection } from "next/server";
 import { MAJOR_ARCANA, TAROT_DEPTH, cardOfTheDay, type TarotCard } from "@/lib/tarot";
@@ -11,10 +12,11 @@ import { TarotReading } from "@/components/tarot/TarotReading";
 import { RetreatPromo } from "@/components/RetreatPromo";
 import { ArrowRight } from "@/components/Icons";
 
-export const metadata: Metadata = {
-  title: "Tarot card of the day",
-  description: "Today's tarot card with its full meaning, a free three-card reading, and the meaning of all 78 cards — Major and Minor Arcana.",
-};
+export const metadata: Metadata = pageMeta({
+  title: "Tarot card of the day & free three-card reading",
+  description: "Today's tarot card with its full meaning, a free three-card tarot reading, and the meaning of all 78 cards — Major and Minor Arcana.",
+  path: "/tarot",
+});
 
 export default async function TarotPage() {
   await connection();

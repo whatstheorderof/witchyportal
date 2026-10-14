@@ -27,6 +27,8 @@ Code lives in GitHub; Vercel builds every push. `main` is production; every othe
 | `PAYMENT_MODE` | leave empty (= live) | leave empty (= test) | empty |
 | `PAYMENT_ALLOWED_HOSTS` | only if needed | same | same |
 | `CRON_SECRET` | random value (`openssl rand -hex 32`) | — | — |
+| `GOOGLE_SITE_VERIFICATION` | optional — the code from Google Search Console's "HTML tag" method | — | — |
+| `BING_SITE_VERIFICATION` | optional — the code from Bing Webmaster Tools | — | — |
 
 4. **Deploy.** The first build creates the tables.
 
@@ -73,7 +75,20 @@ Vercel → Project → **Settings → Domains → Add** `your-domain.com` (and `
 - [ ] Every booking option has a **live** link (production) and a **test** link (previews)
 - [ ] Payment provider's "after payment" redirect set to `https://your-domain.com/booking/return`
 - [ ] Policy pages reviewed; contact email set in Admin → Settings
-- [ ] Custom domain added and `NEXT_PUBLIC_SITE_URL` updated
+- [ ] Custom domain added and `NEXT_PUBLIC_SITE_URL` updated (canonical links, the sitemap and social previews all use it)
+- [ ] Search engines: site verified in Google Search Console (and Bing), `https://your-domain.com/sitemap.xml` submitted — see below
+
+## 7. Search engines (SEO)
+
+Built in — nothing to switch on:
+
+- Every public page has its own title, description, **canonical link** and Open Graph / X preview (`src/lib/seo.ts` → `pageMeta`). Retreats, articles, astrology posts and tips get a generated share image.
+- **Structured data** (schema.org JSON-LD) so search engines understand the content: Organization + WebSite + Yulia as a Person (homepage, About), retreats as a TouristTrip (or an Event with dates and prices once a departure is added) with the schedule and FAQs, articles/astrology/tips as BlogPosting, Ask a Witch episodes as VideoObject, Contact FAQs as FAQPage, and breadcrumbs.
+- `/sitemap.xml` lists every published page, retreat and post (with images), and updates itself as Yulia publishes. `/robots.txt` allows indexing **only on Production** (previews are hidden) and keeps `/admin`, `/api` and booking pages out.
+- Admin → retreats and posts have an optional **SEO title / SEO description** — use them when the page title isn't what people would search for. Keep descriptions under ~155 characters.
+- Old witchyportal.com WordPress addresses (`/index.php/…`) redirect permanently to the new pages, so existing Google rankings carry over.
+
+After the domain is live: Google Search Console → Add property (Domain) → verify (or use the HTML-tag code as `GOOGLE_SITE_VERIFICATION`) → Sitemaps → submit `sitemap.xml`. Use **URL inspection → Request indexing** for the homepage and the retreat page.
 
 ## Secrets
 

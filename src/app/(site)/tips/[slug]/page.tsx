@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { articleLd, breadcrumbLd, pageMeta } from "@/lib/seo";
+import { JsonLd } from "@/components/JsonLd";
 import { getTipLike, relatedPosts } from "@/lib/queries";
 import { getAdmin } from "@/lib/auth";
 import { formatDate } from "@/lib/dates";
@@ -25,11 +27,16 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const { post } = await load(props);
   if (!post) return { title: "Not found" };
   const label = LABEL[post.type] ?? "Witchy tip";
-  return {
+  return pageMeta({
+    ownImage: true,
     title: `${post.title} — ${label}`,
-    description: post.seoDescription || post.excerpt || post.body.slice(0, 155) || `A ${label.toLowerCase()} from Yulia Moon.`,
-    openGraph: { type: "article" },
-  };
+    description: post.seoDescription || post.excerpt || post.body || `A ${label.toLowerCase()} from Yulia Moon.`,
+    path: `/tips/${post.slug}`,
+    type: "article",
+    publishedTime: post.publishAt ?? post.createdAt,
+    modifiedTime: post.updatedAt,
+    noindex: post.status !== "published",
+  });
 }
 
 export default async function TipPage(props: Props) {
@@ -41,6 +48,10 @@ export default async function TipPage(props: Props) {
   return (
     <>
       {isPreview && <PreviewBanner status={post.status} editHref={`/admin/content/${post.id}`} />}
+      {!isPreview && <JsonLd data={[
+        articleLd({ title: post.title, description: post.seoDescription || post.excerpt || post.body || post.title, path: `/tips/${post.slug}`, published: when, modified: post.updatedAt, section: LABEL[post.type] }),
+        breadcrumbLd([["Witchy tips", "/tips"], [post.title, `/tips/${post.slug}`]]),
+      ]} />}
       <article className="container-prose pb-6 pt-28 lg:pt-36">
         <Link href="/tips" className="inline-flex items-center gap-2 text-sm text-plum link-underline"><ArrowLeft />All tips</Link>
         <div className={`mt-8 rounded-[2rem] p-8 sm:p-12 ${isAffirmation ? "bg-plum text-ivory" : "bg-blush"}`}>

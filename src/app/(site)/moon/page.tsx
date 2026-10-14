@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { connection } from "next/server";
 import { FULL_MOON_NAMES, PHASE_GUIDANCE, moonNow, upcomingMoons } from "@/lib/astro/moon";
@@ -11,10 +12,14 @@ import { ArrowRight } from "@/components/Icons";
 import { MoonYear, type DayMark } from "@/components/moon/MoonYear";
 import { KeyDates } from "@/components/moon/KeyDates";
 
-export const metadata: Metadata = {
-  title: "Moon calendar",
-  description: "Tonight's moon, a full-year moon calendar, and the dates to look out for: new and full moons, eclipses, sabbats, equinoxes and retrogrades.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const year = new Intl.DateTimeFormat("en-GB", { timeZone: SITE_TIMEZONE, year: "numeric" }).format(new Date());
+  return pageMeta({
+    title: `Moon calendar ${year} — moon phases, full moons & eclipses`,
+    description: `Tonight's moon and the full ${year} moon calendar: every new and full moon, eclipses, sabbats, equinoxes and retrogrades, in UK time.`,
+    path: "/moon",
+  });
+}
 
 const time = (d: Date) => new Intl.DateTimeFormat("en-GB", { timeZone: SITE_TIMEZONE, hour: "2-digit", minute: "2-digit" }).format(d);
 

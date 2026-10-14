@@ -1,4 +1,7 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { JsonLd } from "@/components/JsonLd";
+import { SITE_DESCRIPTION, organizationLd, pageMeta, personLd, websiteLd } from "@/lib/seo";
 import { getMediaMap, getSetting } from "@/lib/settings";
 import { getLivePostById, getLiveVideoById, latestShortPost, listHighlights, listPosts, listRetreats, listVideos } from "@/lib/queries";
 import { MediaImage } from "@/components/MediaImage";
@@ -20,8 +23,15 @@ import { MoonGlyph } from "@/components/MoonGlyph";
 
 const dated = (d: Date | null | undefined) => (d ? formatDate(d, { day: "numeric", month: "long", year: undefined }) : "");
 
+export const metadata: Metadata = pageMeta({
+  title: "Witchy Portal — witchy retreats, tarot & rituals with Yulia Moon",
+  absoluteTitle: true,
+  description: SITE_DESCRIPTION,
+  path: "/",
+});
+
 export default async function HomePage() {
-  const home = await getSetting("home");
+  const [home, contact] = await Promise.all([getSetting("home"), getSetting("contact")]);
   const [retreats, highlights, astro, articles, shorts, latestVideos, pickedVideo, pickedArticle, pickedTip, latestTip] = await Promise.all([
     listRetreats(),
     listHighlights(),
@@ -53,6 +63,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <JsonLd data={[websiteLd(), organizationLd(contact.email || undefined), personLd()]} />
       {/* HERO — what Witchy Portal offers, in a few seconds */}
       <section className="relative isolate flex min-h-[80svh] items-end overflow-hidden bg-plum-deep text-ivory lg:min-h-[88svh]">
         <div className="absolute inset-0 -z-10">

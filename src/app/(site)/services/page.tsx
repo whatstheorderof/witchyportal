@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { services } from "@content/services";
 import { testimonials } from "@content/testimonials";
@@ -10,10 +11,11 @@ import { TestimonialsStrip } from "@/components/Testimonials";
 import { RetreatPromo } from "@/components/RetreatPromo";
 import { ArrowRight, ExternalIcon } from "@/components/Icons";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "Work with Yulia — spells, tarot & astrology",
-  description: "Book spells, tarot and oracle readings, dream interpretation, astrology reports, favourable date calculations and party hire with Yulia Moon, a Slavic witch in London.",
-};
+  description: "Book spells, tarot and oracle readings, dream interpretation, astrology reports, favourable dates and party hire with Yulia Moon, a Slavic witch in London.",
+  path: "/services",
+});
 
 export default async function ServicesPage() {
   const contact = await getSetting("contact");
