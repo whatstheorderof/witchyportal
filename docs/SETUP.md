@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- Node.js 20.9+ (22 recommended)
+- Node.js 24 (the version Vercel uses; set in package.json "engines")
 - A Postgres database. Easiest: create a free **Neon** project and use a development branch, or run Postgres locally (`docker run -p 5432:5432 -e POSTGRES_PASSWORD=dev postgres:16`).
 
 ## Steps
