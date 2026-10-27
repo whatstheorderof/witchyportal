@@ -2,9 +2,8 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import type { ChartResult } from "@/lib/astro/types";
-import { formatDegree } from "@/lib/astro/types";
-import { ASPECT_INFO, BIG_THREE, BODY_INFO, HOUSE_MEANING, SIGN_INFO } from "@/lib/astro/interpretations";
-import { ChartWheel } from "./ChartWheel";
+import type { NatalReport } from "@/lib/astro/report-types";
+import { Report, type ContactLinks } from "./Report";
 
 interface Place {
   id: number;
@@ -113,14 +112,9 @@ function PlaceCombobox({ value, onChange, error }: { value: Place | null; onChan
   );
 }
 
-function offsetLabel(m: number | null) {
-  if (m == null) return "";
-  const sign = m >= 0 ? "+" : "−";
-  const a = Math.abs(m);
-  return `UTC${sign}${String(Math.floor(a / 60)).padStart(2, "0")}:${String(Math.round(a % 60)).padStart(2, "0")}`;
-}
-
-export function BirthChart() {
+export function BirthChart({ contact }: { contact: ContactLinks }) {
+  const [name, setName] = useState("");
+  const [report, setReport] = useState<NatalReport | null>(null);
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [unknownTime, setUnknownTime] = useState(false);
@@ -129,7 +123,7 @@ export function BirthChart() {
   const [status, setStatus] = useState<"idle" | "loading" | "error" | "done">("idle");
   const [message, setMessage] = useState("");
   const [chart, setChart] = useState<ChartResult | null>(null);
-  const resultRef = useRef<HTMLHeadingElement>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -150,20 +144,22 @@ export function BirthChart() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Something went wrong");
       setChart(data.chart);
+      setReport(data.report);
       setStatus("done");
-      setTimeout(() => resultRef.current?.focus(), 50);
+      setTimeout(() => { const h = document.getElementById("chart-result"); h?.focus(); resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }); }, 50);
     } catch (err) {
       setStatus("error");
       setMessage(err instanceof Error ? err.message : "Something went wrong");
     }
   }
 
-  const byBody = (b: string) => chart?.placements.find((p) => p.body === b);
-  const ascendant = chart?.angles.find((a) => a.name === "Ascendant");
-
   return (
-    <div className="grid gap-14">
-      <form onSubmit={submit} noValidate className="card grid gap-6 p-6 sm:p-10" aria-describedby="privacy-note">
+    <div className="grid min-w-0 gap-14 [&>*]:min-w-0">
+      <form onSubmit={submit} noValidate className="card grid gap-6 p-6 print:hidden sm:p-10" aria-describedby="privacy-note">
+        <div>
+          <label htmlFor="bc-name" className="field-label">Name <span className="font-normal text-muted">(optional — for the report title)</span></label>
+          <input id="bc-name" className="input" autoComplete="off" maxLength={40} value={name} onChange={(e) => setName(e.target.value)} />
+        </div>
         <div className="grid gap-6 sm:grid-cols-2">
           <div>
             <label htmlFor="bc-date" className="field-label">Date of birth <span aria-hidden className="text-blush-deep">*</span></label>
@@ -188,7 +184,7 @@ export function BirthChart() {
           </p>
         )}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-          <button className="btn-primary" disabled={status === "loading"}>{status === "loading" ? "Reading the sky…" : "Calculate my chart"}</button>
+          <button className="btn-primary" disabled={status === "loading"}>{status === "loading" ? "Reading the sky…" : "Get my free natal chart"}</button>
           <p id="privacy-note" className="text-sm text-muted">Your birth details are used only to calculate your chart and are never stored.</p>
         </div>
         <div aria-live="polite">
@@ -202,124 +198,7 @@ export function BirthChart() {
         </div>
       )}
 
-      {chart && status === "done" && (
-        <section aria-labelledby="chart-result" className="grid gap-12">
-          {chart.isFixture && (
-            <p role="alert" className="rounded-2xl border-2 border-dashed border-warning bg-warning/10 p-4 font-medium text-warning">
-              DEVELOPMENT FIXTURE — these placements are sample data, not your real chart.
-            </p>
-          )}
-          <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.1fr]">
-            <div className="grid place-items-center rounded-[2rem] bg-ivory-deep p-4 sm:p-8"><ChartWheel chart={chart} /></div>
-            <div>
-              <p className="eyebrow">Your chart</p>
-              <h2 id="chart-result" tabIndex={-1} ref={resultRef} className="display-md mt-3 outline-none">Your big three</h2>
-              <p className="mt-2 text-sm text-muted">
-                {chart.input.placeLabel} · {chart.input.date}{chart.timeKnown ? ` · ${chart.input.time} (${offsetLabel(chart.utcOffsetMinutes)})` : " · time unknown"}
-              </p>
-              <ul className="mt-6 grid gap-4">
-                {(["Sun", "Moon"] as const).map((b) => {
-                  const p = byBody(b)!;
-                  return (
-                    <li key={b} className="rounded-2xl bg-white/70 p-5 ring-1 ring-line">
-                      <p className="flex items-baseline gap-2 font-display text-2xl text-plum">
-                        <span aria-hidden>{BODY_INFO[b].glyph}</span>{b} in {p.signUncertain && p.possibleSigns ? `${p.possibleSigns.join(" or ")}` : p.sign}
-                      </p>
-                      <p className="mt-1 text-sm text-ink/80">{BIG_THREE[b]} {!p.signUncertain && <>{p.sign}: {SIGN_INFO[p.sign].keywords}.</>}</p>
-                      {p.signUncertain && <p className="mt-2 text-sm text-lavender-deep">The Moon changed sign on this day, so without a birth time we can&rsquo;t tell which sign it was in.</p>}
-                    </li>
-                  );
-                })}
-                <li className="rounded-2xl bg-white/70 p-5 ring-1 ring-line">
-                  {ascendant ? (
-                    <>
-                      <p className="font-display text-2xl text-plum">Rising in {ascendant.sign}</p>
-                      <p className="mt-1 text-sm text-ink/80">{BIG_THREE.Ascendant} {ascendant.sign}: {SIGN_INFO[ascendant.sign].keywords}.</p>
-                    </>
-                  ) : (
-                    <>
-                      <p className="font-display text-2xl text-plum">Rising sign unknown</p>
-                      <p className="mt-1 text-sm text-ink/80">Your Ascendant changes roughly every two hours, so it needs an accurate birth time.</p>
-                    </>
-                  )}
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div>
-            <h3 className="font-display text-2xl text-plum">What your chart says</h3>
-            <p className="mt-1 text-sm text-muted">A short reading of your main placements. Tap the sections below for the full detail.</p>
-                <ul className="mt-4 grid gap-3 text-[1rem] leading-relaxed sm:grid-cols-2 sm:gap-x-8">
-                  {chart.placements.filter((p) => !p.signUncertain).slice(0, 7).map((p) => (
-                    <li key={p.body}><strong className="font-medium text-plum">{p.body} in {p.sign}</strong> — {BODY_INFO[p.body].meaning}, coloured by {SIGN_INFO[p.sign].keywords}{p.house ? `, focused on ${HOUSE_MEANING[p.house - 1]} (house ${p.house})` : ""}.</li>
-                  ))}
-                </ul>
-          </div>
-
-          <div className="grid gap-3">
-            <details className="card p-5 sm:p-6">
-              <summary className="cursor-pointer font-display text-xl text-plum">All placements, degrees & houses</summary>
-              <div className="mt-4 overflow-x-auto rounded-2xl ring-1 ring-line">
-                <table className="w-full min-w-[420px] text-left text-[0.95rem]">
-                  <caption className="sr-only">Planet positions</caption>
-                  <thead className="bg-ivory-deep text-xs uppercase tracking-wider text-muted">
-                    <tr><th scope="col" className="px-4 py-3">Body</th><th scope="col" className="px-4 py-3">Sign</th><th scope="col" className="px-4 py-3">Degree</th><th scope="col" className="px-4 py-3">House</th></tr>
-                  </thead>
-                  <tbody className="divide-y divide-line bg-white/70">
-                    {chart.placements.map((p) => (
-                      <tr key={p.body}>
-                        <th scope="row" className="px-4 py-3 font-medium"><span aria-hidden className="mr-2 text-plum">{BODY_INFO[p.body].glyph}</span>{p.body}{p.retrograde && p.body !== "North Node" && <span className="ml-1 text-xs text-muted" title="Retrograde">℞</span>}</th>
-                        <td className="px-4 py-3">{p.signUncertain && p.possibleSigns ? p.possibleSigns.join(" / ") : <><span aria-hidden>{SIGN_INFO[p.sign].glyph} </span>{p.sign}</>}</td>
-                        <td className="px-4 py-3 tabular-nums">{p.signUncertain ? "—" : formatDegree(p.degree)}</td>
-                        <td className="px-4 py-3">{p.house ?? "—"}</td>
-                      </tr>
-                    ))}
-                    {chart.angles.map((a) => (
-                      <tr key={a.name} className="bg-ivory-deep/40">
-                        <th scope="row" className="px-4 py-3 font-medium">{a.name}</th>
-                        <td className="px-4 py-3"><span aria-hidden>{SIGN_INFO[a.sign].glyph} </span>{a.sign}</td>
-                        <td className="px-4 py-3 tabular-nums">{formatDegree(a.degree)}</td>
-                        <td className="px-4 py-3">—</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </details>
-            {chart.aspects.length > 0 && (
-              <details className="card p-5 sm:p-6">
-                <summary className="cursor-pointer font-display text-xl text-plum">Key aspects ({Math.min(8, chart.aspects.length)})</summary>
-                <p className="mt-3 text-sm text-muted">Aspects are angles between planets — they show which parts of you work together easily and which create creative tension.</p>
-                  <ul className="mt-4 grid gap-2 text-[0.95rem]">
-                    {chart.aspects.slice(0, 8).map((a, i) => (
-                      <li key={i}><span aria-hidden className="mr-1 text-plum">{ASPECT_INFO[a.type].symbol}</span>{a.a} {ASPECT_INFO[a.type].label} {a.b} <span className="text-muted">({a.orb.toFixed(1)}° orb · {ASPECT_INFO[a.type].note})</span></li>
-                    ))}
-                  </ul>
-              </details>
-            )}
-          </div>
-
-          {chart.notes.length > 0 && (
-            <div className="rounded-2xl bg-lavender/35 p-5 text-sm text-plum">
-              <p className="font-medium">Notes about this chart</p>
-              <ul className="mt-2 list-disc space-y-1 pl-5">{chart.notes.map((n, i) => <li key={i}>{n}</li>)}</ul>
-            </div>
-          )}
-
-          <details className="card p-6 text-sm">
-            <summary className="cursor-pointer font-display text-xl text-plum">How this chart is calculated</summary>
-            <ul className="mt-4 list-disc space-y-1.5 pl-5 text-ink/80">
-              <li>Calculated with <strong>{chart.provider.name}</strong> — an open-source astronomy library (VSOP87 / NOVAS models).</li>
-              <li>Zodiac: <strong>tropical</strong> (Western), apparent positions on the true ecliptic of date.</li>
-              <li>Houses: <strong>{chart.houseSystem === "placidus" ? "Placidus" : chart.houseSystem === "whole-sign" ? "Whole Sign" : "not calculated (birth time unknown)"}</strong>. Lunar node: mean North Node.</li>
-              <li>Birth time converted to UTC with the IANA time zone database ({chart.input.timeZone}{chart.timeKnown ? `, ${offsetLabel(chart.utcOffsetMinutes)}` : ""}), including historical daylight-saving rules. UTC: {chart.utc.replace("T", " ").slice(0, 16)}.</li>
-              <li>Coordinates: {chart.input.latitude.toFixed(3)}°, {chart.input.longitude.toFixed(3)}° (GeoNames).</li>
-              <li>Interpretations are general and for reflection and entertainment — they are written separately from the calculations.</li>
-            </ul>
-          </details>
-        </section>
-      )}
+      {chart && report && status === "done" && <div ref={resultRef}><Report chart={chart} report={report} name={name} contact={contact} /></div>}
     </div>
   );
 }

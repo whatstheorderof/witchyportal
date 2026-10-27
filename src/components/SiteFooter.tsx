@@ -15,7 +15,7 @@ export async function SiteFooter() {
   ].filter((s) => s.href);
 
   return (
-    <footer className="relative overflow-hidden bg-plum-deep pb-28 text-ivory lg:pb-0">
+    <footer className="relative overflow-hidden bg-plum-deep pb-28 text-ivory lg:pb-0 print:hidden">
       <div className="container-page grid gap-14 py-16 lg:grid-cols-[1.2fr_1fr] lg:py-24">
         <div className="max-w-xl">
           <p className="eyebrow text-blush">Newsletter</p>

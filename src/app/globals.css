@@ -220,3 +220,10 @@
 h1, h2, h3, h4, .font-display, [class*="display-"] {
   font-variant-numeric: lining-nums proportional-nums;
 }
+
+/* Printing a birth chart report: keep the report, drop page furniture */
+@media print {
+  body { background: #fff; }
+  .card { box-shadow: none; break-inside: avoid-page; }
+  details > summary ~ * { display: block; }
+}

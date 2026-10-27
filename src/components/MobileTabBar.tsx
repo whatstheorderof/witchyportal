@@ -25,7 +25,7 @@ export function MobileTabBar() {
     <>
       <nav
         aria-label="App"
-        className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-line/80 bg-ivory/92 backdrop-blur-md lg:hidden"
+        className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-line/80 bg-ivory/92 backdrop-blur-md lg:hidden print:hidden"
       >
         <ul className="mx-auto grid h-16 max-w-md grid-cols-5">
           {tabs.map(({ href, label, Icon, match }) => {
@@ -74,7 +74,7 @@ export function MobileTabBar() {
             </button>
           </div>
           <ul className="grid gap-1">
-            {[{ href: "/services", label: "Work with Yulia", blurb: "Spells, readings, astrology and party hire." }, { href: "/testimonials", label: "Testimonials", blurb: "Kind words from clients." }, { href: "/birth-chart", label: "Birth Chart", blurb: "Your Sun, Moon and Rising in seconds." }, ...discoverNav, { href: "/about", label: "About Yulia", blurb: "Her story and why she hosts retreats." }, { href: "/socials", label: "Socials", blurb: "Yulia on Instagram, YouTube and Etsy." }, { href: "/favourites", label: "Your favourites", blurb: "Tips, articles and videos you've saved." }, { href: "/contact", label: "Contact", blurb: "Questions, enquiries and collaborations." }].map((i) => (
+            {[{ href: "/services", label: "Work with Yulia", blurb: "Spells, readings, astrology and party hire." }, { href: "/testimonials", label: "Testimonials", blurb: "Kind words from clients." }, { href: "/birth-chart", label: "Birth Chart", blurb: "Your full natal chart and written report, free." }, ...discoverNav, { href: "/about", label: "About Yulia", blurb: "Her story and why she hosts retreats." }, { href: "/socials", label: "Socials", blurb: "Yulia on Instagram, YouTube and Etsy." }, { href: "/favourites", label: "Your favourites", blurb: "Tips, articles and videos you've saved." }, { href: "/contact", label: "Contact", blurb: "Questions, enquiries and collaborations." }].map((i) => (
               <li key={i.href}>
                 <Link href={i.href} className="flex min-h-14 flex-col justify-center rounded-2xl px-4 py-2 hover:bg-sand/50">
                   <span className="font-display text-xl text-plum">{i.label}</span>

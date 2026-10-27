@@ -63,9 +63,14 @@ Open a pull request → GitHub Actions runs lint, type-check, tests and a build 
 
 Content (retreats, posts, videos, prices) is edited in `/admin` and **never needs a deployment**.
 
-## 5. Custom domain
+## 5. Custom domain — witchyportal.org
 
-Vercel → Project → **Settings → Domains → Add** `your-domain.com` (and `www`). Add the DNS records Vercel shows at your registrar (an `A` record for the apex and a `CNAME` for `www`, or switch nameservers to Vercel). HTTPS is automatic. Then set `NEXT_PUBLIC_SITE_URL` for Production and redeploy.
+The site's address is **https://witchyportal.org** (set in `src/lib/env.ts`; canonical links, the sitemap and share previews use it on Production).
+
+1. Vercel → Project → **Settings → Domains**: `witchyportal.org` (primary) and `www.witchyportal.org` (redirects to it).
+2. At the registrar, add the DNS records Vercel shows — usually an **A record** for `@` → `216.198.79.1` and a **CNAME** for `www` → the `…vercel-dns.com` value Vercel gives you.
+3. Wait until Vercel shows both as **Valid Configuration** (HTTPS is issued automatically).
+4. Optional, once the domain works: Vercel → Settings → Domains → `witchyportal.vercel.app` → redirect to `witchyportal.org`.
 
 ## 6. Production checklist
 

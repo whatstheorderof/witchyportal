@@ -12,6 +12,7 @@ import {
   type Sign,
   signOf,
 } from "./types";
+import { balanceOf, derivePoints, findAspects, houseOf, moonPhase } from "./derive";
 
 /**
  * Chart calculation using astronomy-engine (MIT licence,
@@ -23,7 +24,8 @@ import {
  *  - Zodiac: tropical, measured on the true ecliptic of date.
  *  - Positions: apparent geocentric (light-time and aberration corrected).
  *  - Houses: Placidus; Whole Sign above ±66° latitude where Placidus fails.
- *  - Lunar node: mean North Node.
+ *  - Lunar node: true North Node (South Node opposite).
+ *  - Lilith: mean Black Moon Lilith (mean lunar apogee).
  */
 
 const PLANETS: [BodyName, Astronomy.Body][] = [
@@ -43,20 +45,42 @@ const norm = (x: number) => ((x % 360) + 360) % 360;
 function bodyLongitude(name: BodyName, time: Astronomy.AstroTime): number {
   if (name === "Sun") return norm(Astronomy.SunPosition(time).elon);
   if (name === "Moon") return norm(Astronomy.EclipticGeoMoon(time).lon);
-  if (name === "North Node") {
-    // Mean ascending node of the Moon (Meeus, Astronomical Algorithms 47.7)
-    const T = time.tt / 36525;
-    return norm(
-      125.0445479 -
-        1934.1362891 * T +
-        0.0020754 * T * T +
-        (T * T * T) / 467441 -
-        (T * T * T * T) / 60616000,
-    );
-  }
+  if (name === "North Node") return trueNode(time);
+  if (name === "Lilith") return meanLilith(time);
   const body = PLANETS.find(([n]) => n === name)![1];
   const vec = Astronomy.GeoVector(body, time, true);
   return norm(Astronomy.Ecliptic(vec).elon);
+}
+
+/** Mean ascending node of the Moon (Meeus, Astronomical Algorithms 47.7). */
+export function meanNode(time: Astronomy.AstroTime): number {
+  const T = time.tt / 36525;
+  return norm(125.0445479 - 1934.1362891 * T + 0.0020754 * T * T + (T * T * T) / 467441 - (T * T * T * T) / 60616000);
+}
+
+/**
+ * True (osculating) ascending node: where the plane of the Moon's actual
+ * orbit at this instant crosses the ecliptic of date. Calculated from the
+ * Moon's position and velocity (h = r × v), as Swiss Ephemeris does.
+ */
+export function trueNode(time: Astronomy.AstroTime): number {
+  const vec = (t: Astronomy.AstroTime) => {
+    const m = Astronomy.EclipticGeoMoon(t);
+    const lon = m.lon * rad, lat = m.lat * rad;
+    return [Math.cos(lat) * Math.cos(lon) * m.dist, Math.cos(lat) * Math.sin(lon) * m.dist, Math.sin(lat) * m.dist];
+  };
+  const dt = 1 / 1440; // one minute
+  const r0 = vec(time.AddDays(-dt)), r1 = vec(time.AddDays(dt)), r = vec(time);
+  const v = [0, 1, 2].map((k) => (r1[k] - r0[k]) / (2 * dt));
+  const h = [r[1] * v[2] - r[2] * v[1], r[2] * v[0] - r[0] * v[2], r[0] * v[1] - r[1] * v[0]];
+  return norm(Math.atan2(h[0], -h[1]) / rad);
+}
+
+/** Mean Black Moon Lilith: the mean lunar apogee (Meeus 47 — mean perigee + 180°). */
+export function meanLilith(time: Astronomy.AstroTime): number {
+  const T = time.tt / 36525;
+  const perigee = 83.3532465 + 4069.0137287 * T - 0.01032 * T * T - (T * T * T) / 80053 + (T * T * T * T) / 18999000;
+  return norm(perigee + 180);
 }
 
 const ALL_BODIES: BodyName[] = [
@@ -64,17 +88,22 @@ const ALL_BODIES: BodyName[] = [
   "Moon",
   ...PLANETS.map(([n]) => n),
   "North Node",
+  "Lilith",
 ];
 
-function isRetrograde(name: BodyName, time: Astronomy.AstroTime): boolean {
-  if (name === "Sun" || name === "Moon") return false;
-  if (name === "North Node") return true; // mean node always moves backwards
+/** Degrees per day, for applying/separating aspects. */
+function speedOf(name: BodyName, time: Astronomy.AstroTime): number {
   const a = bodyLongitude(name, time.AddDays(-0.5));
   const b = bodyLongitude(name, time.AddDays(0.5));
   let diff = b - a;
   if (diff > 180) diff -= 360;
   if (diff < -180) diff += 360;
-  return diff < 0;
+  return diff;
+}
+
+function isRetrograde(name: BodyName, time: Astronomy.AstroTime): boolean {
+  if (name === "Sun" || name === "Moon" || name === "Lilith") return false;
+  return speedOf(name, time) < 0;
 }
 
 function obliquity(time: Astronomy.AstroTime): number {
@@ -166,49 +195,6 @@ function wholeSignCusps(asc: number): number[] {
   return Array.from({ length: 12 }, (_, i) => norm(start + i * 30));
 }
 
-function houseOf(longitude: number, cusps: number[]): number {
-  for (let i = 0; i < 12; i++) {
-    const start = cusps[i];
-    const end = cusps[(i + 1) % 12];
-    const span = norm(end - start);
-    if (norm(longitude - start) < span) return i + 1;
-  }
-  return 1;
-}
-
-const ASPECTS: { type: Aspect["type"]; angle: number; orb: number }[] = [
-  { type: "conjunction", angle: 0, orb: 8 },
-  { type: "sextile", angle: 60, orb: 5 },
-  { type: "square", angle: 90, orb: 7 },
-  { type: "trine", angle: 120, orb: 7 },
-  { type: "opposition", angle: 180, orb: 8 },
-];
-
-function findAspects(placements: Placement[]): Aspect[] {
-  const list = placements.filter(
-    (p) => p.body !== "North Node" && !p.signUncertain,
-  );
-  const out: Aspect[] = [];
-  for (let i = 0; i < list.length; i++) {
-    for (let j = i + 1; j < list.length; j++) {
-      let sep = Math.abs(list[i].longitude - list[j].longitude);
-      if (sep > 180) sep = 360 - sep;
-      for (const a of ASPECTS) {
-        const orb = Math.abs(sep - a.angle);
-        if (orb <= a.orb) {
-          out.push({
-            a: list[i].body,
-            b: list[j].body,
-            type: a.type,
-            orb: Math.round(orb * 100) / 100,
-          });
-        }
-      }
-    }
-  }
-  return out.sort((x, y) => x.orb - y.orb);
-}
-
 /**
  * Resolve local birth time to UTC. Before a region adopted standard time the
  * tz database records Local Mean Time for the zone's reference city only
@@ -256,6 +242,7 @@ export function calculateChart(input: BirthInput): ChartResult {
   let angles: Angle[] = [];
   let cusps: number[] | null = null;
   let houseSystem: HouseSystem | null = null;
+  let lst: number | null = null;
 
   if (timeKnown) {
     const { asc, mc, eps, ramc: R } = computeAngles(
@@ -268,6 +255,7 @@ export function calculateChart(input: BirthInput): ChartResult {
       longitude: l,
       ...signOf(l),
     });
+    lst = R / 15;
     angles = [
       mk("Ascendant", asc),
       mk("Midheaven", mc),
@@ -336,7 +324,11 @@ export function calculateChart(input: BirthInput): ChartResult {
     placements,
     angles,
     houseCusps: cusps,
-    aspects: findAspects(placements),
+    aspects: findAspects(placements, angles, Object.fromEntries(placements.map((p) => [p.body, speedOf(p.body, time)]))),
+    points: derivePoints(placements, angles, cusps),
+    moonPhase: moonPhase(placements),
+    balance: balanceOf(placements),
+    technical: { julianDay: time.ut + 2451545, localSiderealTime: lst, nodeType: "true" },
   };
 }
 

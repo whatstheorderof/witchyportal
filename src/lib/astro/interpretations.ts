@@ -32,6 +32,7 @@ export const BODY_INFO: Record<BodyName, { glyph: string; meaning: string }> = {
   Neptune: { glyph: "♆︎", meaning: "dreams, intuition and the mystical" },
   Pluto: { glyph: "♇︎", meaning: "power, depth and rebirth" },
   "North Node": { glyph: "☊︎", meaning: "the direction of growth" },
+  Lilith: { glyph: "⚸", meaning: "your wild, untamed self" },
 };
 
 export const HOUSE_MEANING = [

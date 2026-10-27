@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { siteUrl } from "@/lib/env";
 import { listPosts, listRetreats } from "@/lib/queries";
+import { SIGNS } from "@/lib/astro/types";
 
 type Entry = MetadataRoute.Sitemap[number];
 
@@ -12,7 +13,9 @@ const STATIC: [string, Entry["changeFrequency"], number][] = [
   ["/about", "monthly", 0.8],
   ["/tarot", "daily", 0.8],
   ["/moon", "daily", 0.8],
-  ["/birth-chart", "monthly", 0.8],
+  ["/birth-chart", "monthly", 0.9],
+  ["/zodiac", "monthly", 0.7],
+  ...SIGNS.map((s) => [`/zodiac/${s.toLowerCase()}`, "monthly", 0.6] as [string, Entry["changeFrequency"], number]),
   ["/ask-a-witch", "weekly", 0.7],
   ["/watch", "weekly", 0.6],
   ["/discover", "weekly", 0.6],

@@ -34,6 +34,7 @@ export const BODIES = [
   "Neptune",
   "Pluto",
   "North Node",
+  "Lilith",
 ] as const;
 export type BodyName = (typeof BODIES)[number];
 
@@ -76,11 +77,48 @@ export interface Angle {
   degree: number;
 }
 
+/** Anything that can form an aspect: a body or one of the two main angles. */
+export type AspectFactor = BodyName | "Ascendant" | "Midheaven";
+export type AspectType = "conjunction" | "sextile" | "square" | "trine" | "opposition";
+
 export interface Aspect {
-  a: BodyName;
-  b: BodyName;
-  type: "conjunction" | "sextile" | "square" | "trine" | "opposition";
+  a: AspectFactor;
+  b: AspectFactor;
+  type: AspectType;
+  /** Distance from exact, in degrees */
   orb: number;
+  /** The widest orb allowed for this pair and aspect */
+  maxOrb: number;
+  /** 0–100: how close to exact (100 = exact) */
+  strength: number;
+  /** Whether the faster factor is moving towards exactness */
+  applying: boolean | null;
+}
+
+export type Element = "Fire" | "Earth" | "Air" | "Water";
+export type Modality = "Cardinal" | "Fixed" | "Mutable";
+
+export interface Point {
+  name: "Part of Fortune" | "South Node";
+  longitude: number;
+  sign: Sign;
+  degree: number;
+  house: number | null;
+}
+
+export interface MoonPhaseInfo {
+  name: "New Moon" | "Waxing Crescent" | "First Quarter" | "Waxing Gibbous" | "Full Moon" | "Waning Gibbous" | "Last Quarter" | "Balsamic Moon";
+  /** Moon's distance ahead of the Sun, 0–360° */
+  elongation: number;
+  /** Fraction of the Moon lit, 0–1 */
+  illumination: number;
+}
+
+export interface Balance {
+  /** Counts over the ten planets (Sun to Pluto), as in a traditional chart summary */
+  elements: Record<Element, number>;
+  modalities: Record<Modality, number>;
+  polarity: { yang: number; yin: number };
 }
 
 export interface ChartResult {
@@ -100,6 +138,17 @@ export interface ChartResult {
   /** 12 house cusp longitudes (1..12), only when time is known */
   houseCusps: number[] | null;
   aspects: Aspect[];
+  /** Part of Fortune (only with a birth time) and South Node */
+  points: Point[];
+  moonPhase: MoonPhaseInfo | null;
+  balance: Balance;
+  technical: {
+    /** Julian Day (UT) */
+    julianDay: number;
+    /** Local apparent sidereal time, hours */
+    localSiderealTime: number | null;
+    nodeType: "true" | "mean";
+  };
 }
 
 export interface ChartProvider {

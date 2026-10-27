@@ -15,6 +15,7 @@ export const discoverNav = [
   { href: "/ask-a-witch", label: "Ask a Witch", blurb: "Yulia answers your questions on video." },
   { href: "/tarot", label: "Tarot", blurb: "Card of the day — and draw your own." },
   { href: "/moon", label: "Moon calendar", blurb: "Tonight's moon and the next new and full moons." },
+  { href: "/zodiac", label: "Zodiac signs", blurb: "The twelve signs — traits, love and compatibility." },
 ];
 
 /** Shortcut menu opened from the Witchy Portal logo. */
@@ -27,7 +28,7 @@ export const shortcutGroups = [
       { href: "/services", label: "Work with Yulia", blurb: "Spells, readings, astrology and party hire." },
       { href: "/about", label: "About Yulia", blurb: "Her story and why she hosts retreats." },
       { href: "/watch", label: "Watch", blurb: "Witchy TV — all of Yulia's videos." },
-      { href: "/birth-chart", label: "Birth Chart", blurb: "Your Sun, Moon and Rising in seconds." },
+      { href: "/birth-chart", label: "Birth Chart", blurb: "Your full natal chart and written report, free." },
     ],
   },
   {

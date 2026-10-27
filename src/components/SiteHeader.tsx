@@ -22,7 +22,7 @@ export function SiteHeader() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-40 transition-colors duration-500 ${
+      className={`fixed inset-x-0 top-0 z-40 transition-colors duration-500 print:hidden ${
         transparent
           ? "bg-transparent"
           : "border-b border-line/70 bg-ivory/85 backdrop-blur-md supports-[backdrop-filter]:bg-ivory/75"

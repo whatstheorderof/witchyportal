@@ -50,6 +50,6 @@ How the site matches the 24-point priority list. **Done** = built and tested. **
 
 **From Yulia (content):** retreat dates, prices, deposit and balance due date, location, day-by-day itinerary, accommodation, meals, travel guidance, "Is this for me?" answers, retreat FAQs, venue photos, a dancing clip, a welcome video link, a public contact email, and later real guest feedback.
 
-**Accounts and settings:** payment links for each booking option (live and test), `ADMIN_EMAIL` / `ADMIN_PASSWORD` set in Vercel, `CRON_SECRET` for the daily YouTube check, and the witchyportal.com domain.
+**Accounts and settings:** payment links for each booking option (live and test), `ADMIN_EMAIL` / `ADMIN_PASSWORD` set in Vercel, `CRON_SECRET` for the daily YouTube check, and the witchyportal.org domain (DNS records — see DEPLOYMENT.md §5).
 
 **Services not yet connected:** email notifications to Yulia, a newsletter platform (Kit, Mailchimp or Brevo), and automatic payment confirmation (Stripe webhooks). Until then, availability is managed by hand in the admin.

@@ -34,6 +34,13 @@ const nextConfig: NextConfig = {
       // Next.js removes the trailing slash first, so /index.php/what-i-do/ is covered too.
       ...old.map(([from, to]) => ({ source: `/index.php/${from}`, destination: to, permanent: true })),
       { source: "/index.php", destination: "/", permanent: true },
+      // Common ways people type the birth chart address
+      { source: "/natal-chart", destination: "/birth-chart", permanent: true },
+      { source: "/birthchart", destination: "/birth-chart", permanent: true },
+      { source: "/zodiac-signs", destination: "/zodiac", permanent: true },
+      // One public address: www goes to witchyportal.org. (The witchyportal.vercel.app address keeps working;
+      // canonical links on every page already point search engines to witchyportal.org.)
+      { source: "/:path*", has: [{ type: "host", value: "www.witchyportal.org" }], destination: "https://witchyportal.org/:path*", permanent: true },
       // Courses are no longer offered.
       { source: "/courses", destination: "/services", permanent: true },
     ];

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { getPlace } from "@/lib/astro/places";
 import { getChartProvider } from "@/lib/astro/provider";
+import { buildReport } from "@/lib/astro/report";
 
 /**
  * Calculates a chart. Birth details are used in memory only — they are not
@@ -36,7 +37,7 @@ export async function POST(req: NextRequest) {
     const chart = await getChartProvider().calculate({
       date, time, latitude: place.latitude, longitude: place.longitude, timeZone: place.timeZone, placeLabel: place.label,
     });
-    return NextResponse.json({ chart }, { headers: { "Cache-Control": "no-store" } });
+    return NextResponse.json({ chart, report: buildReport(chart) }, { headers: { "Cache-Control": "no-store" } });
   } catch (e) {
     console.error("chart calculation failed", e instanceof Error ? e.message : "unknown");
     return NextResponse.json({ error: "We couldn't calculate this chart right now. Please try again later." }, { status: 502 });
