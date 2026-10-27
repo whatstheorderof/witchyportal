@@ -21,6 +21,7 @@
     "@fontsource-variable/cormorant-garamond": "^5.3.0",
     "@fontsource-variable/jost": "^5.3.0",
     "@photostructure/tz-lookup": "^11.7.0",
+    "@vercel/analytics": "^2.0.1",
     "@vercel/blob": "^2.8.0",
     "all-the-cities": "^3.1.0",
     "astronomy-engine": "^2.1.19",
@@ -51,5 +52,5 @@
   "engines": {
     "node": "22.x"
   },
-  "description": "Witchy Portal \u2014 retreats, rituals and birth charts with Yulia Moon"
+  "description": "Witchy Portal — retreats, rituals and birth charts with Yulia Moon"
 }
