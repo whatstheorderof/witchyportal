@@ -12,7 +12,7 @@ export const ZODIAC_1: Partial<Record<Sign, ZodiacEntry>> = {
     element: "Fire",
     modality: "Cardinal",
     ruler: "Mars",
-    polarity: "Yang (masculine, outward)",
+    polarity: "Masculine (outward, active)",
     keywords: ["Courageous", "Pioneering", "Direct", "Energetic", "Competitive", "Spontaneous"],
     overview: `Aries is the first sign of the zodiac, and Aries people carry that first-ness in their bones. The Sun enters Aries at the spring equinox, when daylight finally overtakes the dark, and there is something of that turning point in how an Aries person meets life: a sudden push of energy, a readiness to begin before anyone has quite finished explaining the plan. Ruled by Mars and belonging to the cardinal fire signs, Aries starts things, and starts them with heat.
 
@@ -35,7 +35,7 @@ The deeper lesson of Aries is the difference between courage and urgency. At the
     element: "Earth",
     modality: "Fixed",
     ruler: "Venus",
-    polarity: "Yin (feminine, receptive)",
+    polarity: "Feminine (inward, receptive)",
     keywords: ["Steadfast", "Sensual", "Patient", "Loyal", "Practical", "Determined"],
     overview: `Taurus people live close to the senses. They notice the weight of a good mug, the smell of rain on warm pavement, the exact moment the bread is ready. Ruled by Venus and belonging to the fixed earth signs, Taurus arrives in the full bloom of spring in the northern hemisphere, when whatever the Aries spark began has rooted and is now putting out leaves. That is the Taurus gift: to take something alive and help it last.
 
@@ -58,7 +58,7 @@ There is often an artist in Taurus, whether that shows up as music, cooking, gar
     element: "Air",
     modality: "Mutable",
     ruler: "Mercury",
-    polarity: "Yang (masculine, outward)",
+    polarity: "Masculine (outward, active)",
     keywords: ["Curious", "Witty", "Adaptable", "Communicative", "Versatile", "Sociable"],
     overview: `Gemini people are collectors of the world. Conversations, facts, jokes, half-overheard stories on the bus, the name of that plant, the way a word shifts meaning from one language to another: everything is potentially interesting, and most of it is. Ruled by Mercury, the messenger, and belonging to the mutable air signs, Gemini arrives as spring tips into summer, when the hedgerows are busy with birds and everything seems to be talking at once.
 
@@ -81,7 +81,7 @@ Beneath the quickness, Gemini people are frequently more sensitive than they app
     element: "Water",
     modality: "Cardinal",
     ruler: "the Moon",
-    polarity: "Yin (feminine, receptive)",
+    polarity: "Feminine (inward, receptive)",
     keywords: ["Nurturing", "Intuitive", "Protective", "Tender", "Imaginative", "Home-loving"],
     overview: `Cancer people know how to make a place feel like home. They remember birthdays, notice when someone has gone quiet, and keep a cupboard stocked with whatever a visitor might need. Ruled by the Moon and belonging to the cardinal water signs, Cancer begins at the summer solstice, the longest day of the year, when the light is at its fullest and, from that moment, slowly begins to turn. There is something of that tender turning point in Cancer: a sign that holds the fullness of feeling, and knows it will change.
 
@@ -104,7 +104,7 @@ Like the Moon, Cancer moods wax and wane, and they often feel the emotional unde
     element: "Fire",
     modality: "Fixed",
     ruler: "the Sun",
-    polarity: "Yang (masculine, outward)",
+    polarity: "Masculine (outward, active)",
     keywords: ["Generous", "Warm-hearted", "Creative", "Confident", "Loyal", "Expressive"],
     overview: `Leo people bring warmth into a room the way the Sun brings warmth into a day. Ruled by the Sun itself and belonging to the fixed fire signs, Leo arrives in the height of summer, when the evenings are long and people gather outdoors. That sense of gathering is key. This sign wants life to be lived generously, with colour, laughter and a circle of friends, and Leo people are often the ones who make it happen.
 
@@ -127,7 +127,7 @@ Behind the confident roar, many Leo people carry a tender fear of being overlook
     element: "Earth",
     modality: "Mutable",
     ruler: "Mercury",
-    polarity: "Yin (feminine, receptive)",
+    polarity: "Feminine (inward, receptive)",
     keywords: ["Discerning", "Helpful", "Analytical", "Modest", "Practical", "Devoted"],
     overview: `Virgo people notice what others miss. The typo on the sign, the friend who is quieter than usual, the small change that would make the whole system run more smoothly: Virgo sees it and, more often than not, quietly does something about it. Ruled by Mercury and belonging to the mutable earth signs, Virgo arrives at harvest time, as summer softens into autumn and the work turns to gathering, sorting and preserving what has grown. That is the Virgo spirit: to separate the useful from the waste and to tend what matters.
 

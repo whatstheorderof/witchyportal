@@ -27,7 +27,7 @@ activities:
   - title: Dancing under the stars
     description: Wild, free dancing on the sand under the night sky.
 personalMessage: |
-  If you're ready to answer the call and become the woman who naturally attracts what she desires…
+  If you're ready to answer the call and become someone who naturally attracts what they desire…
 
   **This is your moment.**
 heroImage:

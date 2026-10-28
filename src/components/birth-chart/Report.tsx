@@ -262,8 +262,8 @@ export function Report({ chart, report, name, contact }: { chart: ChartResult; r
         <div className="mt-10 grid gap-8 rounded-[2rem] bg-white/70 p-6 ring-1 ring-line sm:grid-cols-3 sm:p-8">
           <Bars title="Elements" total={10} rows={report.balance.elements.map((e) => ({ name: e.name, count: e.count, colour: { Fire: "#d98c7c", Earth: "#b99a6b", Air: "#9d8cc4", Water: "#6f7fb3" }[e.name] }))} />
           <Bars title="Modalities" total={10} rows={report.balance.modalities.map((m) => ({ name: m.name, count: m.count, colour: "#7d67a6" }))} />
-          <Bars title="Polarity" total={10} rows={[{ name: "Yang", count: chart.balance.polarity.yang, colour: "#c97f73" }, { name: "Yin", count: chart.balance.polarity.yin, colour: "#4a1f40" }]} />
-          <p className="text-xs text-muted sm:col-span-3">Counted over the ten planets, Sun to Pluto. Yang = fire and air signs (outward); yin = earth and water (receptive).</p>
+          <Bars title="Polarity" total={10} rows={[{ name: "Masculine", count: chart.balance.polarity.masculine, colour: "#c97f73" }, { name: "Feminine", count: chart.balance.polarity.feminine, colour: "#4a1f40" }]} />
+          <p className="text-xs text-muted sm:col-span-3">Counted over the ten planets, Sun to Pluto. Masculine = fire and air signs (outward, active); feminine = earth and water signs (inward, receptive).</p>
         </div>
       </Section>
 

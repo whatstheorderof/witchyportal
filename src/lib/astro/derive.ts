@@ -116,13 +116,13 @@ const TEN: BodyName[] = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "
 export function balanceOf(placements: Placement[]): Balance {
   const elements: Record<Element, number> = { Fire: 0, Earth: 0, Air: 0, Water: 0 };
   const modalities: Record<Modality, number> = { Cardinal: 0, Fixed: 0, Mutable: 0 };
-  let yang = 0, yin = 0;
+  let masculine = 0, feminine = 0;
   for (const p of placements) {
     if (!TEN.includes(p.body) || p.signUncertain) continue;
     const el = SIGN_ELEMENT[p.sign];
     elements[el]++;
     modalities[SIGN_MODALITY[p.sign]]++;
-    if (el === "Fire" || el === "Air") yang++; else yin++;
+    if (el === "Fire" || el === "Air") masculine++; else feminine++;
   }
-  return { elements, modalities, polarity: { yang, yin } };
+  return { elements, modalities, polarity: { masculine, feminine } };
 }

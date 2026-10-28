@@ -191,7 +191,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* WHY WOMEN COME — from the featured retreat */}
+      {/* WHY PEOPLE COME — from the featured retreat */}
       {featured && featured.benefits.length > 0 && (
         <section className="relative isolate overflow-hidden bg-plum-deep py-20 text-ivory lg:py-28" aria-labelledby="why-come">
           <div className="absolute inset-0 -z-10 opacity-30">

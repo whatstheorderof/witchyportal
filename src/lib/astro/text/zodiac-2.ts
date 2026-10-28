@@ -12,7 +12,7 @@ export const ZODIAC_2: Partial<Record<Sign, ZodiacEntry>> = {
     element: "Air",
     modality: "Cardinal",
     ruler: "Venus",
-    polarity: "Yang (masculine, outward)",
+    polarity: "Masculine (outward, active)",
     keywords: ["Harmony", "Fairness", "Diplomacy", "Beauty", "Partnership", "Grace under pressure"],
     overview: `Libra people walk into a room and quietly take its temperature. Before they have said very much, they have noticed who feels left out, which two people are not speaking, and whether the lighting is doing anyone any favours. This is the sign of the Scales, ruled by Venus, and its whole life is an ongoing conversation about fairness, beauty and how people can live alongside one another without anyone being flattened.
 
@@ -39,7 +39,7 @@ Libra does less well in cultures of constant aggression, or where every decision
     element: "Water",
     modality: "Fixed",
     ruler: "Pluto (traditionally Mars)",
-    polarity: "Yin (feminine, receptive)",
+    polarity: "Feminine (inward, receptive)",
     keywords: ["Depth", "Intensity", "Loyalty", "Transformation", "Insight", "Privacy"],
     overview: `Scorpio people rarely tell you everything at once, and they notice a great deal more than they let on. Ask a Scorpio how they are and you may get a polite, closed answer; spend a long evening with one and you may find yourself telling them things you have never said aloud. This is the fixed water sign, ruled by Pluto (traditionally Mars), and its territory is everything beneath the surface: motive, desire, loyalty, power, and the feelings most people would rather not look at directly.
 
@@ -66,7 +66,7 @@ Scorpio is often the quiet power in a team: not the loudest voice, but the one w
     element: "Fire",
     modality: "Mutable",
     ruler: "Jupiter",
-    polarity: "Yang (masculine, outward)",
+    polarity: "Masculine (outward, active)",
     keywords: ["Adventure", "Optimism", "Honesty", "Freedom", "Meaning", "Generosity"],
     overview: `Sagittarius people live with one eye on the horizon. They want to know what is over the next hill, behind the next idea, beneath the surface of an unfamiliar culture or philosophy, and they are happiest when life feels like a journey rather than a holding pattern. This is the Archer, a mutable fire sign ruled by Jupiter, and its arrow is always aimed at something further than where it currently stands.
 
@@ -93,7 +93,7 @@ Repetitive tasks and heavy micromanagement drain them quickly. The professional 
     element: "Earth",
     modality: "Cardinal",
     ruler: "Saturn",
-    polarity: "Yin (feminine, receptive)",
+    polarity: "Feminine (inward, receptive)",
     keywords: ["Ambition", "Discipline", "Responsibility", "Patience", "Integrity", "Dry humour"],
     overview: `Capricorn people often seem to have been born old and to grow younger as the years go by. Responsibility tends to arrive early for them, whether by circumstance or by temperament, and they learn quickly that wishing does not build anything — effort, patience and good judgement do. This is the Sea-Goat, a cardinal earth sign ruled by Saturn, and its symbol says a great deal: a creature able to climb the steepest mountain, with the tail of something that once came from the deep.
 
@@ -120,7 +120,7 @@ They respect clear structures and earned authority, and they can be frustrated b
     element: "Air",
     modality: "Fixed",
     ruler: "Uranus (traditionally Saturn)",
-    polarity: "Yang (masculine, outward)",
+    polarity: "Masculine (outward, active)",
     keywords: ["Originality", "Independence", "Community", "Vision", "Friendship", "Principle"],
     overview: `Aquarius people tend to look at the world as though they have just arrived from somewhere slightly more interesting. They notice the assumption nobody else questions, the rule that exists only because it always has, and the person on the edge of the group who has something worth saying. This is the Water Bearer, a fixed air sign ruled by Uranus (traditionally Saturn), and despite its name it is not a water sign: what it pours out is ideas, perspective and a sense of what the future could be.
 
@@ -147,7 +147,7 @@ They struggle with rigid hierarchies, office politics and rules that make no sen
     element: "Water",
     modality: "Mutable",
     ruler: "Neptune (traditionally Jupiter)",
-    polarity: "Yin (feminine, receptive)",
+    polarity: "Feminine (inward, receptive)",
     keywords: ["Compassion", "Imagination", "Intuition", "Empathy", "Dreaming", "Surrender"],
     overview: `Pisces people seem to live with a door left slightly open between this world and another. They pick up the mood of a room before anyone speaks, feel music with their whole being, and sometimes know what a friend needs before the friend does. This is the sign of the Fish, two of them swimming in opposite directions, a mutable water sign ruled by Neptune (traditionally Jupiter), and its nature is fluid, imaginative and deeply compassionate.
 

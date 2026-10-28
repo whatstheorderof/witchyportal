@@ -6,6 +6,10 @@ import { db } from "@/db";
 import { enquiries, subscribers, waitlist, retreats, departures } from "@/db/schema";
 import { emailSchema } from "@/lib/validation";
 import { fieldErrors, type FormState } from "@/lib/forms";
+import { after } from "next/server";
+import { addToList, sendEmail } from "@/lib/email";
+import { getSetting } from "@/lib/settings";
+import { retreatEmailOf } from "@/lib/contact-links";
 
 const isBot = (fd: FormData) => Boolean(fd.get("company")); // honeypot
 
@@ -28,6 +32,8 @@ export async function subscribe(_: FormState, fd: FormData): Promise<FormState> 
       .insert(subscribers)
       .values({ email: parsed.data.email, source: parsed.data.source ?? "site" })
       .onConflictDoUpdate({ target: subscribers.email, set: { unsubscribedAt: null, consentAt: new Date() } });
+    const source = parsed.data.source ?? "site";
+    after(() => addToList(source === "synastry-report" ? "REPORTS" : "NEWSLETTER", parsed.data.email));
     return { ok: true, message: "You're subscribed — thank you! Look out for Yulia's next letter in your inbox (check your Promotions folder if it doesn't arrive)." };
   } catch (e) {
     console.error("subscribe failed", e);
@@ -50,6 +56,19 @@ export async function sendEnquiry(_: FormState, fd: FormData): Promise<FormState
   if (!parsed.success) return { ok: false, message: "Please check the highlighted fields.", errors: fieldErrors(parsed.error.issues), values };
   try {
     await db.insert(enquiries).values(parsed.data);
+    const e = parsed.data;
+    after(async () => {
+      const contact = await getSetting("contact");
+      const to = e.topic === "retreat" ? retreatEmailOf(contact) : contact.email;
+      if (!to) return;
+      await sendEmail({
+        to,
+        replyTo: e.email,
+        subject: `New ${e.topic} enquiry from ${e.name}`,
+        heading: `New enquiry from ${e.name}`,
+        paragraphs: [`Topic: ${e.topic}`, `From: ${e.name} <${e.email}>`, e.message, "Reply to this email to answer them directly. It's also in Admin → Inbox."],
+      });
+    });
     return { ok: true, message: "Thank you — your message has been sent. Yulia will be in touch soon." };
   } catch (e) {
     console.error("enquiry failed", e);
@@ -78,6 +97,35 @@ export async function joinWaitlist(_: FormState, fd: FormData): Promise<FormStat
   }
   try {
     await db.insert(waitlist).values({ ...parsed.data, note: parsed.data.note || null });
+    const w = parsed.data;
+    after(async () => {
+      const contact = await getSetting("contact");
+      const yulia = retreatEmailOf(contact);
+      const first = w.name.split(/\s+/)[0];
+      await addToList("WAITLIST", w.email, { FIRSTNAME: first });
+      await sendEmail({
+        to: w.email,
+        toName: w.name,
+        replyTo: yulia || undefined,
+        subject: `You're on the list for ${r.title}`,
+        heading: `You're on the list, ${first}`,
+        paragraphs: [
+          `Thank you for joining the waitlist for ${r.title}. You'll hear from Yulia as soon as ${w.departureId ? "a place opens up" : "dates and prices are announced"} — before anything is shared publicly.`,
+          "Joining the waitlist isn't a booking, and there's nothing to pay.",
+          "If you have any questions in the meantime, just reply to this email.",
+          "With love and magic,\nYulia Moon",
+        ],
+      });
+      if (yulia) {
+        await sendEmail({
+          to: yulia,
+          replyTo: w.email,
+          subject: `New waitlist sign-up: ${w.name} (${r.title})`,
+          heading: "Someone joined the waitlist",
+          paragraphs: [`${w.name} <${w.email}> joined the waitlist for ${r.title}.`, ...(w.note ? [`Their note: ${w.note}`] : []), "Reply to this email to write to them. Everyone on the waitlist is in Admin → Inbox → Waitlist."],
+        });
+      }
+    });
     return {
       ok: true,
       message: parsed.data.departureId

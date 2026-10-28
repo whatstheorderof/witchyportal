@@ -59,7 +59,7 @@ export interface ZodiacEntry {
   modality: "Cardinal" | "Fixed" | "Mutable";
   /** Modern and traditional ruler, e.g. "Mars" or "Pluto (traditionally Mars)" */
   ruler: string;
-  polarity: "Yang (masculine, outward)" | "Yin (feminine, receptive)";
+  polarity: "Masculine (outward, active)" | "Feminine (inward, receptive)";
   /** Six single words or short phrases */
   keywords: string[];
   /** 250–320 words */

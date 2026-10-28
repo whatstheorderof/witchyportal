@@ -118,7 +118,7 @@ export interface Balance {
   /** Counts over the ten planets (Sun to Pluto), as in a traditional chart summary */
   elements: Record<Element, number>;
   modalities: Record<Modality, number>;
-  polarity: { yang: number; yin: number };
+  polarity: { masculine: number; feminine: number };
 }
 
 export interface ChartResult {
