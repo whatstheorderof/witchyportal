@@ -15,7 +15,7 @@ So: warm, direct, confident, a little old-world and wise; short clear sentences;
 - 100% ORIGINAL. Do not reproduce, closely paraphrase or imitate Cafe Astrology, Astrostyle, Co-Star, astrology.com, Susan Miller or any book. No quotes from anyone.
 - No predictions about health, illness, death, accidents, pregnancy, lottery/money windfalls, legal outcomes. No medical, legal or financial advice. "Rest", "slow down" and "look after yourself" are fine.
 - Never fatalistic: tension is energy to use. Every text ends constructively.
-- Gender-neutral; don't assume relationship status (speak to singles and couples alike where relevant), sexuality, children or job type.
+- Gender-neutral for general content (horoscopes, readings, tools are for anyone on a spiritual path); women-specific wording is right only for things that are for women, such as the women's retreats. Don't assume relationship status (speak to singles and couples alike where relevant), sexuality, children or job type.
 - British English spelling. Plain text: no markdown, headings, bullets or emoji. "—" for dashes. Separate paragraphs with a blank line ("\n\n").
 - Vary openings and sentence shapes across entries — no template feel. When variants are requested, each variant must be genuinely different (different angle, image and advice), not a rewording.
 - Hit the word counts given per entry.

@@ -18,7 +18,7 @@ views: |
 
   Expect grounded, practical magic rather than anything intimidating. Whether you're brand new to ritual or have a practice of your own, the aim is the same: to leave feeling clearer, lighter and more connected to your own power.
 why: |
-  Every week Yulia answers questions from people navigating love, life and change. A retreat is the chance to go deeper than a video allows — to gather in person, share the practices properly, and give everyone the time and space to be heard.
+  Every week Yulia answers questions from people navigating love, life and change. A retreat is the chance to go deeper than a video allows — to gather in person, share the practices properly, and give each woman the time and space to be heard.
 hopes: |
   - To trust your intuition and your own energy
   - Simple rituals you can keep using at home — for the moon, for cleansing, for setting intentions
