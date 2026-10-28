@@ -77,3 +77,45 @@ export interface ZodiacEntry {
   /** 80–110 words — how the sign tends to get on with the other elements/signs */
   compatibility: string;
 }
+
+/* ---------------- Horoscopes, moon guide & compatibility ---------------- */
+
+/** "1" … "12": houses counted from the reader's Sun sign (solar houses). */
+export type SolarHouse = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12";
+
+/** Several interchangeable versions of a text, so daily horoscopes don't repeat. */
+export type Variants = string[];
+
+/** Pairs of the ten planets (Sun … Pluto), canonical order, e.g. "Venus|Mars". */
+export interface SkyPairText {
+  conjunction: string;
+  harmonious: string;
+  square: string;
+  opposition: string;
+}
+
+/** Sun-sign compatibility, key "Aries|Taurus" in zodiac order (same-sign pairs e.g. "Leo|Leo"). */
+export interface SignCompat {
+  /** 1–10 */
+  overall: number;
+  love: number;
+  friendship: number;
+  communication: number;
+  /** A short evocative title, 3–7 words */
+  headline: string;
+  /** The reading */
+  text: string;
+}
+
+export interface PhaseGuide {
+  /** What this phase is and what it means (120–160 words) */
+  meaning: string;
+  /** The energy of these days and how to work with it (60–90 words) */
+  energy: string;
+  /** Moon magic: rituals and spellwork suited to the phase (90–120 words) */
+  magic: string;
+  /** What to avoid or go gently with (40–60 words) */
+  avoid: string;
+  /** One journal prompt, a single question */
+  prompt: string;
+}

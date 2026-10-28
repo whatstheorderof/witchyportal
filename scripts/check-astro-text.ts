@@ -26,6 +26,17 @@ for (const [name, value] of Object.entries(mod)) {
   if (Array.isArray(v)) {
     if (v.length !== 12) problems.push(`${name}: has ${v.length} entries, needs 12`);
     v.forEach((s, i) => { checkString(`${name}[${i}]`, s, 15); total += words(String(s)); n++; });
+  } else if (v && typeof v === "object" && /VARIANTS|_V$|AFFIRMATION|COMPAT|GUIDE|SKY_|INGRESS|STATION|SOLAR_HOUSE|LUNATION|SYNASTRY|HEADLINE|_DAY$|ASPECT|ENERGY|RITUAL|PAIRS|OVERLAY|SCORE|_HOUSE$|ECLIPSE/.test(name)) {
+    // Deep walk for the horoscope/compatibility libraries
+    const walk = (x: unknown, at: string) => {
+      if (typeof x === "string") {
+        const field = at.split(".").pop() ?? "";
+        if (["headline", "short", "symbol", "prompt", "keywords"].includes(field) || /^\d+$/.test(field.replace(/^.*\[|\]$/g, "")) && /keywords|HEADLINE|ENERGY/.test(at) || /AFFIRMATION|HEADLINE|ENERGY/.test(name)) { if (!x.trim()) problems.push(`${at}: missing`); else { total += words(x); n++; } return; }
+        checkString(at, x, 15); total += words(x); n++;
+      } else if (Array.isArray(x)) x.forEach((y, i) => walk(y, `${at}[${i}]`));
+      else if (x && typeof x === "object") for (const [k, y] of Object.entries(x)) walk(y, `${at}.${k}`);
+    };
+    walk(v, name);
   } else if (v && typeof v === "object") {
     const keys = Object.keys(v);
     const isSignMap = keys.some((k) => (SIGNS as readonly string[]).includes(k));

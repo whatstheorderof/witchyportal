@@ -42,7 +42,7 @@ const PLANETS: [BodyName, Astronomy.Body][] = [
 const rad = Math.PI / 180;
 const norm = (x: number) => ((x % 360) + 360) % 360;
 
-function bodyLongitude(name: BodyName, time: Astronomy.AstroTime): number {
+export function bodyLongitude(name: BodyName, time: Astronomy.AstroTime): number {
   if (name === "Sun") return norm(Astronomy.SunPosition(time).elon);
   if (name === "Moon") return norm(Astronomy.EclipticGeoMoon(time).lon);
   if (name === "North Node") return trueNode(time);

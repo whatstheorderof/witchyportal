@@ -20,6 +20,7 @@ import { FULL_MOON_NAMES, moonNow, upcomingMoons } from "@/lib/astro/moon";
 import { cardOfTheDay } from "@/lib/tarot";
 import { CardSymbol } from "@/components/TarotCardView";
 import { MoonGlyph } from "@/components/MoonGlyph";
+import { YourDay } from "@/components/stars/YourDay";
 
 const dated = (d: Date | null | undefined) => (d ? formatDate(d, { day: "numeric", month: "long", year: undefined }) : "");
 
@@ -111,6 +112,26 @@ export default async function HomePage() {
           </span>
           <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-plum transition group-hover:translate-x-1" />
         </Link>
+      </section>
+
+      {/* YOUR DAY IN THE STARS */}
+      <section aria-label="Your day in the stars" className="container-page grid gap-6 pt-8 lg:grid-cols-[1.4fr_1fr]">
+        <YourDay />
+        <ul className="grid content-start gap-3">
+          {[
+            ["/horoscope", "Daily horoscopes", "Every sign, read from today's sky."],
+            ["/this-week-in-astrology", "This week in astrology", "The week's Moons, retrogrades and aspects."],
+            ["/compatibility", "Compatibility test", "Star signs, love signs and birth charts."],
+            ["/birth-chart", "Your birth chart", "Free natal chart and full written report."],
+          ].map(([href, label, blurb]) => (
+            <li key={href}>
+              <Link href={href} className="group flex items-center gap-4 rounded-2xl bg-ivory-deep p-4 ring-1 ring-line transition hover:bg-white">
+                <span className="min-w-0"><span className="block font-display text-xl text-plum">{label}</span><span className="block text-sm text-muted">{blurb}</span></span>
+                <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-plum transition group-hover:translate-x-1" />
+              </Link>
+            </li>
+          ))}
+        </ul>
       </section>
 
       {/* MEET YULIA */}

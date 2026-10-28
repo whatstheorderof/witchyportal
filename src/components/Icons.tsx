@@ -5,6 +5,7 @@ export const HomeIcon = ({ className }: P) => (<svg {...base(className)}><path d
 export const WaveIcon = ({ className }: P) => (<svg {...base(className)}><path d="M2.5 15c2.2 0 2.2-2 4.4-2s2.2 2 4.4 2 2.2-2 4.4-2 2.2 2 4.4 2 2-2 2-2" /><path d="M2.5 19.5c2.2 0 2.2-2 4.4-2s2.2 2 4.4 2 2.2-2 4.4-2 2.2 2 4.4 2" /><circle cx="15.5" cy="6.5" r="2.5" /></svg>);
 export const SparkIcon = ({ className }: P) => (<svg {...base(className)}><path d="M12 3c.6 4.5 2.5 6.4 7 7-4.5.6-6.4 2.5-7 7-.6-4.5-2.5-6.4-7-7 4.5-.6 6.4-2.5 7-7Z" /><path d="M19 16.5c.25 1.6.9 2.25 2.5 2.5-1.6.25-2.25.9-2.5 2.5-.25-1.6-.9-2.25-2.5-2.5 1.6-.25 2.25-.9 2.5-2.5Z" /></svg>);
 export const ChartIcon = ({ className }: P) => (<svg {...base(className)}><circle cx="12" cy="12" r="8.5" /><circle cx="12" cy="12" r="4" /><path d="M12 3.5v4.5M12 16v4.5M3.5 12H8M16 12h4.5M6 6l3.2 3.2M14.8 14.8 18 18M18 6l-3.2 3.2M9.2 14.8 6 18" /></svg>);
+export const MoonIcon = ({ className }: P) => (<svg {...base(className)}><path transform="translate(24 0) scale(-1 1)" d="M14.5 4.2a8 8 0 1 0 1.9 14.6A6.5 6.5 0 0 1 14.5 4.2Z" /><path d="M5 4.5v3M3.5 6h3" /></svg>);
 export const MenuIcon = ({ className }: P) => (<svg {...base(className)}><path d="M4 7h16M4 12h16M4 17h10" /></svg>);
 export const CloseIcon = ({ className }: P) => (<svg {...base(className)}><path d="M6 6l12 12M18 6 6 18" /></svg>);
 export const ArrowRight = ({ className }: P) => (<svg {...base(className ?? "h-4 w-4")}><path d="M4 12h16m-6-6 6 6-6 6" /></svg>);

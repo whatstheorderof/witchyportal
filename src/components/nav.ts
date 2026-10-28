@@ -1,21 +1,31 @@
 export const primaryNav = [
   { href: "/retreats", label: "Retreats" },
-  { href: "/services", label: "Services" },
-  { href: "/watch", label: "Watch" },
-  { href: "/discover", label: "Discover" },
+  { href: "/horoscope", label: "Horoscopes" },
   { href: "/birth-chart", label: "Birth Chart" },
+  { href: "/discover", label: "Discover" },
+  { href: "/services", label: "Services" },
   { href: "/about", label: "About Yulia" },
   { href: "/contact", label: "Contact" },
 ];
 
+/** The astrology tools at the heart of Discover. */
+export const starsNav = [
+  { href: "/today", label: "Your day", blurb: "Your astrological day at a glance." },
+  { href: "/horoscope", label: "Daily horoscopes", blurb: "What's in store for every sign today." },
+  { href: "/this-week-in-astrology", label: "This week in astrology", blurb: "The week's Moons, retrogrades and big aspects." },
+  { href: "/compatibility", label: "Compatibility", blurb: "Star signs, love signs and birth charts together." },
+  { href: "/moon/phases", label: "Moon phases", blurb: "What each phase means, and the magic for it." },
+];
+
 export const discoverNav = [
+  ...starsNav.slice(1),
+  { href: "/tarot", label: "Tarot", blurb: "Card of the day, and draw your own." },
+  { href: "/moon", label: "Moon calendar", blurb: "The year's new and full moons, eclipses and sabbats." },
+  { href: "/zodiac", label: "Zodiac signs", blurb: "The twelve signs: traits, love and compatibility." },
+  { href: "/astrology", label: "Astrology", blurb: "Weekly and seasonal wisdom from Yulia." },
   { href: "/tips", label: "Witchy Tips", blurb: "Small rituals, affirmations and gentle motivation." },
   { href: "/articles", label: "Articles", blurb: "Short reads on magic, movement and living by the moon." },
-  { href: "/astrology", label: "Astrology", blurb: "Weekly and seasonal wisdom from the sky." },
   { href: "/ask-a-witch", label: "Ask a Witch", blurb: "Yulia answers your questions on video." },
-  { href: "/tarot", label: "Tarot", blurb: "Card of the day — and draw your own." },
-  { href: "/moon", label: "Moon calendar", blurb: "Tonight's moon and the next new and full moons." },
-  { href: "/zodiac", label: "Zodiac signs", blurb: "The twelve signs — traits, love and compatibility." },
 ];
 
 /** Shortcut menu opened from the Witchy Portal logo. */

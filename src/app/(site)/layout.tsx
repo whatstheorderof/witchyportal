@@ -1,6 +1,7 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { MobileTabBar } from "@/components/MobileTabBar";
+import { DailySplash } from "@/components/stars/DailySplash";
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -12,6 +13,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       <main id="main" className="min-h-[70vh]">{children}</main>
       <SiteFooter />
       <MobileTabBar />
+      <DailySplash />
     </>
   );
 }

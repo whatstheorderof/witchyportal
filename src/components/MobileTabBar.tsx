@@ -3,14 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
-import { CloseIcon, HomeIcon, MenuIcon, SparkIcon, TvIcon, WaveIcon } from "./Icons";
+import { CloseIcon, HomeIcon, MenuIcon, MoonIcon, SparkIcon, WaveIcon } from "./Icons";
 import { discoverNav } from "./nav";
 
 const tabs = [
   { href: "/", label: "Home", Icon: HomeIcon, match: (p: string) => p === "/" },
+  { href: "/today", label: "Today", Icon: MoonIcon, match: (p: string) => p.startsWith("/today") || p.startsWith("/horoscope") },
+  { href: "/discover", label: "Discover", Icon: SparkIcon, match: (p: string) => ["/discover", "/tips", "/articles", "/astrology", "/ask-a-witch", "/tarot", "/moon", "/compatibility", "/this-week", "/zodiac"].some((x) => p.startsWith(x)) },
   { href: "/retreats", label: "Retreats", Icon: WaveIcon, match: (p: string) => p.startsWith("/retreats") },
-  { href: "/watch", label: "Watch", Icon: TvIcon, match: (p: string) => p.startsWith("/watch") },
-  { href: "/discover", label: "Discover", Icon: SparkIcon, match: (p: string) => ["/discover", "/tips", "/articles", "/astrology", "/ask-a-witch", "/tarot", "/moon"].some((x) => p.startsWith(x)) },
 ];
 
 export function MobileTabBar() {
@@ -74,7 +74,7 @@ export function MobileTabBar() {
             </button>
           </div>
           <ul className="grid gap-1">
-            {[{ href: "/services", label: "Work with Yulia", blurb: "Spells, readings, astrology and party hire." }, { href: "/testimonials", label: "Testimonials", blurb: "Kind words from clients." }, { href: "/birth-chart", label: "Birth Chart", blurb: "Your full natal chart and written report, free." }, ...discoverNav, { href: "/about", label: "About Yulia", blurb: "Her story and why she hosts retreats." }, { href: "/socials", label: "Socials", blurb: "Yulia on Instagram, YouTube and Etsy." }, { href: "/favourites", label: "Your favourites", blurb: "Tips, articles and videos you've saved." }, { href: "/contact", label: "Contact", blurb: "Questions, enquiries and collaborations." }].map((i) => (
+            {[{ href: "/services", label: "Work with Yulia", blurb: "Spells, readings, astrology and party hire." }, { href: "/testimonials", label: "Testimonials", blurb: "Kind words from clients." }, { href: "/birth-chart", label: "Birth Chart", blurb: "Your full natal chart and written report, free." }, ...discoverNav, { href: "/watch", label: "Watch", blurb: "Witchy TV: all of Yulia's videos." }, { href: "/about", label: "About Yulia", blurb: "Her story and why she hosts retreats." }, { href: "/socials", label: "Socials", blurb: "Yulia on Instagram, YouTube and Etsy." }, { href: "/favourites", label: "Your favourites", blurb: "Tips, articles and videos you've saved." }, { href: "/contact", label: "Contact", blurb: "Questions, enquiries and collaborations." }].map((i) => (
               <li key={i.href}>
                 <Link href={i.href} className="flex min-h-14 flex-col justify-center rounded-2xl px-4 py-2 hover:bg-sand/50">
                   <span className="font-display text-xl text-plum">{i.label}</span>

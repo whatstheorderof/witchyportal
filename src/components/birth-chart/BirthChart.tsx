@@ -5,7 +5,7 @@ import type { ChartResult } from "@/lib/astro/types";
 import type { NatalReport } from "@/lib/astro/report-types";
 import { Report, type ContactLinks } from "./Report";
 
-interface Place {
+export interface Place {
   id: number;
   label: string;
   latitude: number;
@@ -13,7 +13,7 @@ interface Place {
   timeZone: string;
 }
 
-function PlaceCombobox({ value, onChange, error }: { value: Place | null; onChange: (p: Place | null) => void; error?: string }) {
+export function PlaceCombobox({ value, onChange, error }: { value: Place | null; onChange: (p: Place | null) => void; error?: string }) {
   const id = useId();
   const [query, setQuery] = useState(value?.label ?? "");
   const [results, setResults] = useState<Place[]>([]);
