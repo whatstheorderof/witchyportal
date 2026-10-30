@@ -4,7 +4,8 @@ Everything in this folder is published to the website automatically when it's de
 
 | Folder | Appears on |
 | --- | --- |
-| `site/home.md` | Homepage hero and "Hello, I'm Yulia" introduction |
+| `site/home.md` | Homepage hero text and "Hello, I'm Yulia" introduction |
+| `hero.ts` | Homepage header slideshow — the photos that fade one into the next (wide photos work best) |
 | `site/about.md` | About Yulia page |
 | `site/contact.md` | Contact details and social links (footer, Contact, Ask a Witch). `retreatEmail` is shown on retreat and booking pages; `email` everywhere else |
 | `retreats/` | Retreat pages — description, activities, benefits, images (dates, prices and payment links are managed in /admin) |

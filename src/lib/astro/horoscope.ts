@@ -199,10 +199,20 @@ export interface WeekInAstrology {
   start: string;
   end: string;
   label: string;
-  events: { when: string; kind: SkyEvent["kind"]; title: string; paragraphs: string[] }[];
+  events: { id: string; day: string; time: string; when: string; kind: SkyEvent["kind"]; title: string; paragraphs: string[] }[];
   moonDays: { sign: Sign; from: string; text: string }[];
   retrogrades: { planet: string; sign: Sign }[];
+  /** One entry per day, Monday to Sunday, for the calendar view */
+  days: {
+    day: string;
+    weekday: string;
+    date: string;
+    moon: { sign: Sign; phase: string; angle: number; illumination: number; entersSign?: { sign: Sign; time: string } };
+    events: { id: string; time: string; kind: SkyEvent["kind"]; title: string }[];
+  }[];
 }
+
+const hhmm = (d: Date) => new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/London", hour: "2-digit", minute: "2-digit" }).format(d);
 
 /** Monday of the UK week containing `day` */
 export function weekStart(day: string) {
@@ -215,14 +225,31 @@ export function weekInAstrology(monday: string): WeekInAstrology {
   const when = (d: Date) => new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/London", weekday: "long", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(d);
   const events = skyEvents(from, to)
     .filter((e) => !(e.kind === "lunation" && (e.phase === "first" || e.phase === "last")) || true)
-    .map((e) => ({ when: when(e.time), kind: e.kind, title: eventTitle(e), paragraphs: eventText(e) }));
+    .map((e, i) => ({ id: `event-${i + 1}`, day: ukDayKey(e.time), time: hhmm(e.time), when: when(e.time), kind: e.kind, title: eventTitle(e), paragraphs: eventText(e) }));
+  const ingressList = moonIngresses(from, to);
+  const days = Array.from({ length: 7 }, (_, i) => {
+    const day = addDays(monday, i);
+    const noon = ukTime(day, "12:00");
+    // The sign the Moon starts the day in, and where it moves during the day
+    const moon = positionsAt(ukTime(day, "00:00")).find((p) => p.body === "Moon")!;
+    const phase = moonPhaseAt(noon);
+    const enters = ingressList.find((m) => ukDayKey(m.time) === day);
+    const d = new Date(`${day}T12:00:00Z`);
+    return {
+      day,
+      weekday: new Intl.DateTimeFormat("en-GB", { weekday: "short", timeZone: "UTC" }).format(d),
+      date: new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", timeZone: "UTC" }).format(d),
+      moon: { sign: moon.sign, phase: phase.name, angle: phase.angle, illumination: phase.illumination, ...(enters ? { entersSign: { sign: enters.sign, time: hhmm(enters.time) } } : {}) },
+      events: events.filter((e) => e.day === day).map(({ id, time, kind, title }) => ({ id, time, kind, title })),
+    };
+  });
   const startPos = positionsAt(from);
   const startMoon = startPos.find((p) => p.body === "Moon")!;
-  const moonDays = [{ sign: startMoon.sign, from: "Monday", text: MOON_IN_SIGN_DAY[startMoon.sign] }, ...moonIngresses(from, to).map((m) => ({ sign: m.sign, from: when(m.time), text: MOON_IN_SIGN_DAY[m.sign] }))];
+  const moonDays = [{ sign: startMoon.sign, from: "Monday", text: MOON_IN_SIGN_DAY[startMoon.sign] }, ...ingressList.map((m) => ({ sign: m.sign, from: when(m.time), text: MOON_IN_SIGN_DAY[m.sign] }))];
   const mid = new Date((+from + +to) / 2);
   const retrogrades = positionsAt(mid).filter((p) => p.retrograde).map((p) => ({ planet: p.body, sign: p.sign }));
   const fmt = (k: string) => new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", timeZone: "UTC" }).format(new Date(`${k}T12:00:00Z`));
-  return { start: monday, end: addDays(monday, 6), label: `${fmt(monday)} – ${fmt(addDays(monday, 6))}`, events, moonDays, retrogrades };
+  return { start: monday, end: addDays(monday, 6), label: `${fmt(monday)} – ${fmt(addDays(monday, 6))}`, events, moonDays, retrogrades, days };
 }
 
 /** Upcoming stations are useful on the hub page */

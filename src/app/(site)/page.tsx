@@ -6,6 +6,8 @@ import { getMediaMap, getSetting } from "@/lib/settings";
 import { getLivePostById, getLiveVideoById, latestShortPost, listHighlights, listPosts, listRetreats, listVideos } from "@/lib/queries";
 import { MediaImage } from "@/components/MediaImage";
 import { HeroVideo } from "@/components/HeroMedia";
+import { HeroSlideshow } from "@/components/HeroSlideshow";
+import { heroSlides } from "@content/hero";
 import { RetreatCard } from "@/components/RetreatCard";
 import { RetreatBookingCard } from "@/components/RetreatBookingCard";
 import { SectionHeading } from "@/components/Section";
@@ -68,9 +70,18 @@ export default async function HomePage() {
       {/* HERO — what Witchy Portal offers, in a few seconds */}
       <section className="relative isolate flex min-h-[80svh] items-end overflow-hidden bg-plum-deep text-ivory lg:min-h-[88svh]">
         <div className="absolute inset-0 -z-10">
-          <div className="ken-burns absolute inset-0">
-            <MediaImage media={heroImg} fallback="horns" priority sizes="100vw" />
-          </div>
+          {heroVideo ? (
+            <div className="ken-burns absolute inset-0">
+              <MediaImage media={heroImg} fallback="horns" priority sizes="100vw" />
+            </div>
+          ) : (
+            <HeroSlideshow
+              slides={[
+                ...(heroImg && heroImg.kind !== "video" ? [{ src: heroImg.url, alt: heroImg.alt ?? "" }] : []),
+                ...heroSlides.filter((s) => s.src !== heroImg?.url),
+              ]}
+            />
+          )}
           {heroVideo && <HeroVideo src={heroVideo.url} poster={heroVideo.posterUrl ?? heroImg?.url} />}
           <div className="scrim-hero absolute inset-0" />
         </div>
