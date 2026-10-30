@@ -59,7 +59,7 @@ export function PageHero({ eyebrow, title, intro, children, image }: { eyebrow?:
 export function EmptyState({ title, text, action }: { title: string; text: string; action?: React.ReactNode }) {
   return (
     <div className="card flex flex-col items-center gap-3 px-6 py-14 text-center">
-      <span aria-hidden className="font-display text-5xl text-lavender-deep">☾</span>
+      <span aria-hidden className="font-display text-5xl text-lavender-deep">☽︎</span>
       <h2 className="font-display text-2xl text-plum">{title}</h2>
       <p className="max-w-md text-muted">{text}</p>
       {action}

@@ -15,7 +15,7 @@ export default async function BookingReturnPage() {
   const email = retreatEmailOf(await getSetting("contact"));
   return (
     <div className="container-prose flex min-h-[70vh] flex-col justify-center pt-28 pb-20">
-      <span aria-hidden className="font-display text-6xl text-blush-deep">☾</span>
+      <span aria-hidden className="font-display text-6xl text-blush-deep">☽︎</span>
       <h1 className="display-md mt-4">Thank you for choosing to join us</h1>
       <div className="prose-witchy mt-6">
         <p>If you completed payment, your payment provider will email you a receipt shortly.</p>
