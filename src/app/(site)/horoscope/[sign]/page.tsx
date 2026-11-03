@@ -6,6 +6,7 @@ import { SIGNS } from "@/lib/astro/types";
 import { SIGN_INFO } from "@/lib/astro/interpretations";
 import { dailyHoroscope, signFromSlug, todayKey } from "@/lib/astro/horoscope";
 import { addDays } from "@/lib/astro/sky";
+import { featuredYear } from "@/lib/astro/yearly";
 import { ZODIAC } from "@/lib/astro/text/zodiac";
 import { absoluteUrl, breadcrumbLd, pageMeta } from "@/lib/seo";
 import { JsonLd } from "@/components/JsonLd";
@@ -55,6 +56,7 @@ export default async function SignHoroscope({ params, searchParams }: Props) {
               <Link key={k} href={k === "today" ? `/horoscope/${sign.toLowerCase()}` : `?day=${k}`} aria-current={OFFSETS[k] === offset ? "page" : undefined} className={`rounded-full px-4 py-2 text-sm capitalize ${OFFSETS[k] === offset ? "bg-ivory text-plum" : "border border-ivory/30 text-ivory hover:bg-ivory/10"}`}>{k}</Link>
             ))}
             <Link href={`/horoscope/${sign.toLowerCase()}/monthly`} className="rounded-full border border-ivory/30 px-4 py-2 text-sm text-ivory hover:bg-ivory/10">This month</Link>
+            <Link href={`/horoscope/${sign.toLowerCase()}/${featuredYear()}`} className="rounded-full border border-ivory/30 px-4 py-2 text-sm text-ivory hover:bg-ivory/10">Your {featuredYear()}</Link>
           </nav>
           <div className="mt-10 rounded-[2rem] bg-ivory/5 p-6 ring-1 ring-ivory/10 sm:p-10">
             <DayCard h={h} light />

@@ -1,3 +1,4 @@
+import { featuredYear } from "@/lib/astro/yearly";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
@@ -26,6 +27,7 @@ export default async function HoroscopeHub() {
   const moon = pos.find((p) => p.body === "Moon")!;
   const phase = moonPhaseAt(noon);
   const retro = pos.filter((p) => p.retrograde);
+  const year = featuredYear();
   const label = new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" }).format(new Date(`${day}T12:00:00Z`));
   return (
     <>
@@ -66,6 +68,16 @@ export default async function HoroscopeHub() {
             );
           })}
         </ul>
+      </section>
+      <section className="container-page pb-16" aria-labelledby="year-h">
+        <div className="rounded-[2rem] bg-plum-deep p-6 text-ivory sm:p-10">
+          <p className="eyebrow text-blush">The year ahead</p>
+          <h2 id="year-h" className="mt-2 font-display text-3xl text-ivory sm:text-4xl">Your {year} horoscope</h2>
+          <p className="mt-2 max-w-2xl text-ivory/80">Jupiter&rsquo;s blessing, Saturn&rsquo;s lesson, the eclipses and retrogrades in your chart, and every New and Full Moon of {year}, month by month.</p>
+          <ul className="mt-6 flex flex-wrap gap-2">
+            {SIGNS.map((s) => <li key={s}><Link href={`/horoscope/${s.toLowerCase()}/${year}`} className="inline-block rounded-full border border-ivory/30 px-4 py-2 text-sm text-ivory hover:bg-ivory/10"><span aria-hidden>{SIGN_INFO[s].glyph}</span> {s} {year}</Link></li>)}
+          </ul>
+        </div>
       </section>
     </>
   );

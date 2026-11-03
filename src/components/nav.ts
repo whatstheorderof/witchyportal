@@ -15,6 +15,7 @@ export const starsNav = [
   { href: "/this-week-in-astrology", label: "This week in astrology", blurb: "The week's Moons, retrogrades and big aspects." },
   { href: "/compatibility", label: "Compatibility", blurb: "Star signs, love signs and birth charts together." },
   { href: "/moon/phases", label: "Moon phases", blurb: "What each phase means, and the magic for it." },
+  { href: "/calculators", label: "Calculators", blurb: "Your rising, Moon, Venus and Mars signs and Saturn return." },
 ];
 
 export const discoverNav = [
@@ -22,6 +23,9 @@ export const discoverNav = [
   { href: "/tarot", label: "Tarot", blurb: "Card of the day, and draw your own." },
   { href: "/moon", label: "Moon calendar", blurb: "The year's new and full moons, eclipses and sabbats." },
   { href: "/zodiac", label: "Zodiac signs", blurb: "The twelve signs: traits, love and compatibility." },
+  { href: "/mercury-retrograde", label: "Mercury retrograde", blurb: "Every retrograde and shadow, and what it means for you." },
+  { href: "/eclipses", label: "Eclipses", blurb: "The year's eclipses, UK visibility and eclipse season." },
+  { href: "/chinese-zodiac", label: "Chinese zodiac", blurb: "Your animal and element, and the Fire Goat year." },
   { href: "/astrology", label: "Astrology", blurb: "Weekly and seasonal wisdom from Yulia." },
   { href: "/tips", label: "Witchy Tips", blurb: "Small rituals, affirmations and gentle motivation." },
   { href: "/articles", label: "Articles", blurb: "Short reads on magic, movement and living by the moon." },

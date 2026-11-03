@@ -3,7 +3,10 @@
 import { useEffect, useId, useRef, useState } from "react";
 import type { ChartResult } from "@/lib/astro/types";
 import type { NatalReport } from "@/lib/astro/report-types";
+import Link from "next/link";
 import { Report, type ContactLinks } from "./Report";
+import { saveMyChart, useMyChart } from "@/lib/my-chart";
+import { setMySign } from "@/lib/my-sign";
 
 export interface Place {
   id: number;
@@ -123,6 +126,8 @@ export function BirthChart({ contact }: { contact: ContactLinks }) {
   const [status, setStatus] = useState<"idle" | "loading" | "error" | "done">("idle");
   const [message, setMessage] = useState("");
   const [chart, setChart] = useState<ChartResult | null>(null);
+  const [save, setSave] = useState(false);
+  const saved = useMyChart();
   const resultRef = useRef<HTMLDivElement>(null);
 
   async function submit(e: React.FormEvent) {
@@ -145,6 +150,11 @@ export function BirthChart({ contact }: { contact: ContactLinks }) {
       if (!res.ok) throw new Error(data.error ?? "Something went wrong");
       setChart(data.chart);
       setReport(data.report);
+      if (save) {
+        const sun = (data.chart as ChartResult).placements.find((p) => p.body === "Sun")?.sign;
+        saveMyChart({ date, time: unknownTime ? null : time, placeId: place!.id, placeLabel: place!.label, ...(name.trim() ? { name: name.trim() } : {}), ...(sun ? { sun } : {}) });
+        if (sun) setMySign(sun);
+      }
       setStatus("done");
       setTimeout(() => { const h = document.getElementById("chart-result"); h?.focus(); resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }); }, 50);
     } catch (err) {
@@ -183,9 +193,22 @@ export function BirthChart({ contact }: { contact: ContactLinks }) {
             Without a birth time we can still show your planets&rsquo; signs, but not your rising sign (Ascendant), Midheaven or houses, and your Moon&rsquo;s exact degree is uncertain.
           </p>
         )}
+        <div id="save-chart" className="scroll-mt-28 rounded-xl bg-blush/30 px-4 py-3">
+          {saved ? (
+            <p className="text-[0.95rem] text-plum">
+              A birth chart{saved.name ? ` (${saved.name})` : ""} is saved on this device for your <Link href="/today" className="link-underline">personal daily horoscope</Link>.{" "}
+              <button type="button" className="link-underline" onClick={() => saveMyChart(null)}>Forget it</button>
+            </p>
+          ) : (
+            <label className="flex items-start gap-3 text-[0.95rem]">
+              <input type="checkbox" className="mt-0.5 h-5 w-5 shrink-0 accent-plum" checked={save} onChange={(e) => setSave(e.target.checked)} />
+              <span><strong className="font-medium text-plum">Save my chart on this device</strong> for a personal daily horoscope read from my whole chart. It stays in this browser only — we never store it — and you can forget it at any time.</span>
+            </label>
+          )}
+        </div>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
           <button className="btn-primary" disabled={status === "loading"}>{status === "loading" ? "Reading the sky…" : "Get my free natal chart"}</button>
-          <p id="privacy-note" className="text-sm text-muted">Your birth details are used only to calculate your chart and are never stored.</p>
+          <p id="privacy-note" className="text-sm text-muted">Your birth details are used only to calculate your chart and are never stored on our server.</p>
         </div>
         <div aria-live="polite">
           {status === "error" && <p role="alert" className="rounded-xl bg-danger/10 px-4 py-3 text-danger">{message}</p>}

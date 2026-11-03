@@ -2,6 +2,9 @@ import type { MetadataRoute } from "next";
 import { siteUrl } from "@/lib/env";
 import { listPosts, listRetreats } from "@/lib/queries";
 import { SIGNS } from "@/lib/astro/types";
+import { CALCS, CALC_KINDS } from "@/lib/astro/calc-meta";
+import { ANIMALS } from "@/lib/astro/chinese-rules";
+import { yearlyYears } from "@/lib/astro/yearly";
 
 type Entry = MetadataRoute.Sitemap[number];
 
@@ -25,6 +28,14 @@ const STATIC: [string, Entry["changeFrequency"], number][] = [
   ["/compatibility/birth-chart", "monthly", 0.7],
   ...SIGNS.flatMap((a, i) => SIGNS.slice(i).map((b) => [`/compatibility/${a.toLowerCase()}-and-${b.toLowerCase()}`, "monthly", 0.5] as [string, Entry["changeFrequency"], number])),
   ["/moon/phases", "daily", 0.7],
+  ["/calculators", "monthly", 0.7],
+  ...CALC_KINDS.map((k) => [CALCS[k].path, "monthly", 0.8] as [string, Entry["changeFrequency"], number]),
+  ["/mercury-retrograde", "weekly", 0.8],
+  ["/eclipses", "monthly", 0.7],
+  ...yearlyYears().flatMap((y) => SIGNS.map((s) => [`/horoscope/${s.toLowerCase()}/${y}`, "monthly", 0.7] as [string, Entry["changeFrequency"], number])),
+  ["/chinese-zodiac", "monthly", 0.7],
+  ["/chinese-zodiac/2027", "monthly", 0.7],
+  ...ANIMALS.map((a) => [`/chinese-zodiac/${a.toLowerCase()}`, "monthly", 0.6] as [string, Entry["changeFrequency"], number]),
   ...SIGNS.map((s) => [`/zodiac/${s.toLowerCase()}`, "monthly", 0.6] as [string, Entry["changeFrequency"], number]),
   ["/ask-a-witch", "weekly", 0.7],
   ["/watch", "weekly", 0.6],

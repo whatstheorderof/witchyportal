@@ -27,6 +27,9 @@ const lon = (b: SkyBody, d: Date) => {
   return v;
 };
 const wrap = (x: number) => ((x + 540) % 360) - 180; // to (-180, 180]
+/** Ecliptic longitude of a body at a moment (memoised) */
+export const longitudeAt = (b: SkyBody, d: Date) => lon(b, d);
+export const wrap180 = wrap;
 
 /** YYYY-MM-DD in UK time */
 export const ukDayKey = (d: Date) => new Intl.DateTimeFormat("en-CA", { timeZone: SKY_TZ }).format(d);
