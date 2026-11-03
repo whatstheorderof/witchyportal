@@ -1,5 +1,6 @@
 "use server";
 
+import { stripeEnabled } from "@/lib/stripe";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
@@ -242,6 +243,10 @@ export async function saveOption(_: FormState, fd: FormData): Promise<FormState>
     if (!v.ok) errors[k] = v.error;
     else urls[k] = v.url;
   }
+  const checkoutMethod = str(fd, "checkoutMethod") === "stripe" ? "stripe" : "link";
+  const capRaw = str(fd, "capacity");
+  const capacity = capRaw ? Number(capRaw) : null;
+  if (capRaw && (!Number.isInteger(capacity) || capacity! < 0 || capacity! > 500)) errors.capacity = "Enter a whole number of places, or leave it empty";
   if (Object.keys(errors).length) return fail("Please fix the highlighted fields.", errors);
 
   const departureId = str(fd, "departureId");
@@ -256,6 +261,8 @@ export async function saveOption(_: FormState, fd: FormData): Promise<FormState>
     balanceNote: optStr(fd, "balanceNote"),
     availability,
     ...urls,
+    checkoutMethod: checkoutMethod as "link" | "stripe",
+    capacity,
     isVisible: bool(fd, "isVisible"),
     sortOrder: Number(str(fd, "sortOrder") || 0),
   };
@@ -263,7 +270,9 @@ export async function saveOption(_: FormState, fd: FormData): Promise<FormState>
   if (id) await db.update(s.bookingOptions).set(values).where(eq(s.bookingOptions.id, id));
   else await db.insert(s.bookingOptions).values(values);
   refreshSite();
-  const warn = !urls.paymentUrl ? " Note: no live payment link yet — visitors will be asked to contact you." : "";
+  const warn = checkoutMethod === "stripe"
+    ? (stripeEnabled() ? "" : " Note: Stripe isn't connected yet, so the payment links are used until it is.")
+    : !urls.paymentUrl ? " Note: no live payment link yet — visitors will be asked to contact you." : "";
   return ok((id ? "Option saved." : "Option added.") + warn);
 }
 

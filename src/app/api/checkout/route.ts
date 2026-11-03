@@ -4,6 +4,8 @@ import { checkoutClicks } from "@/db/schema";
 import { getBookingSelection } from "@/lib/queries";
 import { deploymentEnv, paymentMode } from "@/lib/env";
 import { validatePaymentUrl } from "@/lib/validation";
+import { stripeEnabled, stripeMode } from "@/lib/stripe";
+import { startRetreatCheckout } from "@/lib/orders";
 
 /**
  * Sends the visitor to the hosted payment page for a booking option.
@@ -26,6 +28,16 @@ export async function POST(req: NextRequest) {
   if (!accepted) return back(retreat.slug, "terms");
   const ok = (a: string) => a === "available" || a === "limited";
   if (!ok(option.availability) || !ok(departure.availability)) return back(retreat.slug, "unavailable");
+
+  // Stripe Checkout: hold a place (capacity-checked) and confirm by webhook
+  if (option.checkoutMethod === "stripe" && stripeEnabled()) {
+    const r = await startRetreatCheckout(sel);
+    if ("error" in r) return back(retreat.slug, r.error);
+    try {
+      await db.insert(checkoutClicks).values({ optionId: option.id, retreatTitle: retreat.title, optionLabel: `${departure.startDate} · ${option.label}`, amount: option.amount, currency: option.currency, environment: `${deploymentEnv()}/stripe-${stripeMode()}` });
+    } catch (e) { console.error("checkout click log failed", e); }
+    return NextResponse.redirect(r.url, 303);
+  }
 
   const mode = paymentMode();
   const raw = mode === "live" ? option.paymentUrl : option.testPaymentUrl;

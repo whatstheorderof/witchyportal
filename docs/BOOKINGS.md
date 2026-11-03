@@ -40,4 +40,4 @@ Each option needs its own link (one per date × room type × deposit/full). If a
 
 ## Moving to automatic confirmation (future)
 
-If you later want automatic booking confirmation, the recommended path is Stripe Checkout Sessions created on the server plus a signed webhook (`checkout.session.completed`) that: verifies the signature, stores the event id to ignore repeats, records the booking, and decrements a per-option capacity inside a database transaction so the last place can't be sold twice. The data model already separates departures and options to support this.
+**Automatic booking confirmation is built** — see docs/STRIPE.md. (Original design note: the recommended path is Stripe Checkout Sessions created on the server plus a signed webhook (`checkout.session.completed`) that: verifies the signature, stores the event id to ignore repeats, records the booking, and decrements a per-option capacity inside a database transaction so the last place can't be sold twice. The data model already separates departures and options to support this.)

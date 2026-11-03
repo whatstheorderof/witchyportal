@@ -50,6 +50,13 @@
       "when": 1790946636482,
       "tag": "0006_events",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793736452996,
+      "tag": "0007_stripe_payments",
+      "breakpoints": true
     }
   ]
 }

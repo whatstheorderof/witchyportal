@@ -3,7 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ANIMALS, FIXED_ELEMENT, RELATION_LABEL, animalFromSlug, animalSlug, elementOfYear, lunarNewYearCached, relation, yearsOf, type Animal } from "@/lib/astro/chinese";
 import { CHINESE_ANIMALS } from "@/lib/astro/text/stars/chinese-animals";
-import { CHINESE_RELATION, CHINESE_YEAR_2027 } from "@/lib/astro/text/stars/chinese-year";
+import { CHINESE_RELATION } from "@/lib/astro/text/stars/chinese-year";
+import { featuredChineseYear } from "@/lib/astro/chinese-years";
 import { absoluteUrl, breadcrumbLd, pageMeta } from "@/lib/seo";
 import { JsonLd } from "@/components/JsonLd";
 import { ChineseCompat } from "@/components/chinese/ChineseCompat";
@@ -30,6 +31,7 @@ export default async function AnimalPage({ params }: Props) {
   const a = animalFromSlug((await params).animal);
   if (!a) notFound();
   const t = CHINESE_ANIMALS[a];
+  const fy = featuredChineseYear();
   const rels = ANIMALS.filter((b) => b !== a).map((b) => ({ b, r: relation(a, b) }));
   const group = (r: string) => rels.filter((x) => x.r === r).map((x) => x.b);
   const years = yearsOf(a, 1924, 2031);
@@ -76,9 +78,9 @@ export default async function AnimalPage({ params }: Props) {
         </section>
         <section className="card p-6 sm:p-8">
           <p className="eyebrow">The year ahead</p>
-          <h2 className="mt-1 font-display text-2xl text-plum sm:text-3xl">The {a} in the 2027 Fire Goat year</h2>
-          <Prose text={CHINESE_YEAR_2027.animals[a]} className="mt-3" />
-          <Link href="/chinese-zodiac/2027" className="mt-3 inline-block link-underline">The Year of the Fire Goat</Link>
+          <h2 className="mt-1 font-display text-2xl text-plum sm:text-3xl">The {a} in the {fy.year} {fy.element} {fy.animal} year</h2>
+          <Prose text={fy.text.animals[a]} className="mt-3" />
+          <Link href={`/chinese-zodiac/${fy.year}`} className="mt-3 inline-block link-underline">The Year of the {fy.element} {fy.animal}</Link>
         </section>
         <section className="rounded-[2rem] bg-blush/40 p-6 sm:p-8"><p className="eyebrow">Yulia&rsquo;s ritual</p><h2 className="mt-1 font-display text-2xl text-plum">A ritual for the {a}</h2><Prose text={t.ritual} className="mt-3" /></section>
         <nav aria-label="Other animals" className="flex flex-wrap gap-2">

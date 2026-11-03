@@ -12,28 +12,35 @@ import { TrackView } from "@/components/Track";
 
 export const metadata: Metadata = { title: "Review your booking", robots: { index: false } };
 
-type Props = { params: Promise<{ slug: string }>; searchParams: Promise<{ option?: string; error?: string }> };
+type Props = { params: Promise<{ slug: string }>; searchParams: Promise<{ option?: string; error?: string; cancelled?: string }> };
 
 const ERRORS: Record<string, string> = {
   terms: "Please confirm you've read the booking terms before continuing.",
   unavailable: "Sorry — that option is no longer available. Please choose another.",
   nolink: "Online payment isn't set up for this option yet. Please contact us to book.",
+  full: "Sorry — every place for this option is taken or being paid for right now. Places held for unfinished payments are released after 30 minutes, so you can try again then or join the waitlist.",
+  stripe: "We couldn't open the payment page just now. Nothing has been charged — please try again in a moment.",
 };
 
 import { getSetting } from "@/lib/settings";
+import { stripeEnabled, stripeMode } from "@/lib/stripe";
+import { placesTaken } from "@/lib/orders";
 import { retreatEmailOf } from "@/lib/contact-links";
 import { RetreatEmailNote } from "@/components/RetreatEmail";
 
 export default async function BookPage(props: Props) {
   const { slug } = await props.params;
-  const { option: optionId, error } = await props.searchParams;
+  const { option: optionId, error, cancelled } = await props.searchParams;
   if (!optionId || !/^[0-9a-f-]{36}$/i.test(optionId)) notFound();
   const sel = await getBookingSelection(optionId);
   if (!sel || sel.retreat.slug !== slug) notFound();
   const { option, departure, retreat } = sel;
   const bookable = isBookable(option.availability) && isBookable(departure.availability);
   const mode = paymentMode();
-  const link = mode === "live" ? option.paymentUrl : option.testPaymentUrl;
+  const useStripe = option.checkoutMethod === "stripe" && stripeEnabled();
+  const link = useStripe ? "stripe" : mode === "live" ? option.paymentUrl : option.testPaymentUrl;
+  const testMode = useStripe ? stripeMode() === "test" : mode === "test";
+  const left = useStripe && option.capacity != null ? Math.max(0, option.capacity - (await placesTaken(option.id))) : null;
   const nights = nightsBetween(departure.startDate, departure.endDate);
   const email = retreatEmailOf(await getSetting("contact"));
   const balance = option.paymentType === "deposit" && option.totalPrice ? option.totalPrice - option.amount : null;
@@ -46,6 +53,7 @@ export default async function BookPage(props: Props) {
       <h1 className="display-md mt-3">You&rsquo;re about to reserve</h1>
 
       {error && ERRORS[error] && <p role="alert" className="mt-6 rounded-xl bg-danger/10 px-4 py-3 text-danger">{ERRORS[error]}</p>}
+      {cancelled && !error && <p role="status" className="mt-6 rounded-xl bg-lavender/40 px-4 py-3 text-plum">Payment cancelled — nothing has been charged. Your selection is below if you&rsquo;d like to try again.</p>}
 
       <section className="card mt-8 overflow-hidden" aria-label="Booking summary">
         <div className="bg-plum-deep px-6 py-5 text-ivory">
@@ -100,12 +108,16 @@ export default async function BookPage(props: Props) {
           <Link href={`/contact?retreat=${retreat.id}`} className="btn-primary mt-4">Contact Yulia</Link>
         </div>
       ) : (
-        <ConfirmAndPay optionId={option.id} testMode={mode === "test"} />
+        <>
+          {left !== null && left <= 3 && <p className="mt-8 text-sm font-medium text-plum">{left === 0 ? "All places are currently held — places from unfinished payments are released after 30 minutes." : `${left} place${left === 1 ? "" : "s"} left for this option.`}</p>}
+          <ConfirmAndPay optionId={option.id} testMode={testMode} />
+          {useStripe && <p className="mt-3 text-sm text-muted">You&rsquo;ll pay on Stripe&rsquo;s secure page. Your place is held for 30 minutes while you pay, and you&rsquo;ll get an email confirming your booking as soon as the payment goes through.</p>}
+        </>
       )}
 
       <div className="mt-10 grid gap-3 text-sm text-muted">
         <p className="flex gap-2"><LockIcon className="mt-0.5 h-4 w-4 shrink-0" />Payment is taken securely by our payment provider on their own page. We never see your card details.</p>
-        <p>Your place is confirmed once Yulia has received your payment and emailed you. Returning to this website after paying does not by itself confirm a booking.</p>
+        <p>{useStripe ? "Your place is confirmed by email as soon as Stripe confirms your payment." : "Your place is confirmed once Yulia has received your payment and emailed you. Returning to this website after paying does not by itself confirm a booking."}</p>
         <RetreatEmailNote email={email} subject={`${retreat.title} — booking question`} lead="Questions before you pay?" className="text-sm" />
       </div>
     </div>

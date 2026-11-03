@@ -33,6 +33,7 @@
     "react-dom": "19.2.8",
     "react-markdown": "^10.1.0",
     "server-only": "^0.0.1",
+    "stripe": "^18.5.0",
     "zod": "^4.6.5"
   },
   "devDependencies": {
@@ -51,5 +52,5 @@
   "engines": {
     "node": "24.x"
   },
-  "description": "Witchy Portal \u2014 retreats, rituals and birth charts with Yulia Moon"
+  "description": "Witchy Portal — retreats, rituals and birth charts with Yulia Moon"
 }

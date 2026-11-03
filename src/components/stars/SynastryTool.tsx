@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { PlaceCombobox, type Place } from "@/components/birth-chart/BirthChart";
 import { NewsletterForm } from "@/components/forms";
@@ -12,8 +12,15 @@ type Response = {
   full: SynastryReport | null;
   price: { label: string };
   purchasing: boolean;
+  purchased: boolean;
   adminPreview: boolean;
 };
+type Saved = { a: Person; b: Person };
+const PENDING_KEY = "witchy:synastry-pending";
+const PAID_KEY = "witchy:synastry-paid";
+const load = <T,>(k: string, fallback: T): T => { try { const v = localStorage.getItem(k); return v ? (JSON.parse(v) as T) : fallback; } catch { return fallback; } };
+const store = (k: string, v: unknown) => { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch { /* private mode */ } };
+const sameInputs = (x: Saved, y: Saved) => (["a", "b"] as const).every((k) => x[k].date === y[k].date && x[k].time === y[k].time && x[k].place?.id === y[k].place?.id);
 const blank = (): Person => ({ name: "", date: "", time: "", unknown: false, place: null });
 const AREA_LABEL = { love: "Love", communication: "Communication", passion: "Passion", stability: "Stability", growth: "Growth" } as const;
 
@@ -39,8 +46,52 @@ export function SynastryTool() {
   const [res, setRes] = useState<Response | null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [buying, setBuying] = useState(false);
+  const [mail, setMail] = useState<{ state: "idle" | "busy" | "done" | "error"; text?: string }>({ state: "idle" });
+  const [notice, setNotice] = useState("");
+  const [paidList, setPaidList] = useState<Saved[]>([]);
   const out = useRef<HTMLDivElement>(null);
   const set = (k: "a" | "b", patch: Partial<Person>) => setPeople((p) => ({ ...p, [k]: { ...p[k], ...patch } }));
+  const bodyOf = (pp: Saved, extra: Record<string, unknown> = {}) => ({ ...Object.fromEntries((["a", "b"] as const).map((k) => [k, { name: pp[k].name, date: pp[k].date, time: pp[k].unknown ? null : pp[k].time, placeId: pp[k].place!.id }])), ...extra });
+
+  async function run(pp: Saved, extra: Record<string, unknown> = {}) {
+    setBusy(true); setError(""); setMail({ state: "idle" });
+    try {
+      const r = await fetch("/api/synastry", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(bodyOf(pp, extra)) });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error);
+      setRes(d);
+      if (d.purchased) {
+        // Keep purchased reports on this device so they can be reopened
+        const list = load<Saved[]>(PAID_KEY, []).filter((x) => !sameInputs(x, pp));
+        const next = [pp, ...list].slice(0, 10);
+        store(PAID_KEY, next); setPaidList(next);
+      }
+      setTimeout(() => out.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+      return d as Response;
+    } catch (err) { setError(err instanceof Error ? err.message : "Something went wrong"); return null; } finally { setBusy(false); }
+  }
+
+  // Coming back from Stripe (?paid=cs_…) or a cancelled payment (?cancelled=1)
+  useEffect(() => {
+    const t = setTimeout(() => {
+    const q = new URLSearchParams(window.location.search);
+    const paid = q.get("paid"), cancelled = q.get("cancelled");
+    const pending = load<Saved | null>(PENDING_KEY, null);
+    setPaidList(load<Saved[]>(PAID_KEY, []));
+    if ((paid || cancelled) && pending) {
+      setPeople(pending);
+      window.history.replaceState(null, "", window.location.pathname);
+      if (cancelled) setNotice("Payment cancelled — nothing has been charged. Your free preview is below.");
+      void run(pending, paid ? { session: paid } : {}).then((d) => {
+        if (paid && d && !d.purchased) setNotice("We're still waiting for Stripe to confirm your payment. Give it a minute, then press “Compare our charts” again — you won't be charged twice.");
+        if (paid && d?.purchased) { store(PENDING_KEY, null); setNotice("Thank you — your full report is unlocked. It's saved on this device: enter the same details again any time to reopen it."); }
+      });
+    }
+    }, 0);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -48,15 +99,30 @@ export function SynastryTool() {
       const p = people[k];
       if (!p.date || (!p.unknown && !p.time) || !p.place) { setError(`Please complete the birth date, time (or tick “unknown”) and place for ${k === "a" ? "the first" : "the second"} person.`); return; }
     }
-    setBusy(true); setError("");
-    const body = Object.fromEntries((["a", "b"] as const).map((k) => [k, { name: people[k].name, date: people[k].date, time: people[k].unknown ? null : people[k].time, placeId: people[k].place!.id }]));
+    setNotice("");
+    await run(people);
+  }
+
+  async function buy() {
+    setBuying(true); setError("");
     try {
-      const r = await fetch("/api/synastry", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      store(PENDING_KEY, people); // the details stay in this browser, so the report can be shown after payment
+      const r = await fetch("/api/synastry/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(bodyOf(people)) });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error);
-      setRes(d);
-      setTimeout(() => out.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
-    } catch (err) { setError(err instanceof Error ? err.message : "Something went wrong"); } finally { setBusy(false); }
+      if (d.alreadyPaid) { await run(people); return; }
+      window.location.assign(d.url);
+    } catch (err) { setError(err instanceof Error ? err.message : "Something went wrong"); setBuying(false); }
+  }
+
+  async function emailCopy() {
+    setMail({ state: "busy" });
+    try {
+      const r = await fetch("/api/synastry/email", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(bodyOf(people)) });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error);
+      setMail({ state: "done", text: `Sent to ${d.to}.` });
+    } catch (err) { setMail({ state: "error", text: err instanceof Error ? err.message : "Couldn't send" }); }
   }
 
   const personFields = (k: "a" | "b", label: string) => {
@@ -80,6 +146,16 @@ export function SynastryTool() {
   const pv = res?.preview;
   return (
     <div className="grid gap-12">
+      {paidList.length > 0 && (
+        <section aria-labelledby="mine-h" className="rounded-2xl bg-blush/40 p-5">
+          <h2 id="mine-h" className="font-medium text-plum">Your reports on this device</h2>
+          <ul className="mt-2 flex flex-wrap gap-2">
+            {paidList.map((p, i) => <li key={i}><button type="button" className="chip min-h-9" onClick={() => { setPeople(p); void run(p); }}>{p.a.name || "Person one"} &amp; {p.b.name || "Person two"}</button></li>)}
+          </ul>
+          <button type="button" className="mt-3 text-sm link-underline" onClick={() => { store(PAID_KEY, null); setPaidList([]); }}>Forget these on this device</button>
+        </section>
+      )}
+      {notice && <p role="status" className="rounded-2xl bg-lavender/40 p-4 text-plum">{notice}</p>}
       <form onSubmit={submit} noValidate className="card grid gap-8 p-6 sm:p-10">
         <div className="grid gap-10 md:grid-cols-2">{personFields("a", "You")}{personFields("b", "Them")}</div>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -91,24 +167,34 @@ export function SynastryTool() {
 
       {res && pv && (
         <div ref={out} aria-live="polite" className="grid scroll-mt-28 gap-10">
+          {view && res.purchased && (
+            <div className="flex flex-col gap-3 rounded-2xl bg-ivory p-4 ring-1 ring-line sm:flex-row sm:items-center sm:justify-between print:hidden">
+              <p className="text-sm text-ink/80">Your full report. It&rsquo;s saved on this device — enter the same details any time to reopen it.</p>
+              <div className="flex flex-wrap gap-2">
+                <button type="button" className="btn-outline min-h-10 text-sm" onClick={() => window.print()}>Print or save as PDF</button>
+                <button type="button" className="btn-outline min-h-10 text-sm" disabled={mail.state === "busy" || mail.state === "done"} onClick={emailCopy}>{mail.state === "busy" ? "Sending…" : "Email me a copy"}</button>
+              </div>
+              {mail.text && <p role="status" className={`text-sm ${mail.state === "error" ? "text-danger" : "text-plum"}`}>{mail.text}</p>}
+            </div>
+          )}
           {res.adminPreview && <p className="rounded-2xl border-2 border-dashed border-warning bg-warning/10 p-4 text-sm text-warning">Admin preview: you&rsquo;re signed in, so the full paid report is shown. Visitors see the free preview until payment is switched on.</p>}
           <section className="rounded-[2rem] bg-plum-deep p-6 text-ivory sm:p-10" aria-labelledby="syn-h">
             <p className="eyebrow text-blush">Birth chart compatibility</p>
-            <h2 id="syn-h" className="mt-2 font-display text-3xl sm:text-4xl">{pv.names.a} &amp; {pv.names.b}</h2>
+            <h2 id="syn-h" className="mt-2 font-display text-3xl text-ivory sm:text-4xl">{pv.names.a} &amp; {pv.names.b}</h2>
             <div className="mt-8 grid gap-8 lg:grid-cols-[auto_1fr] lg:items-center">
               <div className="grid h-36 w-36 place-items-center rounded-full border-4 border-blush/70 text-center"><span><span className="block font-display text-5xl leading-none">{pv.overall}</span><span className="text-sm text-ivory/75">out of 100</span></span></div>
-              <dl className="grid gap-4">
+              <ul className="grid gap-4">
                 {pv.scores.map((s) => (
-                  <div key={s.area}>
+                  <li key={s.area}>
                     <div className="grid grid-cols-[8.5rem_1fr_2.5rem] items-center gap-3 text-sm">
-                      <dt>{AREA_LABEL[s.area]}</dt>
-                      <dd className="h-2.5 overflow-hidden rounded-full bg-ivory/15" aria-hidden><span className="block h-full rounded-full bg-blush" style={{ width: `${s.score}%` }} /></dd>
-                      <dd className="text-right tabular-nums" aria-label={`${AREA_LABEL[s.area]}: ${s.score} out of 100`}>{s.score}</dd>
+                      <span>{AREA_LABEL[s.area]}</span>
+                      <span className="h-2.5 overflow-hidden rounded-full bg-ivory/15" aria-hidden><span className="block h-full rounded-full bg-blush" style={{ width: `${s.score}%` }} /></span>
+                      <span className="text-right tabular-nums" aria-label={`${AREA_LABEL[s.area]}: ${s.score} out of 100`}>{s.score}</span>
                     </div>
-                    <dd className="mt-1 text-sm text-ivory/75">{s.note}</dd>
-                  </div>
+                    <p className="mt-1 text-sm text-ivory/75">{s.note}</p>
+                  </li>
                 ))}
-              </dl>
+              </ul>
             </div>
             <div className="mt-8 grid gap-3 sm:grid-cols-2">
               {(["a", "b"] as const).map((k) => {
@@ -142,11 +228,20 @@ export function SynastryTool() {
                   {pv.locked.aspects.length > 12 && <li className="text-muted">…and {pv.locked.aspects.length - 12} more</li>}
                 </ul>
               </div>
+              {res.purchasing ? (
+              <div className="bg-plum-deep p-6 text-ivory sm:p-10">
+                <p className="font-display text-2xl">Unlock your full report</p>
+                <p className="mt-2 text-ivory/80">Every connection between your charts and where you light up each other&rsquo;s lives, in Yulia&rsquo;s words — {res.price.label}, paid securely with Stripe. You can print it, save it as a PDF or have a copy emailed to you.</p>
+                <button type="button" onClick={buy} disabled={buying} className="btn-primary mt-5 bg-ivory text-plum hover:bg-blush">{buying ? "Opening secure payment…" : `Unlock the full report — ${res.price.label}`}</button>
+                <p className="mt-3 text-xs text-ivory/65">We don&rsquo;t store your birth details: they stay in this browser, and we keep only a one-way code to recognise your purchase.</p>
+              </div>
+              ) : (
               <div className="bg-plum-deep p-6 text-ivory sm:p-10">
                 <p className="font-display text-2xl">The full report is launching soon</p>
                 <p className="mt-2 text-ivory/80">Leave your email and we&rsquo;ll tell you the moment it&rsquo;s available. Or, for a personal reading of your two charts, <Link href="/contact" className="underline">ask Yulia directly</Link>.</p>
                 <div className="mt-5 max-w-xl"><NewsletterForm source="synastry-report" dark /></div>
               </div>
+              )}
             </section>
           )}
           {pv.notes.length > 0 && <p className="text-sm text-muted">{pv.notes.join(" ")}</p>}

@@ -3,6 +3,10 @@ import { asc, desc, inArray, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { posts, retreats, videos } from "@/db/schema";
 import { AdminHeader, Panel } from "@/components/admin/ui";
+import { stripeMode, stripeProblem } from "@/lib/stripe";
+import { siteUrl } from "@/lib/env";
+import { SYNASTRY_PRICE } from "@/lib/astro/compat";
+import { reportSalesOn } from "@/lib/report-purchase";
 import { AdminForm, Check, F, Select } from "@/components/admin/AdminForm";
 import { MediaPicker } from "@/components/admin/MediaPicker";
 import { saveSettings } from "../../actions";
@@ -12,6 +16,7 @@ import { pickerMedia } from "@/lib/admin-data";
 export const metadata = { title: "Settings" };
 
 export default async function SettingsAdmin() {
+  const reportOn = reportSalesOn();
   const yt = await getSetting("youtube");
   const recent = sql`coalesce(publish_at, created_at)`;
   const [vids, arts, shortsPosts] = await Promise.all([
@@ -103,6 +108,21 @@ export default async function SettingsAdmin() {
             <F label="Newsletter text" name="newsletterText" defaultValue={site.newsletterText} textarea rows={2} />
             <input type="hidden" name="announcement" value={site.announcement} />
           </AdminForm>
+        </Panel>
+        <Panel title="Payments (Stripe)" id="payments" intro="Stripe is connected with environment variables in Vercel, not here — see docs/STRIPE.md.">
+          {stripeProblem() ? (
+            <div className="grid gap-2 text-[0.95rem]">
+              <p><strong>Not connected:</strong> {stripeProblem()}.</p>
+              <p className="text-muted">Until it is, retreat options use their payment links and the compatibility report stays a free preview.</p>
+            </div>
+          ) : (
+            <div className="grid gap-2 text-[0.95rem]">
+              <p><strong>Connected</strong> in <strong>{stripeMode()}</strong> mode{stripeMode() === "test" ? " — no real money is taken" : ""}.</p>
+              <p>Webhook address: <code className="rounded bg-ink/5 px-1">{siteUrl()}/api/stripe/webhook</code></p>
+              <p>Compatibility report: {reportOn ? `on sale at ${SYNASTRY_PRICE.label}` : "switched off (SYNASTRY_SALES=off)"}.</p>
+              <p><Link href="/admin/orders" className="link-underline">See orders</Link></p>
+            </div>
+          )}
         </Panel>
       </div>
     </>

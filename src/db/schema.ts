@@ -34,6 +34,10 @@ export const availability = pgEnum("availability", [
 ]);
 
 export const paymentType = pgEnum("payment_type", ["deposit", "full"]);
+/** How a booking option takes payment: a hosted payment link, or Stripe Checkout with automatic confirmation. */
+export const checkoutMethod = pgEnum("checkout_method", ["link", "stripe"]);
+export const orderKind = pgEnum("order_kind", ["retreat", "synastry"]);
+export const orderStatus = pgEnum("order_status", ["pending", "paid", "expired", "cancelled", "refunded", "needs_attention"]);
 
 export const postType = pgEnum("post_type", [
   "article",
@@ -194,6 +198,10 @@ export const bookingOptions = pgTable(
     paymentUrl: text("payment_url"),
     /** Test-mode payment link — used in previews/development. */
     testPaymentUrl: text("test_payment_url"),
+    /** "stripe" = Stripe Checkout with automatic confirmation (needs STRIPE_SECRET_KEY) */
+    checkoutMethod: checkoutMethod("checkout_method").default("link").notNull(),
+    /** Places that can be sold with Stripe Checkout; null = no automatic limit */
+    capacity: integer("capacity"),
     isVisible: boolean("is_visible").default(true).notNull(),
     sortOrder: integer("sort_order").default(0).notNull(),
     ...timestamps,
@@ -212,6 +220,51 @@ export const checkoutClicks = pgTable("checkout_clicks", {
   environment: text("environment").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
+
+/**
+ * Payments taken on the site with Stripe Checkout: retreat places and paid
+ * reports. A row is created as "pending" before the visitor goes to Stripe
+ * (holding a place for 30 minutes) and becomes "paid" only when Stripe's
+ * signed webhook — or a server-side check with Stripe — says so.
+ * Birth details are never stored: a report order keeps only an HMAC of them.
+ */
+export const orders = pgTable(
+  "orders",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    kind: orderKind("kind").notNull(),
+    status: orderStatus("status").default("pending").notNull(),
+    /** "live" or "test" — which Stripe mode took the payment */
+    mode: text("mode").notNull(),
+    stripeSessionId: text("stripe_session_id").unique(),
+    stripePaymentIntent: text("stripe_payment_intent"),
+    amount: integer("amount").notNull(),
+    currency: text("currency").notNull(),
+    description: text("description").notNull(),
+    optionId: uuid("option_id").references(() => bookingOptions.id, { onDelete: "set null" }),
+    quantity: integer("quantity").default(1).notNull(),
+    /** HMAC of a report's inputs (never the inputs themselves) */
+    inputHash: text("input_hash"),
+    name: text("name"),
+    email: text("email"),
+    phone: text("phone"),
+    /** A held place is released after this moment if unpaid */
+    expiresAt: timestamp("expires_at", { withTimezone: true }),
+    paidAt: timestamp("paid_at", { withTimezone: true }),
+    note: text("note"),
+    ...timestamps,
+  },
+  (t) => [index("orders_option_idx").on(t.optionId), index("orders_hash_idx").on(t.inputHash), index("orders_created_idx").on(t.createdAt)],
+);
+
+/** Stripe webhook events already handled (Stripe can send the same event more than once). */
+export const stripeEvents = pgTable("stripe_events", {
+  id: text("id").primaryKey(),
+  type: text("type").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export type Order = typeof orders.$inferSelect;
 
 /* ------------------------------------------------------------------ */
 /* Editorial content                                                    */

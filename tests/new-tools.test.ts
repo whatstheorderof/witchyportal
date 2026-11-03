@@ -9,7 +9,7 @@ import { yearlyHoroscope } from "../src/lib/astro/yearly";
 import { personalDay } from "../src/lib/astro/personal";
 import { ANIMALS, chineseYearFor, elementOfYear, lunarNewYear, lunarNewYearTable, relation, animalOfYear } from "../src/lib/astro/chinese";
 import { CHINESE_ANIMALS } from "../src/lib/astro/text/stars/chinese-animals";
-import { CHINESE_YEAR_2027 } from "../src/lib/astro/text/stars/chinese-year";
+import { CHINESE_YEARS, featuredChineseYear } from "../src/lib/astro/chinese-years";
 import { addDays } from "../src/lib/astro/sky";
 
 const london = { latitude: 51.5074, longitude: -0.1278, timeZone: "Europe/London", placeLabel: "London" };
@@ -118,6 +118,19 @@ describe("Chinese zodiac", () => {
     expect(relation("Snake", "Pig")).toBe("clash");
     expect(relation("Rooster", "Dog")).toBe("harm");
     expect(relation("Rat", "Rat")).toBe("same");
-    for (const a of ANIMALS) { expect(CHINESE_ANIMALS[a].overview.length).toBeGreaterThan(200); expect(CHINESE_YEAR_2027.animals[a].length).toBeGreaterThan(200); }
+    for (const a of ANIMALS) { expect(CHINESE_ANIMALS[a].overview.length).toBeGreaterThan(200); for (const y of Object.values(CHINESE_YEARS)) expect(y.text.animals[a].length).toBeGreaterThan(200); }
+  });
+});
+
+describe("Chinese New Year pages are written ahead", () => {
+  it("each written year has the right animal and element", () => {
+    for (const y of Object.values(CHINESE_YEARS)) { expect(animalOfYear(y.year)).toBe(y.animal); expect(elementOfYear(y.year)).toBe(y.element); }
+    expect(featuredChineseYear(new Date("2026-11-03")).year).toBe(2027);
+    expect(featuredChineseYear(new Date("2027-09-10")).year).toBe(2028);
+  });
+  it("from September, next year's text exists (write it before Lunar New Year)", () => {
+    const now = new Date();
+    const next = now.getUTCMonth() >= 8 ? now.getUTCFullYear() + 1 : now.getUTCFullYear();
+    expect(CHINESE_YEARS[next], `Write the ${next} Chinese New Year text (src/lib/astro/chinese-years.ts)`).toBeTruthy();
   });
 });

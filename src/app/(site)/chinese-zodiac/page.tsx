@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ANIMALS, FIXED_ELEMENT, animalSlug, lunarNewYearTable, yearsOf } from "@/lib/astro/chinese";
 import { CHINESE_ANIMALS } from "@/lib/astro/text/stars/chinese-animals";
 import { CHINESE_ELEMENT, CHINESE_INTRO, CHINESE_RELATION } from "@/lib/astro/text/stars/chinese-year";
+import { featuredChineseYear } from "@/lib/astro/chinese-years";
 import { absoluteUrl, breadcrumbLd, pageMeta } from "@/lib/seo";
 import { JsonLd } from "@/components/JsonLd";
 import { ChineseFinder } from "@/components/chinese/ChineseFinder";
@@ -11,12 +12,13 @@ import { Prose } from "@/components/stars/Faqs";
 export const metadata = pageMeta({
   title: "Chinese Zodiac — Find Your Animal, Element and Compatibility | Witchy Portal",
   absoluteTitle: true,
-  description: "Find your Chinese zodiac animal and element from your birth date (Lunar New Year included), read all twelve animals, check Chinese zodiac compatibility and see the 2027 Year of the Fire Goat.",
+  description: "Find your Chinese zodiac animal and element from your birth date (Lunar New Year included), read all twelve animals, check Chinese zodiac compatibility and read the year ahead for every animal.",
   path: "/chinese-zodiac",
 });
 
 export default function ChineseZodiac() {
   const lny = lunarNewYearTable(1900, 2101);
+  const fy = featuredChineseYear();
   return (
     <>
       <JsonLd data={[
@@ -28,7 +30,7 @@ export default function ChineseZodiac() {
           <p className="eyebrow text-blush">Twelve animals, five elements</p>
           <h1 className="display-lg mt-3 text-ivory">Chinese zodiac</h1>
           <p className="mt-4 max-w-2xl text-ivory/85">Find your animal and element from your birth date, meet all twelve animals, and see who you&rsquo;re naturally in tune with.</p>
-          <Link href="/chinese-zodiac/2027" className="mt-6 inline-flex rounded-full bg-ivory px-5 py-2.5 text-sm font-medium text-plum hover:bg-blush">2027: the Year of the Fire Goat →</Link>
+          <Link href={`/chinese-zodiac/${fy.year}`} className="mt-6 inline-flex rounded-full bg-ivory px-5 py-2.5 text-sm font-medium text-plum hover:bg-blush">{fy.year}: the Year of the {fy.element} {fy.animal} →</Link>
         </div>
       </section>
       <div className="container-page grid max-w-5xl gap-12 py-12">

@@ -356,6 +356,23 @@ async function main() {
     }
     await db.insert(s.settings).values({ key: "_sync", value: syncState }).onConflictDoUpdate({ target: s.settings.key, set: { value: syncState } });
 
+    /* ---------------- Policy page additions ---------------- */
+    {
+      const file = path.join(ROOT, "policy-additions.ts");
+      if (existsSync(file)) {
+        const { POLICY_ADDITIONS } = (await import(file)) as typeof import("../content/policy-additions");
+        for (const add of POLICY_ADDITIONS) {
+          const [page] = await db.select().from(s.pages).where(eq(s.pages.slug, add.slug));
+          if (!page || page.body.includes(add.marker)) continue;
+          const i = add.before ? page.body.indexOf(add.before) : -1;
+          const body = i >= 0 ? `${page.body.slice(0, i)}${add.text}\n\n${page.body.slice(i)}` : `${page.body.trimEnd()}\n\n${add.text}`;
+          await db.update(s.pages).set({ body, updatedAt: new Date() }).where(eq(s.pages.id, page.id));
+          console.log(`  • added to ${add.slug} page: ${add.marker}`);
+          counts.updated++;
+        }
+      }
+    }
+
     console.log(`✓ Content synced — ${counts.added} added, ${counts.updated} updated, ${counts.unchanged} unchanged${counts.keptAdminEdits ? `, ${counts.keptAdminEdits} kept as edited in admin` : ""}`);
   } finally {
     await client.end();

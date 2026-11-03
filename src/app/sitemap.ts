@@ -4,6 +4,7 @@ import { listPosts, listRetreats } from "@/lib/queries";
 import { SIGNS } from "@/lib/astro/types";
 import { CALCS, CALC_KINDS } from "@/lib/astro/calc-meta";
 import { ANIMALS } from "@/lib/astro/chinese-rules";
+import { CHINESE_YEARS } from "@/lib/astro/chinese-years";
 import { yearlyYears } from "@/lib/astro/yearly";
 
 type Entry = MetadataRoute.Sitemap[number];
@@ -34,7 +35,7 @@ const STATIC: [string, Entry["changeFrequency"], number][] = [
   ["/eclipses", "monthly", 0.7],
   ...yearlyYears().flatMap((y) => SIGNS.map((s) => [`/horoscope/${s.toLowerCase()}/${y}`, "monthly", 0.7] as [string, Entry["changeFrequency"], number])),
   ["/chinese-zodiac", "monthly", 0.7],
-  ["/chinese-zodiac/2027", "monthly", 0.7],
+  ...Object.keys(CHINESE_YEARS).map((y) => [`/chinese-zodiac/${y}`, "monthly", 0.7] as [string, Entry["changeFrequency"], number]),
   ...ANIMALS.map((a) => [`/chinese-zodiac/${a.toLowerCase()}`, "monthly", 0.6] as [string, Entry["changeFrequency"], number]),
   ...SIGNS.map((s) => [`/zodiac/${s.toLowerCase()}`, "monthly", 0.6] as [string, Entry["changeFrequency"], number]),
   ["/ask-a-witch", "weekly", 0.7],

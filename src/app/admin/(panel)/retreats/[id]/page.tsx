@@ -16,12 +16,13 @@ import { CURRENCIES, formatMoney, minorToInput } from "@/lib/money";
 import { AVAILABILITY_LABEL, AvailabilityBadge } from "@/components/Availability";
 import { allowedPaymentHosts } from "@/lib/validation";
 import { paymentMode } from "@/lib/env";
+import { placesPaid } from "@/lib/orders";
 
 export const metadata = { title: "Edit retreat" };
 
 const availabilityOptions = s.availability.enumValues.map((v) => ({ value: v, label: AVAILABILITY_LABEL[v] }));
 
-function OptionFields({ o }: { o?: s.BookingOption }) {
+function OptionFields({ o, paid }: { o?: s.BookingOption; paid?: number }) {
   return (
     <>
       <div className="grid gap-4 sm:grid-cols-2">
@@ -38,6 +39,11 @@ function OptionFields({ o }: { o?: s.BookingOption }) {
         <Select label="Availability (manual)" name="availability" defaultValue={o?.availability ?? "available"} options={availabilityOptions} />
       </div>
       <F label="Short description" name="description" defaultValue={o?.description} />
+      <div className="grid gap-4 rounded-xl bg-lavender/25 p-4 sm:grid-cols-2">
+        <Select label="How guests pay" name="checkoutMethod" defaultValue={o?.checkoutMethod ?? "link"} options={[{ value: "link", label: "Payment link (confirm bookings by hand)" }, { value: "stripe", label: "Stripe Checkout (automatic confirmation)" }]} />
+        <F label="Places for this option (Stripe Checkout)" name="capacity" type="number" defaultValue={o?.capacity ?? ""} hint={`Stops selling when all places are paid or held, then shows "Sold out".${paid != null ? ` Paid so far: ${paid}.` : ""} Leave empty for no limit.`} />
+        <p className="text-sm text-muted sm:col-span-2">Stripe Checkout charges exactly the amount above, emails the guest and you when paid, and needs Stripe connected (see Settings → Payments). Until then, the payment links below are used.</p>
+      </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <F label="LIVE payment link (production)" name="paymentUrl" type="url" defaultValue={o?.paymentUrl} mono placeholder="https://buy.stripe.com/…" />
         <F label="TEST payment link (previews)" name="testPaymentUrl" type="url" defaultValue={o?.testPaymentUrl} mono placeholder="https://buy.stripe.com/test_…" hint="Use your provider's test mode so no real money is taken on preview sites." />
@@ -63,6 +69,7 @@ export default async function EditRetreat({ params, searchParams }: { params: Pr
   ]);
   const opts = deps.length ? await db.select().from(s.bookingOptions).where(inArray(s.bookingOptions.departureId, deps.map((d) => d.id))).orderBy(asc(s.bookingOptions.sortOrder), asc(s.bookingOptions.amount)) : [];
   const mode = paymentMode();
+  const paidMap = await placesPaid(opts.map((o) => o.id));
 
   return (
     <>
@@ -158,14 +165,15 @@ export default async function EditRetreat({ params, searchParams }: { params: Pr
                             <span className="flex flex-wrap items-center gap-2 text-sm">
                               <span>{o.paymentType === "deposit" ? "Deposit" : "Full"} {formatMoney(o.amount, o.currency)}</span>
                               <AvailabilityBadge value={o.availability} />
-                              {!o.paymentUrl && <span className="rounded-full bg-warning/10 px-2 py-0.5 text-xs text-warning">no live link</span>}
-                              {!o.testPaymentUrl && <span className="rounded-full bg-ink/5 px-2 py-0.5 text-xs text-muted">no test link</span>}
+                              {o.checkoutMethod === "stripe" && <span className="rounded-full bg-plum/10 px-2 py-0.5 text-xs text-plum">Stripe{o.capacity != null ? ` · ${paidMap.get(o.id) ?? 0}/${o.capacity} paid` : ""}</span>}
+                              {o.checkoutMethod !== "stripe" && !o.paymentUrl && <span className="rounded-full bg-warning/10 px-2 py-0.5 text-xs text-warning">no live link</span>}
+                              {o.checkoutMethod !== "stripe" && !o.testPaymentUrl && <span className="rounded-full bg-ink/5 px-2 py-0.5 text-xs text-muted">no test link</span>}
                             </span>
                           </summary>
                           <div className="mt-4">
                             <AdminForm action={saveOption} submitLabel="Save option">
                               <input type="hidden" name="id" value={o.id} /><input type="hidden" name="departureId" value={d.id} />
-                              <OptionFields o={o} />
+                              <OptionFields o={o} paid={paidMap.get(o.id) ?? 0} />
                             </AdminForm>
                             <div className="mt-4"><ConfirmDelete action={deleteOption} fields={{ id: o.id, retreatId: r.id }} label="Delete option" what="this booking option" /></div>
                           </div>
