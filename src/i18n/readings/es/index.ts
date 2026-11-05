@@ -20,6 +20,7 @@ import d_chart_sun from "./chart-sun.json";
 import d_chart_venus from "./chart-venus.json";
 import d_chart_zodiac_1 from "./chart-zodiac-1.json";
 import d_chart_zodiac_2 from "./chart-zodiac-2.json";
+import d_pages from "./pages.json";
 import d_posts from "./posts.json";
 import d_stars_chinese_2028 from "./stars-chinese-2028.json";
 import d_stars_chinese_animals from "./stars-chinese-animals.json";
@@ -37,5 +38,5 @@ import d_stars_synastry_3 from "./stars-synastry-3.json";
 import d_stars_venus_pairs from "./stars-venus-pairs.json";
 import d_tarot from "./tarot.json";
 
-const dict: Record<string, string> = Object.assign({}, d_chart_angles, d_chart_aspects_1, d_chart_aspects_2, d_chart_aspects_3, d_chart_cusps, d_chart_houses_outer, d_chart_houses_personal, d_chart_jupiter, d_chart_lilith, d_chart_mars, d_chart_mercury, d_chart_moon_phase, d_chart_moon, d_chart_node, d_chart_outer, d_chart_points, d_chart_saturn, d_chart_sun, d_chart_venus, d_chart_zodiac_1, d_chart_zodiac_2, d_posts, d_stars_chinese_2028, d_stars_chinese_animals, d_stars_chinese_year, d_stars_compat_1, d_stars_compat_2, d_stars_daily_aspects, d_stars_daily_moon, d_stars_guides, d_stars_moon_guide, d_stars_sky_aspects, d_stars_synastry_1, d_stars_synastry_2, d_stars_synastry_3, d_stars_venus_pairs, d_tarot);
+const dict: Record<string, string> = Object.assign({}, d_chart_angles, d_chart_aspects_1, d_chart_aspects_2, d_chart_aspects_3, d_chart_cusps, d_chart_houses_outer, d_chart_houses_personal, d_chart_jupiter, d_chart_lilith, d_chart_mars, d_chart_mercury, d_chart_moon_phase, d_chart_moon, d_chart_node, d_chart_outer, d_chart_points, d_chart_saturn, d_chart_sun, d_chart_venus, d_chart_zodiac_1, d_chart_zodiac_2, d_pages, d_posts, d_stars_chinese_2028, d_stars_chinese_animals, d_stars_chinese_year, d_stars_compat_1, d_stars_compat_2, d_stars_daily_aspects, d_stars_daily_moon, d_stars_guides, d_stars_moon_guide, d_stars_sky_aspects, d_stars_synastry_1, d_stars_synastry_2, d_stars_synastry_3, d_stars_venus_pairs, d_tarot);
 export default dict;
