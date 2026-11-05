@@ -15,7 +15,7 @@ import "server-only";
  */
 import { cache } from "react";
 import { getLocale, uiDict } from "./server";
-import { LOCALE_INFO, readingsLang, translate, type Locale } from "./config";
+import { LOCALE_INFO, READINGS_DONE, readingsLang, translate, type Locale } from "./config";
 
 type Dict = Record<string, string>;
 
@@ -61,7 +61,9 @@ export interface Rx {
 }
 
 export function makeRx(locale: Locale, dict: Dict, ui: Dict = {}): Rx {
-  const on = locale !== "en" && Object.keys(dict).length > 0;
+  // A language's readings are shown once it is complete (READINGS_DONE), so visitors never get
+  // a page that switches language paragraph by paragraph. READINGS_PREVIEW=1 shows work in progress.
+  const on = locale !== "en" && Object.keys(dict).length > 0 && (READINGS_DONE.includes(locale) || process.env.READINGS_PREVIEW === "1");
   const one = (text: string): string => {
     if (!on || !text) return text;
     const whole = dict[readingKey(text)];
