@@ -51,7 +51,7 @@ export function DailySplash() {
           <Link href={`/horoscope/${h.sign.toLowerCase()}`} onClick={() => setH(null)} className="btn-primary bg-ivory text-plum hover:bg-blush">{t("My full horoscope")}</Link>
           <button type="button" onClick={() => setH(null)} className="btn-outline border-ivory/40 text-ivory hover:bg-ivory/10">{t("Enter Witchy Portal")}</button>
         </div>
-        <p className="mt-4 text-xs text-ivory/60">{t("You can switch this greeting off on your")} <Link href="/today" onClick={() => setH(null)} className="underline">{t("Today")}</Link> {t("page.")}</p>
+        <p className="mt-4 text-xs text-ivory/60">{t("You can switch this greeting off on your")} <Link href="/today" onClick={() => setH(null)} className="underline">{t("Today")}</Link>{t(" page.")}</p>
       </div>
     </div>
   );
