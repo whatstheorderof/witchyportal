@@ -14,6 +14,7 @@ import d_chart_moon_phase from "./chart-moon-phase.json";
 import d_chart_moon from "./chart-moon.json";
 import d_chart_node from "./chart-node.json";
 import d_chart_outer from "./chart-outer.json";
+import d_chart_points from "./chart-points.json";
 import d_chart_saturn from "./chart-saturn.json";
 import d_chart_sun from "./chart-sun.json";
 import d_chart_venus from "./chart-venus.json";
@@ -24,5 +25,5 @@ import d_stars_daily_moon from "./stars-daily-moon.json";
 import d_stars_moon_guide from "./stars-moon-guide.json";
 import d_tarot from "./tarot.json";
 
-const dict: Record<string, string> = Object.assign({}, d_chart_angles, d_chart_aspects_1, d_chart_aspects_2, d_chart_aspects_3, d_chart_cusps, d_chart_houses_outer, d_chart_houses_personal, d_chart_jupiter, d_chart_lilith, d_chart_mars, d_chart_mercury, d_chart_moon_phase, d_chart_moon, d_chart_node, d_chart_outer, d_chart_saturn, d_chart_sun, d_chart_venus, d_chart_zodiac_1, d_chart_zodiac_2, d_stars_daily_aspects, d_stars_daily_moon, d_stars_moon_guide, d_tarot);
+const dict: Record<string, string> = Object.assign({}, d_chart_angles, d_chart_aspects_1, d_chart_aspects_2, d_chart_aspects_3, d_chart_cusps, d_chart_houses_outer, d_chart_houses_personal, d_chart_jupiter, d_chart_lilith, d_chart_mars, d_chart_mercury, d_chart_moon_phase, d_chart_moon, d_chart_node, d_chart_outer, d_chart_points, d_chart_saturn, d_chart_sun, d_chart_venus, d_chart_zodiac_1, d_chart_zodiac_2, d_stars_daily_aspects, d_stars_daily_moon, d_stars_moon_guide, d_tarot);
 export default dict;
