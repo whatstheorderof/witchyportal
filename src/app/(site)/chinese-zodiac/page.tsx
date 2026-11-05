@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/i18n/client";
 import { ANIMALS, FIXED_ELEMENT, animalSlug, lunarNewYearTable, yearsOf } from "@/lib/astro/chinese";
 import { CHINESE_ANIMALS } from "@/lib/astro/text/stars/chinese-animals";
 import { CHINESE_ELEMENT, CHINESE_INTRO, CHINESE_RELATION } from "@/lib/astro/text/stars/chinese-year";

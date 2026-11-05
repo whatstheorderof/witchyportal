@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/i18n/client";
 
 export function TopicFilter({ base, topics, active, extra }: { base: string; topics: string[]; active?: string; extra?: { label: string; value: string; param: string; active: boolean }[] }) {
   if (topics.length === 0 && !extra?.length) return null;

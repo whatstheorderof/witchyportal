@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
-import Link from "next/link";
+import Link from "@/i18n/client";
 import { connection } from "next/server";
 import { MAJOR_ARCANA, TAROT_DEPTH, cardOfTheDay, type TarotCard } from "@/lib/tarot";
 import { MINOR_ARCANA, SUITS } from "@/lib/tarot-minor";

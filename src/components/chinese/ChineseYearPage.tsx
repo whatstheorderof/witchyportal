@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/i18n/client";
 import { notFound } from "next/navigation";
 import { ANIMALS, animalSlug, lunarNewYearCached } from "@/lib/astro/chinese";
 import { CHINESE_YEARS } from "@/lib/astro/chinese-years";

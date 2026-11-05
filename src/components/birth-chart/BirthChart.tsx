@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import type { ChartResult } from "@/lib/astro/types";
 import type { NatalReport } from "@/lib/astro/report-types";
-import Link from "next/link";
+import Link from "@/i18n/client";
 import { Report, type ContactLinks } from "./Report";
 import { saveMyChart, useMyChart } from "@/lib/my-chart";
 import { setMySign } from "@/lib/my-sign";

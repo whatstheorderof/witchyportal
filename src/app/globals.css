@@ -228,3 +228,10 @@ h1, h2, h3, h4, .font-display, [class*="display-"] {
   .card { box-shadow: none; break-inside: avoid-page; }
   details > summary ~ * { display: block; }
 }
+
+/* Other languages: script fonts first for their characters, then the site fonts */
+:lang(ar) { --font-display: "Noto Naskh Arabic Variable", "Cormorant Garamond Variable", serif; --font-sans: "Noto Naskh Arabic Variable", "Jost Variable", system-ui, sans-serif; }
+:lang(hi) { --font-display: "Cormorant Garamond Variable", "Noto Sans Devanagari Variable", serif; --font-sans: "Jost Variable", "Noto Sans Devanagari Variable", system-ui, sans-serif; }
+:lang(zh-Hans) { --font-display: "Cormorant Garamond Variable", "Noto Sans SC Variable", "PingFang SC", "Microsoft YaHei", serif; --font-sans: "Jost Variable", "Noto Sans SC Variable", "PingFang SC", "Microsoft YaHei", sans-serif; }
+/* Letter-spaced capitals don't suit these scripts */
+:lang(ar) .eyebrow, :lang(hi) .eyebrow, :lang(zh-Hans) .eyebrow { letter-spacing: 0; text-transform: none; }

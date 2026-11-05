@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
-import Link from "next/link";
+import Link from "@/i18n/client";
 import { connection } from "next/server";
 import { FULL_MOON_NAMES, PHASE_GUIDANCE, moonNow, upcomingMoons } from "@/lib/astro/moon";
 import { keyDates, ukDay, yearMoons } from "@/lib/astro/calendar";

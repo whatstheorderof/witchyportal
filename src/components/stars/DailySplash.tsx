@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Link from "@/i18n/client";
+import { useBarePath } from "@/i18n/client";
 import type { DailyHoroscope } from "@/lib/astro/horoscope";
 import { getMySign, markSplashSeen, splashEnabled, splashSeenOn } from "@/lib/my-sign";
 import { DayCard } from "./DayCard";
@@ -15,7 +15,7 @@ const ukToday = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Londo
  */
 export function DailySplash() {
   const [h, setH] = useState<DailyHoroscope | null>(null);
-  const pathname = usePathname();
+  const pathname = useBarePath();
   const closeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {

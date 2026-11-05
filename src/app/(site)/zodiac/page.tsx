@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/i18n/client";
 import { SIGNS } from "@/lib/astro/types";
 import { SIGN_INFO } from "@/lib/astro/interpretations";
 import { ZODIAC } from "@/lib/astro/text/zodiac";

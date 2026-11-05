@@ -3,7 +3,7 @@ import { pageMeta } from "@/lib/seo";
 import { listPosts } from "@/lib/queries";
 import { PageHero, EmptyState } from "@/components/Section";
 import { AstrologyCard } from "@/components/PostCards";
-import Link from "next/link";
+import Link from "@/i18n/client";
 import { ArrowRight } from "@/components/Icons";
 import { RetreatPromo } from "@/components/RetreatPromo";
 

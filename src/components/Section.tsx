@@ -1,10 +1,12 @@
-import Link from "next/link";
+import Link from "@/i18n/client";
 import { ArrowRight } from "./Icons";
 import { MediaImage, FALLBACK_IMAGES } from "./MediaImage";
+import { getI18n } from "@/i18n/server";
 
-export function SectionHeading({
+export async function SectionHeading({
   eyebrow, title, intro, href, linkLabel, as: As = "h2", className = "",
 }: { eyebrow?: string; title: string; intro?: string; href?: string; linkLabel?: string; as?: "h1" | "h2"; className?: string }) {
+  const { t } = await getI18n();
   return (
     <div className={`flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between ${className}`}>
       <div className="max-w-2xl">
@@ -14,7 +16,7 @@ export function SectionHeading({
       </div>
       {href && (
         <Link href={href} className="inline-flex items-center gap-2 text-plum link-underline shrink-0">
-          {linkLabel ?? "View all"} <ArrowRight />
+          {linkLabel ?? t("View all")} <ArrowRight />
         </Link>
       )}
     </div>
@@ -32,8 +34,8 @@ const STRIP_FOCUS: Partial<Record<keyof typeof FALLBACK_IMAGES, string>> = {
 export function PageHero({ eyebrow, title, intro, children, image }: { eyebrow?: string; title: string; intro?: string; children?: React.ReactNode; image?: keyof typeof FALLBACK_IMAGES }) {
   return (
     <section className="relative overflow-hidden border-b border-line/70 bg-ivory-deep pt-28 pb-12 lg:pt-40 lg:pb-16">
-      <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-lavender/50 blur-3xl" />
-      <div aria-hidden className="pointer-events-none absolute -bottom-32 left-10 h-72 w-72 rounded-full bg-blush/60 blur-3xl" />
+      <div aria-hidden className="pointer-events-none absolute -end-24 -top-24 h-80 w-80 rounded-full bg-lavender/50 blur-3xl" />
+      <div aria-hidden className="pointer-events-none absolute -bottom-32 start-10 h-72 w-72 rounded-full bg-blush/60 blur-3xl" />
       <div className={`container-page relative ${image ? "lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:items-end lg:gap-16" : ""}`}>
         <div className="min-w-0">
           {eyebrow && <p className="eyebrow reveal">{eyebrow}</p>}

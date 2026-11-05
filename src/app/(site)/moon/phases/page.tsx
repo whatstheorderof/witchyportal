@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/i18n/client";
 import { connection } from "next/server";
 import { lunations, moonPhaseAt, positionsAt } from "@/lib/astro/sky";
 import { yearMoons } from "@/lib/astro/calendar";

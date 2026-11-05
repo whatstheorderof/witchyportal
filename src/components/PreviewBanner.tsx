@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/i18n/client";
 
 export function PreviewBanner({ status, editHref }: { status: string; editHref: string }) {
   return (

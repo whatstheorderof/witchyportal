@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/i18n/client";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { SIGNS, type Sign } from "@/lib/astro/types";

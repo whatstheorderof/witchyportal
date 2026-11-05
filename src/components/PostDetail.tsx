@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/i18n/client";
 import type { Media, Post } from "@/db/schema";
 import { formatDate } from "@/lib/dates";
 import { MediaImage } from "./MediaImage";

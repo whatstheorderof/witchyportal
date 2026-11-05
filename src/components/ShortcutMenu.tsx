@@ -1,7 +1,8 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Link from "@/i18n/client";
+import { useBarePath, useI18n } from "@/i18n/client";
+import { LanguagePicker } from "./i18n/LanguagePicker";
 import { useEffect, useId, useRef, useState } from "react";
 import { Wordmark } from "./Logo";
 import { ArrowRight, CloseIcon } from "./Icons";
@@ -13,7 +14,8 @@ import { shortcutGroups } from "./nav";
  */
 export function ShortcutMenu({ light }: { light: boolean }) {
   const [open, setOpen] = useState(false);
-  const pathname = usePathname();
+  const pathname = useBarePath();
+  const { t } = useI18n();
   const id = useId();
   const button = useRef<HTMLButtonElement>(null);
   const panel = useRef<HTMLDivElement>(null);
@@ -60,7 +62,7 @@ export function ShortcutMenu({ light }: { light: boolean }) {
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-controls={`${id}-menu`}
-        aria-label="Witchy Portal — open shortcuts menu"
+        aria-label={t("Witchy Portal — open shortcuts menu")}
         className="flex items-center gap-1.5 rounded-lg"
       >
         <Wordmark light={light && !open} />
@@ -76,19 +78,19 @@ export function ShortcutMenu({ light }: { light: boolean }) {
             ref={panel}
             id={`${id}-menu`}
             role="dialog"
-            aria-label="Shortcuts"
-            className="reveal fixed inset-x-3 top-[4.5rem] z-50 max-h-[calc(100dvh-10.5rem-env(safe-area-inset-bottom))] lg:max-h-[calc(100dvh-7rem)] overflow-y-auto rounded-[1.75rem] bg-ivory p-5 text-ink shadow-(--shadow-lift) ring-1 ring-line sm:inset-x-auto sm:left-5 sm:w-[min(92vw,760px)] sm:p-7 lg:left-12 lg:top-[5.25rem]"
+            aria-label={t("Shortcuts")}
+            className="reveal fixed inset-x-3 top-[4.5rem] z-50 max-h-[calc(100dvh-10.5rem-env(safe-area-inset-bottom))] lg:max-h-[calc(100dvh-7rem)] overflow-y-auto rounded-[1.75rem] bg-ivory p-5 text-ink shadow-(--shadow-lift) ring-1 ring-line sm:inset-x-auto sm:start-5 sm:w-[min(92vw,760px)] sm:p-7 lg:start-12 lg:top-[5.25rem]"
           >
             <div className="mb-4 flex items-center justify-between">
-              <p className="eyebrow">Shortcuts</p>
-              <button type="button" onClick={() => { setOpen(false); button.current?.focus(); }} className="grid h-10 w-10 place-items-center rounded-full hover:bg-sand/60" aria-label="Close shortcuts">
+              <p className="eyebrow">{t("Shortcuts")}</p>
+              <button type="button" onClick={() => { setOpen(false); button.current?.focus(); }} className="grid h-10 w-10 place-items-center rounded-full hover:bg-sand/60" aria-label={t("Close shortcuts")}>
                 <CloseIcon className="h-5 w-5" />
               </button>
             </div>
             <div className="grid gap-5 sm:grid-cols-3 sm:gap-6">
               {shortcutGroups.map((g) => (
-                <nav key={g.title} aria-label={g.title}>
-                  <p className="mb-2 text-[0.7rem] uppercase tracking-[0.2em] text-muted">{g.title}</p>
+                <nav key={g.title} aria-label={t(g.title)}>
+                  <p className="mb-2 text-[0.7rem] uppercase tracking-[0.2em] text-muted">{t(g.title)}</p>
                   <ul className="grid grid-cols-2 gap-1 sm:grid-cols-1">
                     {g.items.map((i) => {
                       const active = i.href === "/" ? pathname === "/" : pathname.startsWith(i.href);
@@ -100,8 +102,8 @@ export function ShortcutMenu({ light }: { light: boolean }) {
                             onClick={() => setOpen(false)}
                             className="block rounded-xl px-3 py-2 transition hover:bg-sand/50 focus-visible:bg-sand/50 aria-[current=page]:bg-lavender/40"
                           >
-                            <span className="block font-display text-xl leading-tight text-plum">{i.label}</span>
-                            <span className="hidden text-xs text-muted sm:block">{i.blurb}</span>
+                            <span className="block font-display text-xl leading-tight text-plum">{t(i.label)}</span>
+                            <span className="hidden text-xs text-muted sm:block">{t(i.blurb)}</span>
                           </Link>
                         </li>
                       );
@@ -111,7 +113,7 @@ export function ShortcutMenu({ light }: { light: boolean }) {
               ))}
             </div>
             <Link href="/retreats" onClick={() => setOpen(false)} className="btn-primary mt-6 w-full sm:w-auto">
-              Book a retreat <ArrowRight />
+              {t("Book a retreat")} <ArrowRight />
             </Link>
           </div>
         </>

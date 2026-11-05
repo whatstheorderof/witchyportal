@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { msg } from "@/i18n/config";
 
 /**
  * Hosts accepted for hosted payment links. Extend with PAYMENT_ALLOWED_HOSTS
@@ -95,4 +96,4 @@ export function slugify(s: string): string {
     .slice(0, 100);
 }
 
-export const emailSchema = z.string().trim().toLowerCase().email("Enter a valid email address").max(254);
+export const emailSchema = z.string().trim().toLowerCase().email(msg("Enter a valid email address")).max(254);

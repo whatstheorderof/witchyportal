@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/i18n/client";
 import { CALCS, CALC_KINDS, type CalcKind } from "@/lib/astro/calc-meta";
 import { CALC_GUIDE } from "@/lib/astro/text/stars/guides";
 import { absoluteUrl, breadcrumbLd, faqLd, pageMeta } from "@/lib/seo";

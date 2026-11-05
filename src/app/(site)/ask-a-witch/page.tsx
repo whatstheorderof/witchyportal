@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { breadcrumbLd, pageMeta, videoLd } from "@/lib/seo";
 import { JsonLd } from "@/components/JsonLd";
-import Link from "next/link";
+import Link from "@/i18n/client";
 import { listVideos } from "@/lib/queries";
 import { getSetting } from "@/lib/settings";
 import { videoSeries } from "@/lib/youtube";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import Link from "@/i18n/client";
 import { PlaceCombobox, type Place } from "@/components/birth-chart/BirthChart";
 import { NewsletterForm } from "@/components/forms";
 import type { SynAspect, SynOverlay, SynastryReport } from "@/lib/astro/compat";

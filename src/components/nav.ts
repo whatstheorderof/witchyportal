@@ -1,61 +1,63 @@
+import { msg } from "@/i18n/config";
+
 export const primaryNav = [
-  { href: "/retreats", label: "Retreats" },
-  { href: "/horoscope", label: "Horoscopes" },
-  { href: "/birth-chart", label: "Birth Chart" },
-  { href: "/discover", label: "Discover" },
-  { href: "/services", label: "Services" },
-  { href: "/about", label: "About Yulia" },
-  { href: "/contact", label: "Contact" },
+  { href: "/retreats", label: msg("Retreats") },
+  { href: "/horoscope", label: msg("Horoscopes") },
+  { href: "/birth-chart", label: msg("Birth Chart") },
+  { href: "/discover", label: msg("Discover") },
+  { href: "/services", label: msg("Services") },
+  { href: "/about", label: msg("About Yulia") },
+  { href: "/contact", label: msg("Contact") },
 ];
 
 /** The astrology tools at the heart of Discover. */
 export const starsNav = [
-  { href: "/today", label: "Your day", blurb: "Your astrological day at a glance." },
-  { href: "/horoscope", label: "Daily horoscopes", blurb: "What's in store for every sign today." },
-  { href: "/this-week-in-astrology", label: "This week in astrology", blurb: "The week's Moons, retrogrades and big aspects." },
-  { href: "/compatibility", label: "Compatibility", blurb: "Star signs, love signs and birth charts together." },
-  { href: "/moon/phases", label: "Moon phases", blurb: "What each phase means, and the magic for it." },
-  { href: "/calculators", label: "Calculators", blurb: "Your rising, Moon, Venus and Mars signs and Saturn return." },
+  { href: "/today", label: msg("Your day"), blurb: msg("Your astrological day at a glance.") },
+  { href: "/horoscope", label: msg("Daily horoscopes"), blurb: msg("What's in store for every sign today.") },
+  { href: "/this-week-in-astrology", label: msg("This week in astrology"), blurb: msg("The week's Moons, retrogrades and big aspects.") },
+  { href: "/compatibility", label: msg("Compatibility"), blurb: msg("Star signs, love signs and birth charts together.") },
+  { href: "/moon/phases", label: msg("Moon phases"), blurb: msg("What each phase means, and the magic for it.") },
+  { href: "/calculators", label: msg("Calculators"), blurb: msg("Your rising, Moon, Venus and Mars signs and Saturn return.") },
 ];
 
 export const discoverNav = [
   ...starsNav.slice(1),
-  { href: "/tarot", label: "Tarot", blurb: "Card of the day, and draw your own." },
-  { href: "/moon", label: "Moon calendar", blurb: "The year's new and full moons, eclipses and sabbats." },
-  { href: "/zodiac", label: "Zodiac signs", blurb: "The twelve signs: traits, love and compatibility." },
-  { href: "/mercury-retrograde", label: "Mercury retrograde", blurb: "Every retrograde and shadow, and what it means for you." },
-  { href: "/eclipses", label: "Eclipses", blurb: "The year's eclipses, UK visibility and eclipse season." },
-  { href: "/chinese-zodiac", label: "Chinese zodiac", blurb: "Your animal and element, and the Fire Goat year." },
-  { href: "/astrology", label: "Astrology", blurb: "Weekly and seasonal wisdom from Yulia." },
-  { href: "/tips", label: "Witchy Tips", blurb: "Small rituals, affirmations and gentle motivation." },
-  { href: "/articles", label: "Articles", blurb: "Short reads on magic, movement and living by the moon." },
-  { href: "/ask-a-witch", label: "Ask a Witch", blurb: "Yulia answers your questions on video." },
+  { href: "/tarot", label: msg("Tarot"), blurb: msg("Card of the day, and draw your own.") },
+  { href: "/moon", label: msg("Moon calendar"), blurb: msg("The year's new and full moons, eclipses and sabbats.") },
+  { href: "/zodiac", label: msg("Zodiac signs"), blurb: msg("The twelve signs: traits, love and compatibility.") },
+  { href: "/mercury-retrograde", label: msg("Mercury retrograde"), blurb: msg("Every retrograde and shadow, and what it means for you.") },
+  { href: "/eclipses", label: msg("Eclipses"), blurb: msg("The year's eclipses, UK visibility and eclipse season.") },
+  { href: "/chinese-zodiac", label: msg("Chinese zodiac"), blurb: msg("Your animal and element, and the Fire Goat year.") },
+  { href: "/astrology", label: msg("Astrology"), blurb: msg("Weekly and seasonal wisdom from Yulia.") },
+  { href: "/tips", label: msg("Witchy Tips"), blurb: msg("Small rituals, affirmations and gentle motivation.") },
+  { href: "/articles", label: msg("Articles"), blurb: msg("Short reads on magic, movement and living by the moon.") },
+  { href: "/ask-a-witch", label: msg("Ask a Witch"), blurb: msg("Yulia answers your questions on video.") },
 ];
 
 /** Shortcut menu opened from the Witchy Portal logo. */
 export const shortcutGroups = [
   {
-    title: "Visit",
+    title: msg("Visit"),
     items: [
-      { href: "/", label: "Home", blurb: "Start here." },
-      { href: "/retreats", label: "Retreats", blurb: "Dates, prices and booking." },
-      { href: "/services", label: "Work with Yulia", blurb: "Spells, readings, astrology and party hire." },
-      { href: "/about", label: "About Yulia", blurb: "Her story and why she hosts retreats." },
-      { href: "/watch", label: "Watch", blurb: "Witchy TV — all of Yulia's videos." },
-      { href: "/birth-chart", label: "Birth Chart", blurb: "Your full natal chart and written report, free." },
+      { href: "/", label: msg("Home"), blurb: msg("Start here.") },
+      { href: "/retreats", label: msg("Retreats"), blurb: msg("Dates, prices and booking.") },
+      { href: "/services", label: msg("Work with Yulia"), blurb: msg("Spells, readings, astrology and party hire.") },
+      { href: "/about", label: msg("About Yulia"), blurb: msg("Her story and why she hosts retreats.") },
+      { href: "/watch", label: msg("Watch"), blurb: msg("Witchy TV — all of Yulia's videos.") },
+      { href: "/birth-chart", label: msg("Birth Chart"), blurb: msg("Your full natal chart and written report, free.") },
     ],
   },
   {
-    title: "Discover",
+    title: msg("Discover"),
     items: discoverNav,
   },
   {
-    title: "Connect",
+    title: msg("Connect"),
     items: [
-      { href: "/testimonials", label: "Testimonials", blurb: "Kind words from clients." },
-      { href: "/socials", label: "Socials", blurb: "Instagram, YouTube and Etsy." },
-      { href: "/contact", label: "Contact", blurb: "Questions, enquiries and collaborations." },
-      { href: "/favourites", label: "Your favourites", blurb: "Everything you've saved on this device." },
+      { href: "/testimonials", label: msg("Testimonials"), blurb: msg("Kind words from clients.") },
+      { href: "/socials", label: msg("Socials"), blurb: msg("Instagram, YouTube and Etsy.") },
+      { href: "/contact", label: msg("Contact"), blurb: msg("Questions, enquiries and collaborations.") },
+      { href: "/favourites", label: msg("Your favourites"), blurb: msg("Everything you've saved on this device.") },
     ],
   },
 ];

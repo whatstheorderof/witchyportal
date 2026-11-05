@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/i18n/client";
 import { connection } from "next/server";
 import { eclipsesIn, type Eclipse } from "@/lib/astro/retro";
 import { SIGNS } from "@/lib/astro/types";

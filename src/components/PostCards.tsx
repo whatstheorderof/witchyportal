@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/i18n/client";
 import type { Media, Post, Video } from "@/db/schema";
 import { formatDate } from "@/lib/dates";
 import { MediaImage } from "./MediaImage";
@@ -21,7 +21,7 @@ const when = (p: Post) => p.publishAt ?? p.createdAt;
 
 export function ArticleCard({ post, index }: { post: P; index?: number }) {
   return (
-    <article className="group relative flex flex-col">
+    <article lang="en" className="group relative flex flex-col">
       <div className="relative aspect-[3/2] overflow-hidden rounded-(--radius-card) bg-sand">
         <MediaImage media={post.cover} fallback={photoFor(ARTICLE_PHOTOS, post.slug, index)} sizes="(min-width:1024px) 30vw, 92vw" className="object-[center_25%] transition duration-700 group-hover:scale-[1.04]" />
       </div>
@@ -46,7 +46,7 @@ export function TipCard({ post, index = 0 }: { post: P; index?: number }) {
   const dark = tone.includes("text-ivory");
   const isAffirmation = post.type === "affirmation";
   return (
-    <article className={`relative flex h-full flex-col justify-between gap-6 rounded-(--radius-card) p-6 sm:p-7 ${tone}`}>
+    <article lang="en" className={`relative flex h-full flex-col justify-between gap-6 rounded-(--radius-card) p-6 sm:p-7 ${tone}`}>
       <div>
         <p className={`text-[0.7rem] font-medium uppercase tracking-[0.22em] ${dark ? "text-blush" : "text-plum-soft"}`}>
           {isAffirmation ? "Affirmation" : post.type === "motivation" ? "Motivation" : post.topic || "Witchy tip"}
@@ -77,7 +77,7 @@ export function TipCard({ post, index = 0 }: { post: P; index?: number }) {
 
 export function AstrologyCard({ post, featured = false, index }: { post: P; featured?: boolean; index?: number }) {
   return (
-    <article className={`group relative overflow-hidden rounded-(--radius-card) bg-plum-deep text-ivory ${featured ? "min-h-[420px]" : "min-h-[320px]"}`}>
+    <article lang="en" className={`group relative overflow-hidden rounded-(--radius-card) bg-plum-deep text-ivory ${featured ? "min-h-[420px]" : "min-h-[320px]"}`}>
       <MediaImage media={post.cover} fallback={photoFor(ASTRO_PHOTOS, post.slug, index)} sizes="(min-width:1024px) 45vw, 92vw" className="opacity-60 transition duration-700 group-hover:scale-[1.03]" />
       <div className="scrim-card absolute inset-0" />
       <div className="relative flex h-full min-h-[inherit] flex-col justify-end p-6 sm:p-8">
@@ -94,7 +94,7 @@ export function AstrologyCard({ post, featured = false, index }: { post: P; feat
 
 export function ShortCard({ video }: { video: Video }) {
   return (
-    <figure className="w-[60vw] max-w-[230px] shrink-0 snap-start sm:w-[210px] lg:w-auto lg:min-w-0 lg:max-w-none">
+    <figure lang="en" className="w-[60vw] max-w-[230px] shrink-0 snap-start sm:w-[210px] lg:w-auto lg:min-w-0 lg:max-w-none">
       <YouTubeEmbed id={video.youtubeId} title={video.title} vertical />
       <figcaption className="mt-3 flex items-start justify-between gap-2 text-[0.95rem] leading-snug text-ink">
         <span className="line-clamp-2 min-w-0">
@@ -109,7 +109,7 @@ export function ShortCard({ video }: { video: Video }) {
 
 export function VideoCard({ video }: { video: Video }) {
   return (
-    <figure>
+    <figure lang="en">
       <YouTubeEmbed id={video.youtubeId} title={video.title} />
       <figcaption className="mt-3">
         <div className="flex items-start justify-between gap-3">

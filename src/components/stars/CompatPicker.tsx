@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { SIGNS, type Sign } from "@/lib/astro/types";
 import { SIGN_INFO } from "@/lib/astro/interpretations";
 import { useMySign } from "@/lib/my-sign";
+import { useI18n } from "@/i18n/client";
 
 /** Pick two signs and go to their compatibility page. */
 export function CompatPicker() {
@@ -12,12 +13,13 @@ export function CompatPicker() {
   const [a, setA] = useState<Sign | "">("");
   const [b, setB] = useState<Sign | "">("");
   const router = useRouter();
+  const { href } = useI18n();
   const first = a || mine || "";
   const go = (e: React.FormEvent) => {
     e.preventDefault();
     if (!first || !b) return;
     const [x, y] = SIGNS.indexOf(first) <= SIGNS.indexOf(b) ? [first, b] : [b, first];
-    router.push(`/compatibility/${x.toLowerCase()}-and-${y.toLowerCase()}`);
+    router.push(href(`/compatibility/${x.toLowerCase()}-and-${y.toLowerCase()}`));
   };
   const select = (id: string, label: string, value: string, set: (v: Sign) => void) => (
     <div>

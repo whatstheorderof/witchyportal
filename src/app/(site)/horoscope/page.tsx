@@ -1,6 +1,6 @@
 import { featuredYear } from "@/lib/astro/yearly";
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/i18n/client";
 import { connection } from "next/server";
 import { SIGNS } from "@/lib/astro/types";
 import { SIGN_INFO } from "@/lib/astro/interpretations";

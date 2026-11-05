@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/i18n/client";
 import type { AspectFactor, ChartResult } from "@/lib/astro/types";
 import { formatDegree } from "@/lib/astro/types";
 import type { FactorSection, NatalReport, Reading } from "@/lib/astro/report-types";

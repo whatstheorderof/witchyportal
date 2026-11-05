@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
-import Link from "next/link";
+import Link from "@/i18n/client";
 import { listVideos } from "@/lib/queries";
 import { getSetting } from "@/lib/settings";
 import { videoSeries } from "@/lib/youtube";

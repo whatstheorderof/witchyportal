@@ -23,6 +23,7 @@ import { getSetting } from "./settings";
 import { retreatEmailOf } from "./contact-links";
 import { formatMoney } from "./money";
 import { formatDateRange } from "./dates";
+import { localePath, type Locale } from "@/i18n/config";
 
 const HOLD_MS = 30 * 60 * 1000; // Stripe's minimum Checkout lifetime is 30 minutes
 const ok = (a: string) => a === "available" || a === "limited";
@@ -48,7 +49,7 @@ export async function placesPaid(optionIds: string[]) {
 type Selection = { option: s.BookingOption; departure: typeof s.departures.$inferSelect; retreat: typeof s.retreats.$inferSelect };
 
 /** Hold a place and open a Stripe Checkout page. Returns the Stripe URL or a reason it can't. */
-export async function startRetreatCheckout(sel: Selection): Promise<{ url: string } | { error: "unavailable" | "full" | "stripe" }> {
+export async function startRetreatCheckout(sel: Selection, lang: Locale = "en"): Promise<{ url: string } | { error: "unavailable" | "full" | "stripe" }> {
   const { option, departure, retreat } = sel;
   const description = `${retreat.title} · ${formatDateRange(departure.startDate, departure.endDate)} · ${option.label}`;
   const mode = stripeMode();
@@ -81,8 +82,8 @@ export async function startRetreatCheckout(sel: Selection): Promise<{ url: strin
       client_reference_id: order.id,
       metadata: { orderId: order.id, kind: "retreat", optionId: option.id },
       payment_intent_data: { description, metadata: { orderId: order.id, kind: "retreat" } },
-      success_url: absolute(`/booking/return?session_id={CHECKOUT_SESSION_ID}`),
-      cancel_url: absolute(`/retreats/${retreat.slug}/book?option=${option.id}&cancelled=1`),
+      success_url: absolute(localePath(lang, "/booking/return") + "?session_id={CHECKOUT_SESSION_ID}"),
+      cancel_url: absolute(localePath(lang, `/retreats/${retreat.slug}/book?option=${option.id}&cancelled=1`)),
     }, { idempotencyKey: `order-${order.id}` });
     await db.update(s.orders).set({ stripeSessionId: session.id, updatedAt: new Date() }).where(eq(s.orders.id, order.id));
     return { url: session.url! };

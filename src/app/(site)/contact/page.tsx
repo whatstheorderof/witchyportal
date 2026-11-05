@@ -10,27 +10,33 @@ import { getSetting } from "@/lib/settings";
 import { PageHero } from "@/components/Section";
 import { EnquiryForm } from "@/components/forms";
 import { Markdown } from "@/components/Markdown";
+import { getI18n } from "@/i18n/server";
+import { localeMeta } from "@/i18n/meta";
 
-export const metadata: Metadata = pageMeta({
-  title: "Contact Yulia Moon",
-  description: "Contact Yulia Moon about spells, readings, retreats, events and collaborations — by WhatsApp, email or the enquiry form.",
-  path: "/contact",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getI18n();
+  return localeMeta({
+    title: t("Contact Yulia Moon"),
+    description: t("Contact Yulia Moon about spells, readings, retreats, events and collaborations — by WhatsApp, email or the enquiry form."),
+    path: "/contact",
+  });
+}
 
 export default async function ContactPage({ searchParams }: { searchParams: Promise<{ retreat?: string }> }) {
   const { retreat } = await searchParams;
-  const [retreats, faqs, contact] = await Promise.all([listRetreats(), listGeneralFaqs(), getSetting("contact")]);
+  const [retreats, rawFaqs, contact, { t, tc }] = await Promise.all([listRetreats(), listGeneralFaqs(), getSetting("contact"), getI18n()]);
+  const faqs = rawFaqs.map((f) => ({ ...f, question: tc(f.question), answer: tc(f.answer) }));
   // Yulia's other Instagram accounts, from content/socials.ts
   const norm = (u: string) => u.replace(/\/$/, "").toLowerCase();
   const otherInstagram = socials.filter((x) => x.platform === "Instagram" && norm(x.url) !== norm(contact.instagram));
   const defaultRetreat = retreats.find((r) => r.id === retreat)?.id;
   return (
     <>
-      <JsonLd data={[faqLd(faqs.map((f) => ({ question: f.question, answer: f.answer }))), breadcrumbLd([["Contact", "/contact"]])]} />
-      <PageHero image="cape" eyebrow="Contact" title="Send Yulia a message" intro={contact.responseTime} />
+      <JsonLd data={[faqLd(faqs.map((f) => ({ question: f.question, answer: f.answer }))), breadcrumbLd([[t("Contact"), "/contact"]])]} />
+      <PageHero image="cape" eyebrow={t("Contact")} title={t("Send Yulia a message")} intro={tc(contact.responseTime)} />
       <div className="container-page grid gap-16 py-14 lg:grid-cols-[1.3fr_1fr] lg:py-20">
-        <section aria-label="Enquiry form" className="card p-6 sm:p-10">
-          <EnquiryForm retreats={retreats.map((r) => ({ id: r.id, title: r.title }))} defaultRetreatId={defaultRetreat} />
+        <section aria-label={t("Enquiry form")} className="card p-6 sm:p-10">
+          <EnquiryForm retreats={retreats.map((r) => ({ id: r.id, title: tc(r.title) }))} defaultRetreatId={defaultRetreat} />
         </section>
         <aside className="grid content-start gap-10">
           {(contact.email || contact.instagram || contact.whatsapp) && (
@@ -38,16 +44,16 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
               {contact.whatsapp && (
                 <div>
                   <p className="eyebrow">WhatsApp</p>
-                  <a href={whatsappLink(contact.whatsapp, "Hi Yulia, ")!} target="_blank" rel="noopener noreferrer" className="mt-2 block font-display text-2xl text-plum link-underline">{prettyPhone(contact.whatsapp)}</a>
-                  <p className="mt-1 text-sm text-muted">The quickest way to ask about spells, readings and events.</p>
+                  <a href={whatsappLink(contact.whatsapp, t("Hi Yulia, "))!} target="_blank" rel="noopener noreferrer" className="mt-2 block font-display text-2xl text-plum link-underline">{prettyPhone(contact.whatsapp)}</a>
+                  <p className="mt-1 text-sm text-muted">{t("The quickest way to ask about spells, readings and events.")}</p>
                 </div>
               )}
               {contact.email && (
                 <div>
-                  <p className="eyebrow">Email</p>
+                  <p className="eyebrow">{t("Email")}</p>
                   <a href={`mailto:${contact.email}`} className="mt-2 block font-display text-2xl text-plum link-underline">{contact.email}</a>
                   {contact.retreatEmail && contact.retreatEmail !== contact.email && (
-                    <p className="mt-2 text-sm text-muted">Retreat questions and bookings: <a href={`mailto:${contact.retreatEmail}`} className="break-all text-plum link-underline">{contact.retreatEmail}</a></p>
+                    <p className="mt-2 text-sm text-muted">{t("Retreat questions and bookings:")} <a href={`mailto:${contact.retreatEmail}`} className="break-all text-plum link-underline">{contact.retreatEmail}</a></p>
                   )}
                 </div>
               )}
@@ -55,11 +61,11 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
                 <div>
                   <p className="eyebrow">Instagram</p>
                   <a href={contact.instagram} target="_blank" rel="noopener noreferrer" className="mt-2 block font-display text-2xl text-plum link-underline">{handle(contact.instagram)}</a>
-                  <p className="mt-1 text-sm text-muted">Send Yulia your Ask a Witch questions by DM.</p>
+                  <p className="mt-1 text-sm text-muted">{t("Send Yulia your Ask a Witch questions by DM.")}</p>
                   {otherInstagram.map((o) => (
                     <div key={o.url} className="mt-4">
                       <a href={o.url} target="_blank" rel="noopener noreferrer" className="block font-display text-2xl text-plum link-underline">{o.handle}</a>
-                      <p className="mt-1 text-sm text-muted">{o.description}</p>
+                      <p className="mt-1 text-sm text-muted">{tc(o.description)}</p>
                     </div>
                   ))}
                 </div>
@@ -68,7 +74,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
           )}
           {faqs.length > 0 && (
             <div>
-              <p className="eyebrow">Frequently asked</p>
+              <p className="eyebrow">{t("Frequently asked")}</p>
               <div className="mt-4 divide-y divide-line border-y border-line">
                 {faqs.map((f) => (
                   <details key={f.id} className="group py-1">

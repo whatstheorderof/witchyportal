@@ -1,17 +1,19 @@
 const TZ = process.env.NEXT_PUBLIC_SITE_TIMEZONE || "Europe/London";
 
-export function formatDate(d: string | Date, opts: Intl.DateTimeFormatOptions = {}) {
+export function formatDate(d: string | Date, opts: Intl.DateTimeFormatOptions = {}, intl = "en-GB") {
   const date = typeof d === "string" ? new Date(d.length === 10 ? d + "T12:00:00Z" : d) : d;
-  return new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: TZ, ...opts }).format(date);
+  return new Intl.DateTimeFormat(intl, { day: "numeric", month: "long", year: "numeric", timeZone: TZ, ...opts }).format(date);
 }
 
-export function formatDateRange(start: string, end: string) {
+export function formatDateRange(start: string, end: string, intl = "en-GB") {
   const s = new Date(start + "T12:00:00Z");
   const e = new Date(end + "T12:00:00Z");
   const sameYear = s.getUTCFullYear() === e.getUTCFullYear();
   const sameMonth = sameYear && s.getUTCMonth() === e.getUTCMonth();
   const f = (d: Date, o: Intl.DateTimeFormatOptions) =>
-    new Intl.DateTimeFormat("en-GB", { timeZone: "UTC", ...o }).format(d);
+    new Intl.DateTimeFormat(intl, { timeZone: "UTC", ...o }).format(d);
+  // Other languages: let Intl build the range in the local style
+  if (intl !== "en-GB") return new Intl.DateTimeFormat(intl, { timeZone: "UTC", day: "numeric", month: sameYear ? "long" : "short", year: "numeric" }).formatRange(s, e);
   if (sameMonth) return `${f(s, { day: "numeric" })}–${f(e, { day: "numeric", month: "long", year: "numeric" })}`;
   if (sameYear) return `${f(s, { day: "numeric", month: "short" })} – ${f(e, { day: "numeric", month: "short", year: "numeric" })}`;
   return `${f(s, { day: "numeric", month: "short", year: "numeric" })} – ${f(e, { day: "numeric", month: "short", year: "numeric" })}`;

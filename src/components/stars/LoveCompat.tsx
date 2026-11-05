@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Link from "next/link";
+import Link from "@/i18n/client";
 import { SIGN_INFO } from "@/lib/astro/interpretations";
 import type { Sign } from "@/lib/astro/types";
 

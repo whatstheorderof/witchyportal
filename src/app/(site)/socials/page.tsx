@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
-import Link from "next/link";
+import Link from "@/i18n/client";
 import { socials } from "@content/socials";
 import { MediaImage } from "@/components/MediaImage";
 import { MoonMark } from "@/components/Logo";
 import { ArrowRight, ExternalIcon, PlayIcon } from "@/components/Icons";
+import { getI18n } from "@/i18n/server";
+import { localeMeta } from "@/i18n/meta";
 
-export const metadata: Metadata = pageMeta({
-  title: "Socials",
-  description: "Follow Yulia Moon and Witchy Portal on Instagram, YouTube and Etsy.",
-  path: "/socials",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getI18n();
+  return localeMeta({ title: t("Socials"), description: t("Follow Yulia Moon and Witchy Portal on Instagram, YouTube and Etsy."), path: "/socials" });
+}
 
 const iconBase = { fill: "none", stroke: "currentColor", strokeWidth: 1.5, strokeLinecap: "round" as const, strokeLinejoin: "round" as const, viewBox: "0 0 24 24", "aria-hidden": true, className: "h-6 w-6" };
 const ICONS: Record<string, React.ReactNode> = {
@@ -20,19 +21,20 @@ const ICONS: Record<string, React.ReactNode> = {
   star: (<svg {...iconBase}><path d="M12 3c.6 4.5 2.5 6.4 7 7-4.5.6-6.4 2.5-7 7-.6-4.5-2.5-6.4-7-7 4.5-.6 6.4-2.5 7-7Z" /></svg>),
 };
 
-export default function SocialsPage() {
+export default async function SocialsPage() {
+  const { t, tc } = await getI18n();
   return (
     <section className="relative overflow-hidden bg-ivory-deep pt-24 pb-20 lg:pt-36 lg:pb-28">
-      <div aria-hidden className="pointer-events-none absolute -right-24 top-10 h-80 w-80 rounded-full bg-lavender/50 blur-3xl" />
-      <div aria-hidden className="pointer-events-none absolute -left-20 bottom-10 h-72 w-72 rounded-full bg-blush/60 blur-3xl" />
+      <div aria-hidden className="pointer-events-none absolute -end-24 top-10 h-80 w-80 rounded-full bg-lavender/50 blur-3xl" />
+      <div aria-hidden className="pointer-events-none absolute -start-20 bottom-10 h-72 w-72 rounded-full bg-blush/60 blur-3xl" />
       <div className="relative mx-auto w-full max-w-xl px-5">
         <div className="flex flex-col items-center text-center">
           <div className="relative h-28 w-28 overflow-hidden rounded-full ring-4 ring-ivory shadow-(--shadow-lift)">
             <MediaImage fallback="golden" sizes="112px" priority className="object-[center_20%]" />
           </div>
-          <p className="eyebrow mt-6 flex items-center gap-2"><MoonMark className="h-4 w-4" />Find Yulia online</p>
-          <h1 className="display-lg mt-2">Socials</h1>
-          <p className="mt-3 max-w-md text-muted">Follow along for rituals, readings, Ask a Witch answers and retreat news.</p>
+          <p className="eyebrow mt-6 flex items-center gap-2"><MoonMark className="h-4 w-4" />{t("Find Yulia online")}</p>
+          <h1 className="display-lg mt-2">{t("Socials")}</h1>
+          <p className="mt-3 max-w-md text-muted">{t("Follow along for rituals, readings, Ask a Witch answers and retreat news.")}</p>
         </div>
 
         <ul className="mt-10 grid gap-3">
@@ -46,20 +48,20 @@ export default function SocialsPage() {
               >
                 <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-plum text-ivory">{ICONS[s.icon] ?? ICONS.star}</span>
                 <span className="min-w-0 flex-1">
-                  <span className="block font-display text-2xl leading-tight text-plum">{s.label}</span>
+                  <span className="block font-display text-2xl leading-tight text-plum">{tc(s.label)}</span>
                   <span className="block text-sm text-plum-soft">{s.platform} · {s.handle}</span>
-                  {s.description && <span className="mt-1 block text-sm text-muted">{s.description}</span>}
+                  {s.description && <span className="mt-1 block text-sm text-muted">{tc(s.description)}</span>}
                 </span>
                 <ExternalIcon className="h-5 w-5 shrink-0 text-plum transition group-hover:translate-x-0.5" />
-                <span className="sr-only">(opens in a new tab)</span>
+                <span className="sr-only">{t("(opens in a new tab)")}</span>
               </a>
             </li>
           ))}
         </ul>
 
         <div className="mt-10 grid gap-3 sm:grid-cols-2">
-          <Link href="/retreats" className="btn-primary">See retreats <ArrowRight /></Link>
-          <Link href="/ask-a-witch" className="btn-outline">Watch Ask a Witch</Link>
+          <Link href="/retreats" className="btn-primary">{t("See retreats")} <ArrowRight /></Link>
+          <Link href="/ask-a-witch" className="btn-outline">{t("Watch Ask a Witch")}</Link>
         </div>
       </div>
     </section>

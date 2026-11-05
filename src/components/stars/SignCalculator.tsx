@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Link from "next/link";
+import Link from "@/i18n/client";
 import { PlaceCombobox, type Place } from "@/components/birth-chart/BirthChart";
 import { CALCS, type CalcKind, type CalcResult } from "@/lib/astro/calc-meta";
 import { SIGN_INFO } from "@/lib/astro/interpretations";

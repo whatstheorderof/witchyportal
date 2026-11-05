@@ -20,6 +20,9 @@
   "dependencies": {
     "@fontsource-variable/cormorant-garamond": "^5.3.0",
     "@fontsource-variable/jost": "^5.3.0",
+    "@fontsource-variable/noto-naskh-arabic": "^5.3.0",
+    "@fontsource-variable/noto-sans-devanagari": "^5.3.0",
+    "@fontsource-variable/noto-sans-sc": "^5.3.1",
     "@photostructure/tz-lookup": "^11.7.0",
     "@vercel/blob": "^2.8.0",
     "all-the-cities": "^3.1.0",

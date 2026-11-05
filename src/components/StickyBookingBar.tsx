@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useI18n } from "@/i18n/client";
 
 /**
  * Mobile booking action that sits just above the bottom navigation.
@@ -10,6 +11,7 @@ import { useEffect, useState } from "react";
  */
 export function StickyBookingBar({ price, dates, bookable }: { price: string | null; dates: string | null; bookable: boolean }) {
   const [hidden, setHidden] = useState(false);
+  const { t } = useI18n();
 
   useEffect(() => {
     const targets = [document.getElementById("book"), document.querySelector("footer")].filter(Boolean) as Element[];
@@ -35,11 +37,11 @@ export function StickyBookingBar({ price, dates, bookable }: { price: string | n
       >
         <div className="mx-auto flex max-w-md items-center justify-between gap-4">
           <div className="min-w-0">
-            <p className="truncate text-xs text-muted">{dates ?? "Dates to be announced"}</p>
-            <p className="truncate font-display text-xl leading-tight text-plum">{price ? `from ${price}` : "Price coming soon"}</p>
+            <p className="truncate text-xs text-muted">{dates ?? t("Dates to be announced")}</p>
+            <p className="truncate font-display text-xl leading-tight text-plum">{price ? t("from {price}", { price }) : t("Price coming soon")}</p>
           </div>
           <a href={bookable ? "#book" : "#waitlist"} tabIndex={hidden ? -1 : 0} className="btn-primary min-h-12 shrink-0 px-6">
-            {bookable ? "Book now" : "Join waitlist"}
+            {bookable ? t("Book now") : t("Join waitlist")}
           </a>
         </div>
       </div>

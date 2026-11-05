@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/i18n/client";
 import { JsonLd } from "@/components/JsonLd";
 import { SITE_DESCRIPTION, organizationLd, pageMeta, personLd, websiteLd } from "@/lib/seo";
 import { getMediaMap, getSetting } from "@/lib/settings";
@@ -16,25 +16,28 @@ import { YouTubeEmbed } from "@/components/YouTube";
 import { ArrowRight } from "@/components/Icons";
 import { TestimonialsStrip } from "@/components/Testimonials";
 import { testimonials } from "@content/testimonials";
-import { formatDate } from "@/lib/dates";
 import { parseYouTubeId } from "@/lib/validation";
 import { FULL_MOON_NAMES, moonNow, upcomingMoons } from "@/lib/astro/moon";
 import { cardOfTheDay } from "@/lib/tarot";
 import { CardSymbol } from "@/components/TarotCardView";
 import { MoonGlyph } from "@/components/MoonGlyph";
 import { YourDay } from "@/components/stars/YourDay";
+import { getI18n } from "@/i18n/server";
+import { localeMeta } from "@/i18n/meta";
 
-const dated = (d: Date | null | undefined) => (d ? formatDate(d, { day: "numeric", month: "long", year: undefined }) : "");
-
-export const metadata: Metadata = pageMeta({
-  title: "Witchy Portal — witchy retreats, tarot & rituals with Yulia Moon",
-  absoluteTitle: true,
-  description: SITE_DESCRIPTION,
-  path: "/",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getI18n();
+  return localeMeta({
+    title: t("Witchy Portal — witchy retreats, tarot & rituals with Yulia Moon"),
+    absoluteTitle: true,
+    description: t(SITE_DESCRIPTION),
+    path: "/",
+  });
+}
 
 export default async function HomePage() {
-  const [home, contact] = await Promise.all([getSetting("home"), getSetting("contact")]);
+  const [home, contact, { t, tc, date }] = await Promise.all([getSetting("home"), getSetting("contact"), getI18n()]);
+  const dated = (d: Date | null | undefined) => (d ? date(d, { day: "numeric", month: "long" }) : "");
   const [retreats, highlights, astro, articles, shorts, latestVideos, pickedVideo, pickedArticle, pickedTip, latestTip] = await Promise.all([
     listRetreats(),
     listHighlights(),
@@ -86,59 +89,59 @@ export default async function HomePage() {
           <div className="scrim-hero absolute inset-0" />
         </div>
         <div className="container-page pb-24 pt-32 sm:pb-28 lg:pb-36">
-          <p className="eyebrow reveal inline-block rounded-full bg-plum-deep/45 px-3 py-1.5 text-ivory backdrop-blur-sm">{home.heroEyebrow}</p>
-          <h1 className="display-xl reveal mt-4 max-w-4xl text-ivory [text-shadow:0_2px_30px_rgb(42_16_37/0.35)]">{home.heroTitle}</h1>
-          <p className="reveal mt-5 max-w-xl text-lg text-ivory/90 sm:text-xl">{home.heroSubtitle}</p>
+          <p className="eyebrow reveal inline-block rounded-full bg-plum-deep/45 px-3 py-1.5 text-ivory backdrop-blur-sm">{tc(home.heroEyebrow)}</p>
+          <h1 className="display-xl reveal mt-4 max-w-4xl text-ivory [text-shadow:0_2px_30px_rgb(42_16_37/0.35)]">{tc(home.heroTitle)}</h1>
+          <p className="reveal mt-5 max-w-xl text-lg text-ivory/90 sm:text-xl">{tc(home.heroSubtitle)}</p>
           <div className="reveal mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link href="/retreats" className="btn-light">Explore Retreats <ArrowRight /></Link>
-            <Link href="/about" className="btn-ghost-light">Meet Yulia</Link>
+            <Link href="/retreats" className="btn-light">{t("Explore Retreats")} <ArrowRight /></Link>
+            <Link href="/about" className="btn-ghost-light">{t("Meet Yulia")}</Link>
           </div>
         </div>
       </section>
 
       {/* NEXT RETREAT — all key facts together */}
       {featured && (
-        <section aria-label="Next retreat" className="container-page relative z-10 -mt-14 sm:-mt-20">
+        <section aria-label={t("Next retreat")} className="container-page relative z-10 -mt-14 sm:-mt-20">
           <RetreatBookingCard retreat={featured} />
         </section>
       )}
 
       {/* TODAY'S MAGIC */}
-      <section aria-label="Today's magic" className="container-page grid gap-3 pt-8 sm:grid-cols-2">
-        <Link href="/moon" className="group flex items-center gap-4 rounded-2xl bg-ivory-deep p-4 ring-1 ring-line transition hover:bg-white">
+      <section aria-label={t("Today's magic")} className="container-page grid gap-3 pt-8 sm:grid-cols-2">
+        <Link href="/moon" className="group flex min-w-0 items-center gap-4 rounded-2xl bg-ivory-deep p-4 ring-1 ring-line transition hover:bg-white">
           <MoonGlyph angle={moon.angle} size={56} />
           <span className="min-w-0">
-            <span className="block text-[0.7rem] uppercase tracking-[0.2em] text-plum-soft">Tonight&rsquo;s moon</span>
-            <span className="block font-display text-xl leading-tight text-plum">{moon.phaseName} in {moon.sign}</span>
-            {nextMoon && <span className="block text-sm text-muted">Next {nextMoon.kind === "new" ? "new moon" : `full moon (${FULL_MOON_NAMES[nextMoon.date.getUTCMonth()]})`}: {formatDate(nextMoon.date, { weekday: "short", day: "numeric", month: "short", year: undefined })}</span>}
+            <span className="block text-[0.7rem] uppercase tracking-[0.2em] text-plum-soft">{t("Tonight’s moon")}</span>
+            <span className="block font-display text-xl leading-tight text-plum">{t("{phase} in {sign}", { phase: t(moon.phaseName), sign: t(moon.sign) })}</span>
+            {nextMoon && <span className="block text-sm text-muted">{nextMoon.kind === "new" ? t("Next new moon: {date}", { date: date(nextMoon.date, { weekday: "short", day: "numeric", month: "short" }) }) : t("Next full moon ({name}): {date}", { name: t(FULL_MOON_NAMES[nextMoon.date.getUTCMonth()]), date: date(nextMoon.date, { weekday: "short", day: "numeric", month: "short" }) })}</span>}
           </span>
-          <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-plum transition group-hover:translate-x-1" />
+          <ArrowRight className="ms-auto h-4 w-4 shrink-0 text-plum transition group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
         </Link>
-        <Link href="/tarot" className="group flex items-center gap-4 rounded-2xl bg-ivory-deep p-4 ring-1 ring-line transition hover:bg-white">
+        <Link href="/tarot" className="group flex min-w-0 items-center gap-4 rounded-2xl bg-ivory-deep p-4 ring-1 ring-line transition hover:bg-white">
           <span aria-hidden className="grid h-14 w-10 shrink-0 place-items-center rounded-md border-2 border-ivory bg-plum font-display text-2xl text-ivory shadow-(--shadow-soft)"><CardSymbol card={card} /></span>
           <span className="min-w-0">
-            <span className="block text-[0.7rem] uppercase tracking-[0.2em] text-plum-soft">Card of the day</span>
-            <span className="block font-display text-xl leading-tight text-plum">{card.name}</span>
-            <span className="block truncate text-sm text-muted">{card.keywords}</span>
+            <span className="block text-[0.7rem] uppercase tracking-[0.2em] text-plum-soft">{t("Card of the day")}</span>
+            <span lang="en" className="block font-display text-xl leading-tight text-plum">{card.name}</span>
+            <span lang="en" className="block truncate text-sm text-muted">{card.keywords}</span>
           </span>
-          <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-plum transition group-hover:translate-x-1" />
+          <ArrowRight className="ms-auto h-4 w-4 shrink-0 text-plum transition group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
         </Link>
       </section>
 
       {/* YOUR DAY IN THE STARS */}
-      <section aria-label="Your day in the stars" className="container-page grid gap-6 pt-8 lg:grid-cols-[1.4fr_1fr]">
+      <section aria-label={t("Your day in the stars")} className="container-page grid gap-6 pt-8 lg:grid-cols-[1.4fr_1fr]">
         <YourDay />
         <ul className="grid content-start gap-3">
           {[
-            ["/horoscope", "Daily horoscopes", "Every sign, read from today's sky."],
-            ["/this-week-in-astrology", "This week in astrology", "The week's Moons, retrogrades and aspects."],
-            ["/compatibility", "Compatibility test", "Star signs, love signs and birth charts."],
-            ["/birth-chart", "Your birth chart", "Free natal chart and full written report."],
+            ["/horoscope", t("Daily horoscopes"), t("Every sign, read from today's sky.")],
+            ["/this-week-in-astrology", t("This week in astrology"), t("The week's Moons, retrogrades and aspects.")],
+            ["/compatibility", t("Compatibility test"), t("Star signs, love signs and birth charts.")],
+            ["/birth-chart", t("Your birth chart"), t("Free natal chart and full written report.")],
           ].map(([href, label, blurb]) => (
             <li key={href}>
-              <Link href={href} className="group flex items-center gap-4 rounded-2xl bg-ivory-deep p-4 ring-1 ring-line transition hover:bg-white">
+              <Link href={href} className="group flex min-w-0 items-center gap-4 rounded-2xl bg-ivory-deep p-4 ring-1 ring-line transition hover:bg-white">
                 <span className="min-w-0"><span className="block font-display text-xl text-plum">{label}</span><span className="block text-sm text-muted">{blurb}</span></span>
-                <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-plum transition group-hover:translate-x-1" />
+                <ArrowRight className="ms-auto h-4 w-4 shrink-0 text-plum transition group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
               </Link>
             </li>
           ))}
@@ -149,22 +152,22 @@ export default async function HomePage() {
       <section className="relative mt-16 overflow-hidden bg-sand/60 py-20 grain lg:mt-24 lg:py-28" aria-labelledby="meet-yulia">
         <div className="container-page grid items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-20">
           <div className="order-2 lg:order-1">
-            <p className="eyebrow">Your host</p>
-            <h2 id="meet-yulia" className="display-lg mt-3">{home.introTitle}</h2>
-            <p className="mt-6 whitespace-pre-line text-lg leading-relaxed text-ink/85">{home.introText}</p>
+            <p className="eyebrow">{t("Your host")}</p>
+            <h2 id="meet-yulia" className="display-lg mt-3">{tc(home.introTitle)}</h2>
+            <p className="mt-6 whitespace-pre-line text-lg leading-relaxed text-ink/85">{tc(home.introText)}</p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/about" className="btn-outline">Read Yulia&rsquo;s story <ArrowRight /></Link>
-              <Link href="/watch" className="btn-outline">Watch Yulia</Link>
+              <Link href="/about" className="btn-outline">{t("Read Yulia’s story")} <ArrowRight /></Link>
+              <Link href="/watch" className="btn-outline">{t("Watch Yulia")}</Link>
             </div>
           </div>
           <div className="order-1 lg:order-2">
             {welcomeId ? (
               <figure>
-                <YouTubeEmbed id={welcomeId} title="A welcome from Yulia" />
-                <figcaption className="mt-3 text-sm text-muted">A welcome from Yulia</figcaption>
+                <YouTubeEmbed id={welcomeId} title={t("A welcome from Yulia")} />
+                <figcaption className="mt-3 text-sm text-muted">{t("A welcome from Yulia")}</figcaption>
               </figure>
             ) : (
-              <div className="relative aspect-[5/4] overflow-hidden rounded-[2rem] rounded-tl-[8rem]">
+              <div className="relative aspect-[5/4] overflow-hidden rounded-[2rem] rounded-ss-[8rem]">
                 <MediaImage media={introImg} fallback="golden" sizes="(min-width:1024px) 50vw, 92vw" className="object-[center_25%]" />
               </div>
             )}
@@ -175,26 +178,26 @@ export default async function HomePage() {
       {/* THIS WEEK WITH YULIA */}
       {(weekVideo || weekArticle || weekTip) && (
         <section className="container-page py-20 lg:py-28" aria-labelledby="this-week">
-          <SectionHeading eyebrow="Fresh every week" title="This week with Yulia" intro="A video, a read and a little magic to carry with you." href="/discover" linkLabel="Discover more" />
-          <h2 id="this-week" className="sr-only">This week with Yulia</h2>
+          <SectionHeading eyebrow={t("Fresh every week")} title={t("This week with Yulia")} intro={t("A video, a read and a little magic to carry with you.")} href="/discover" linkLabel={t("Discover more")} />
+          <h2 id="this-week" className="sr-only">{t("This week with Yulia")}</h2>
           <div className="mt-10 grid gap-8 lg:grid-cols-3">
             {weekVideo && (
               <article>
-                <p className="mb-3 text-xs uppercase tracking-[0.18em] text-plum-soft">Watch · {dated(weekVideo.publishAt ?? weekVideo.createdAt)}</p>
+                <p className="mb-3 text-xs uppercase tracking-[0.18em] text-plum-soft">{t("Watch")} · {dated(weekVideo.publishAt ?? weekVideo.createdAt)}</p>
                 <YouTubeEmbed id={weekVideo.youtubeId} title={weekVideo.title} vertical={weekVideo.kind === "short"} />
-                <h3 className="mt-3 font-display text-2xl leading-snug text-plum">{weekVideo.title}</h3>
-                <Link href="/watch" className="mt-2 inline-flex items-center gap-1 text-sm text-plum link-underline">More on Witchy TV <ArrowRight /></Link>
+                <h3 lang="en" className="mt-3 font-display text-2xl leading-snug text-plum">{weekVideo.title}</h3>
+                <Link href="/watch" className="mt-2 inline-flex items-center gap-1 text-sm text-plum link-underline">{t("More on Witchy TV")} <ArrowRight /></Link>
               </article>
             )}
             {weekArticle && (
               <div>
-                <p className="mb-3 text-xs uppercase tracking-[0.18em] text-plum-soft">Read</p>
+                <p className="mb-3 text-xs uppercase tracking-[0.18em] text-plum-soft">{t("Read")}</p>
                 <ArticleCard post={weekArticle} index={0} />
               </div>
             )}
             {weekTip && (
               <div>
-                <p className="mb-3 text-xs uppercase tracking-[0.18em] text-plum-soft">{weekTip.type === "affirmation" ? "Affirmation" : weekTip.type === "motivation" ? "Motivation" : "Witchy tip"} · {dated(weekTip.publishAt ?? weekTip.createdAt)}</p>
+                <p className="mb-3 text-xs uppercase tracking-[0.18em] text-plum-soft">{weekTip.type === "affirmation" ? t("Affirmation") : weekTip.type === "motivation" ? t("Motivation") : t("Witchy tip")} · {dated(weekTip.publishAt ?? weekTip.createdAt)}</p>
                 <TipCard post={weekTip} index={1} />
               </div>
             )}
@@ -211,16 +214,16 @@ export default async function HomePage() {
           <div className="absolute inset-0 -z-10 bg-gradient-to-r from-plum-deep via-plum-deep/90 to-plum-deep/60" />
           <div className="container-page grid gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-center">
             <div>
-              <p className="eyebrow text-blush">{featured.title}</p>
-              <h2 id="why-come" className="display-lg mt-3 text-ivory">{featured.tagline || "What you'll take home"}</h2>
-              <p className="mt-5 max-w-lg text-lg text-ivory/80">{featured.summary}</p>
-              <Link href={`/retreats/${featured.slug}`} className="btn-light mt-8">Discover the retreat <ArrowRight /></Link>
+              <p className="eyebrow text-blush">{tc(featured.title)}</p>
+              <h2 id="why-come" className="display-lg mt-3 text-ivory">{tc(featured.tagline) || t("What you'll take home")}</h2>
+              <p className="mt-5 max-w-lg text-lg text-ivory/80">{tc(featured.summary)}</p>
+              <Link href={`/retreats/${featured.slug}`} className="btn-light mt-8">{t("Discover the retreat")} <ArrowRight /></Link>
             </div>
             <ul className="grid gap-3">
               {featured.benefits.map((b, i) => (
                 <li key={i} className="flex gap-4 rounded-2xl bg-ivory/8 p-4 ring-1 ring-ivory/10">
                   <span aria-hidden className="font-display text-2xl text-blush">✦</span>
-                  <span className="text-ivory/90">{b}</span>
+                  <span className="text-ivory/90">{tc(b)}</span>
                 </li>
               ))}
             </ul>
@@ -234,15 +237,15 @@ export default async function HomePage() {
           <div className="relative aspect-square lg:aspect-auto lg:h-full lg:min-h-[420px]">
             <MediaImage fallback="redSmoke" sizes="(min-width:1024px) 45vw, 92vw" className="object-[center_20%]" />
           </div>
-          <div className="p-7 sm:p-10 lg:py-14 lg:pr-14 lg:pl-0">
-            <p className="eyebrow">Work with Yulia</p>
-            <h2 id="work-with" className="display-md mt-2">Spells, readings &amp; guidance</h2>
-            <p className="mt-4 text-lg text-ink/85">Spellwork from all paths of witchcraft, tarot and oracle readings, dream interpretation, astrology reports, favourable dates and party hire — every piece of work tailored to you.</p>
+          <div className="p-7 sm:p-10 lg:py-14 lg:pe-14 lg:ps-0">
+            <p className="eyebrow">{t("Work with Yulia")}</p>
+            <h2 id="work-with" className="display-md mt-2">{t("Spells, readings & guidance")}</h2>
+            <p className="mt-4 text-lg text-ink/85">{t("Spellwork from all paths of witchcraft, tarot and oracle readings, dream interpretation, astrology reports, favourable dates and party hire — every piece of work tailored to you.")}</p>
             <ul className="mt-5 flex flex-wrap gap-2">
-              {["Spells", "Tarot readings", "Dreams", "Astrology reports", "Favourable dates", "Party hire"].map((x) => <li key={x} className="chip">{x}</li>)}
+              {[t("Spells"), t("Tarot readings"), t("Dreams"), t("Astrology reports"), t("Favourable dates"), t("Party hire")].map((x) => <li key={x} className="chip">{x}</li>)}
             </ul>
             <div className="mt-7 flex flex-wrap gap-3">
-              <Link href="/services" className="btn-primary">See what you can book <ArrowRight /></Link>
+              <Link href="/services" className="btn-primary">{t("See what you can book")} <ArrowRight /></Link>
             </div>
           </div>
         </div>
@@ -259,9 +262,9 @@ export default async function HomePage() {
                 <MediaImage media={h.media} fallback={(["veil", "sand", "horns"] as const)[i % 3]} sizes="(min-width:768px) 30vw, 92vw" className="opacity-80 transition duration-700 group-hover:scale-[1.04]" />
                 <div className="scrim-card absolute inset-0" />
                 <div className="relative flex h-full min-h-[300px] flex-col justify-end p-6">
-                  {h.eyebrow && <p className="text-[0.7rem] uppercase tracking-[0.22em] text-blush">{h.eyebrow}</p>}
-                  <h3 className="mt-2 font-display text-3xl text-ivory"><Link href={h.href} className="after:absolute after:inset-0">{h.title}</Link></h3>
-                  {h.text && <p className="mt-2 text-ivory/80">{h.text}</p>}
+                  {h.eyebrow && <p className="text-[0.7rem] uppercase tracking-[0.22em] text-blush">{tc(h.eyebrow)}</p>}
+                  <h3 className="mt-2 font-display text-3xl text-ivory"><Link href={h.href} className="after:absolute after:inset-0">{tc(h.title)}</Link></h3>
+                  {h.text && <p className="mt-2 text-ivory/80">{tc(h.text)}</p>}
                 </div>
               </li>
             ))}
@@ -272,7 +275,7 @@ export default async function HomePage() {
       {/* FROM THE STARS + READS */}
       {(astro.length > 0 || moreArticles.length > 0) && (
         <section className="container-page pb-20 lg:pb-28">
-          <SectionHeading eyebrow="Read" title="From the stars & the sea" href="/articles" linkLabel="All articles" />
+          <SectionHeading eyebrow={t("Read")} title={t("From the stars & the sea")} href="/articles" linkLabel={t("All articles")} />
           <div className="mt-10 grid gap-8 lg:grid-cols-[1.2fr_2fr]">
             {astro[0] && <AstrologyCard post={astro[0]} featured index={0} />}
             <div className="grid gap-8 sm:grid-cols-2">{moreArticles.slice(0, 2).map((a, i) => <ArticleCard key={a.id} post={a} index={i + 1} />)}</div>
@@ -284,8 +287,8 @@ export default async function HomePage() {
       {shorts.length > 0 && (
         <section className="bg-ivory-deep py-20 lg:py-28" aria-labelledby="shorts-title">
           <div className="container-page">
-            <SectionHeading eyebrow="Ask a Witch" title="Little answers, big magic" href="/watch" linkLabel="Open Witchy TV" />
-            <h2 id="shorts-title" className="sr-only">Ask a Witch shorts</h2>
+            <SectionHeading eyebrow={t("Ask a Witch")} title={t("Little answers, big magic")} href="/watch" linkLabel={t("Open Witchy TV")} />
+            <h2 id="shorts-title" className="sr-only">{t("Ask a Witch shorts")}</h2>
           </div>
           <div className="no-scrollbar mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-px-5 px-5 pb-2 sm:scroll-px-8 sm:px-8 lg:mx-auto lg:grid lg:max-w-[1320px] lg:grid-cols-5 lg:gap-6 lg:overflow-visible lg:px-12 lg:[&>*:nth-child(n+6)]:hidden">
             {shorts.map((v) => <ShortCard key={v.id} video={v} />)}
@@ -296,7 +299,7 @@ export default async function HomePage() {
       {/* MORE RETREATS */}
       {others.length > 0 && (
         <section className="container-page py-20 lg:py-28">
-          <SectionHeading eyebrow="Retreats" title="More ways to gather" href="/retreats" linkLabel="All retreats" />
+          <SectionHeading eyebrow={t("Retreats")} title={t("More ways to gather")} href="/retreats" linkLabel={t("All retreats")} />
           <div className="mt-10 grid gap-10 md:grid-cols-2">{others.map((r) => <RetreatCard key={r.id} retreat={r} />)}</div>
         </section>
       )}
@@ -308,11 +311,11 @@ export default async function HomePage() {
           <div className="absolute inset-0 bg-gradient-to-t from-plum-deep via-plum-deep/60 to-plum-deep/30" />
         </div>
         <div className="container-page text-center">
-          <p className="eyebrow text-blush">Your place is waiting</p>
-          <h2 className="display-lg mx-auto mt-4 max-w-3xl text-ivory">Salt air, ritual and a circle of kindred spirits</h2>
+          <p className="eyebrow text-blush">{t("Your place is waiting")}</p>
+          <h2 className="display-lg mx-auto mt-4 max-w-3xl text-ivory">{t("Salt air, ritual and a circle of kindred spirits")}</h2>
           <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
-            <Link href="/retreats" className="btn-light">Explore Retreats <ArrowRight /></Link>
-            <Link href="/contact" className="btn-ghost-light">Ask a question</Link>
+            <Link href="/retreats" className="btn-light">{t("Explore Retreats")} <ArrowRight /></Link>
+            <Link href="/contact" className="btn-ghost-light">{t("Ask a question")}</Link>
           </div>
         </div>
       </section>

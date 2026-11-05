@@ -1,12 +1,9 @@
 import type { Departure } from "@/db/schema";
+import { getI18n } from "@/i18n/server";
+import { AVAILABILITY_LABEL } from "@/lib/availability";
 
-export const AVAILABILITY_LABEL: Record<Departure["availability"], string> = {
-  available: "Places available",
-  limited: "Few places left",
-  waitlist: "Waitlist open",
-  sold_out: "Sold out",
-  closed: "Bookings closed",
-};
+export { AVAILABILITY_LABEL, isBookable } from "@/lib/availability";
+
 
 const STYLE: Record<Departure["availability"], string> = {
   available: "bg-success/10 text-success ring-success/20",
@@ -16,14 +13,14 @@ const STYLE: Record<Departure["availability"], string> = {
   closed: "bg-ink/5 text-muted ring-ink/10",
 };
 
-export function AvailabilityBadge({ value, note, className = "", solid = false }: { value: Departure["availability"]; note?: string | null; className?: string; solid?: boolean }) {
+export async function AvailabilityBadge({ value, note, className = "", solid = false }: { value: Departure["availability"]; note?: string | null; className?: string; solid?: boolean }) {
+  const { t, tc } = await getI18n();
   const style = solid ? `bg-ivory/95 ring-transparent ${STYLE[value].split(" ").filter((c) => c.startsWith("text-")).join(" ")}` : STYLE[value];
   return (
     <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ring-1 ${style} ${className}`}>
       <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-current" />
-      {note || AVAILABILITY_LABEL[value]}
+      {note ? tc(note) : t(AVAILABILITY_LABEL[value])}
     </span>
   );
 }
 
-export const isBookable = (a: Departure["availability"]) => a === "available" || a === "limited";

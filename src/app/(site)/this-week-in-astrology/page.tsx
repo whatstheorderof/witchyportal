@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/i18n/client";
 import { connection } from "next/server";
 import { todayKey, weekInAstrology, weekStart } from "@/lib/astro/horoscope";
 import { MoonGlyph } from "@/components/MoonGlyph";

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/i18n/client";
 import { pageMeta } from "@/lib/seo";
 import { YourDay } from "@/components/stars/YourDay";
 

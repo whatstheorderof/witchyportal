@@ -6,6 +6,7 @@ import { deploymentEnv, paymentMode } from "@/lib/env";
 import { validatePaymentUrl } from "@/lib/validation";
 import { stripeEnabled, stripeMode } from "@/lib/stripe";
 import { startRetreatCheckout } from "@/lib/orders";
+import { isLocale, localePath, type Locale } from "@/i18n/config";
 
 /**
  * Sends the visitor to the hosted payment page for a booking option.
@@ -18,8 +19,9 @@ export async function POST(req: NextRequest) {
   const form = await req.formData();
   const optionId = String(form.get("optionId") ?? "");
   const accepted = form.get("accept") === "on";
+  const lang = isLocale(form.get("lang")) ? (form.get("lang") as Locale) : "en";
   const back = (slug: string | null, error: string) =>
-    NextResponse.redirect(new URL(slug ? `/retreats/${slug}/book?option=${optionId}&error=${error}` : "/retreats", req.url), 303);
+    NextResponse.redirect(new URL(localePath(lang, slug ? `/retreats/${slug}/book?option=${optionId}&error=${error}` : "/retreats"), req.url), 303);
 
   if (!/^[0-9a-f-]{36}$/i.test(optionId)) return back(null, "unavailable");
   const sel = await getBookingSelection(optionId);
@@ -31,7 +33,7 @@ export async function POST(req: NextRequest) {
 
   // Stripe Checkout: hold a place (capacity-checked) and confirm by webhook
   if (option.checkoutMethod === "stripe" && stripeEnabled()) {
-    const r = await startRetreatCheckout(sel);
+    const r = await startRetreatCheckout(sel, lang);
     if ("error" in r) return back(retreat.slug, r.error);
     try {
       await db.insert(checkoutClicks).values({ optionId: option.id, retreatTitle: retreat.title, optionLabel: `${departure.startDate} · ${option.label}`, amount: option.amount, currency: option.currency, environment: `${deploymentEnv()}/stripe-${stripeMode()}` });
