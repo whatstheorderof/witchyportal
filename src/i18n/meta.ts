@@ -13,13 +13,14 @@ type Input = Parameters<typeof pageMeta>[0];
 export async function localeMeta(input: Input): Promise<Metadata> {
   const { locale, info } = await getI18n();
   const base = pageMeta(input);
-  if (!isTranslatedPath(input.path)) return base;
-  const languages: Record<string, string> = Object.fromEntries(LOCALES.map((l) => [LOCALE_INFO[l].hreflang, localePath(l, input.path)]));
+  if (!isTranslatedPath(input.path, locale)) return base;
+  const langs = LOCALES.filter((l) => l === "en" || isTranslatedPath(input.path, l));
+  const languages: Record<string, string> = Object.fromEntries(langs.map((l) => [LOCALE_INFO[l].hreflang, localePath(l, input.path)]));
   languages["x-default"] = input.path;
   const url = localePath(locale, input.path);
   return {
     ...base,
     alternates: { canonical: url, languages },
-    openGraph: { ...base.openGraph, url, locale: info.og, alternateLocale: LOCALES.filter((l) => l !== locale).map((l) => LOCALE_INFO[l].og) },
+    openGraph: { ...base.openGraph, url, locale: info.og, alternateLocale: langs.filter((l) => l !== locale).map((l) => LOCALE_INFO[l].og) },
   };
 }

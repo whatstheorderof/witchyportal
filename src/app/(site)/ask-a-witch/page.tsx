@@ -1,5 +1,6 @@
-import type { Metadata } from "next";
-import { breadcrumbLd, pageMeta, videoLd } from "@/lib/seo";
+import { breadcrumbLd, videoLd } from "@/lib/seo";
+import { getI18n } from "@/i18n/server";
+import { localeMeta } from "@/i18n/meta";
 import { JsonLd } from "@/components/JsonLd";
 import Link from "@/i18n/client";
 import { listVideos } from "@/lib/queries";
@@ -13,15 +14,18 @@ import { YouTubeEmbed } from "@/components/YouTube";
 import { ExternalIcon } from "@/components/Icons";
 import { RetreatPromo } from "@/components/RetreatPromo";
 
-export const metadata: Metadata = pageMeta({
-  title: "Ask a Witch — Yulia Moon answers your questions",
-  description: "Yulia Moon answers your questions about spells, tarot, dreams, love and the craft. Watch every Ask a Witch episode, and send her your own question.",
-  path: "/ask-a-witch",
-});
+export async function generateMetadata() {
+  const { t } = await getI18n();
+  return localeMeta({
+    title: t("Ask a Witch — Yulia Moon answers your questions"),
+    description: t("Yulia Moon answers your questions about spells, tarot, dreams, love and the craft. Watch every Ask a Witch episode, and send her your own question."),
+    path: "/ask-a-witch",
+  });
+}
 
 export default async function AskAWitchPage({ searchParams }: { searchParams: Promise<{ topic?: string }> }) {
   const { topic } = await searchParams;
-  const [everything, yt, contact] = await Promise.all([listVideos({ limit: 3000 }), getSetting("youtube"), getSetting("contact")]);
+  const [everything, yt, contact, { t, info: { intl } }] = await Promise.all([listVideos({ limit: 3000 }), getSetting("youtube"), getSetting("contact"), getI18n()]);
   // The Yulia Moon Show has its own channel on the Watch page.
   // Only Ask a Witch here — the show, Shorts and other videos have their own channels on the Watch page.
   // Full Ask a Witch episodes only — short vertical clips live in Witchy Shorts on the Watch page.
@@ -39,23 +43,23 @@ export default async function AskAWitchPage({ searchParams }: { searchParams: Pr
   return (
     <>
       <JsonLd data={[
-        { "@type": "ItemList", name: "Ask a Witch episodes", itemListElement: byDate.slice(0, 20).map((v, i) => ({ "@type": "ListItem", position: i + 1, item: videoLd({ youtubeId: v.youtubeId, title: v.title, description: v.description, uploaded: v.publishAt ?? v.createdAt }) })) },
+        { "@type": "ItemList", name: t("Ask a Witch episodes"), itemListElement: byDate.slice(0, 20).map((v, i) => ({ "@type": "ListItem", position: i + 1, item: videoLd({ youtubeId: v.youtubeId, title: v.title, description: v.description, uploaded: v.publishAt ?? v.createdAt }) })) },
         breadcrumbLd([["Ask a Witch", "/ask-a-witch"]]),
       ]} />
-      <PageHero image="wings" eyebrow="Ask a Witch" title="Your questions, answered" intro="Yulia's Ask a Witch videos and Shorts, all in one place. Press play to watch right here — nothing loads from YouTube until you do.">
+      <PageHero image="wings" eyebrow="Ask a Witch" title={t("Your questions, answered")} intro={`${t("Yulia's Ask a Witch videos and Shorts, all in one place. Press play to watch right here — nothing loads from YouTube until you do.")} ${t("Videos are in English.")}`}>
         <div className="mt-8 flex flex-wrap items-center gap-3">
-          <Link href="/watch?channel=ask" className="btn-primary">Watch on Witchy TV</Link>
+          <Link href="/watch?channel=ask" className="btn-primary">{t("Watch on Witchy TV")}</Link>
           {showCount > 0 && <Link href="/watch?channel=show" className="btn-outline">The Yulia Moon Show</Link>}
           <Link href="/watch?channel=shorts" className="btn-outline">Witchy Shorts</Link>
           {subscribe && (
             <a href={subscribe} target="_blank" rel="noopener noreferrer" className="btn-outline">
-              Subscribe on YouTube <ExternalIcon />
+              {t("Subscribe on YouTube")} <ExternalIcon />
             </a>
           )}
           {contact.instagram ? (
-            <a href={contact.instagram} target="_blank" rel="noopener noreferrer" className="btn-outline">Send Yulia a question on Instagram <ExternalIcon /></a>
+            <a href={contact.instagram} target="_blank" rel="noopener noreferrer" className="btn-outline">{t("Send Yulia a question on Instagram")} <ExternalIcon /></a>
           ) : (
-            <Link href="/contact" className="btn-outline">Send Yulia a question</Link>
+            <Link href="/contact" className="btn-outline">{t("Send Yulia a question")}</Link>
           )}
         </div>
         <TopicFilter base="/ask-a-witch" topics={topics} active={topic} />
@@ -64,9 +68,9 @@ export default async function AskAWitchPage({ searchParams }: { searchParams: Pr
       {list.length === 0 ? (
         <section className="container-page py-14">
           <EmptyState
-            title="Videos are on their way"
-            text="Yulia's Ask a Witch videos will appear here soon. In the meantime you can watch them on her channel."
-            action={yt.channelUrl ? <a href={yt.channelUrl} target="_blank" rel="noopener noreferrer" className="btn-outline mt-2">Visit the channel <ExternalIcon /></a> : undefined}
+            title={t("Videos are on their way")}
+            text={t("Yulia's Ask a Witch videos will appear here soon. In the meantime you can watch them on her channel.")}
+            action={yt.channelUrl ? <a href={yt.channelUrl} target="_blank" rel="noopener noreferrer" className="btn-outline mt-2">{t("Visit the channel")} <ExternalIcon /></a> : undefined}
           />
         </section>
       ) : (
@@ -78,12 +82,12 @@ export default async function AskAWitchPage({ searchParams }: { searchParams: Pr
                   <YouTubeEmbed id={latest.youtubeId} title={latest.title} vertical={latest.kind === "short"} />
                 </div>
                 <div>
-                  <p className="eyebrow">Latest answer</p>
-                  <h2 id="latest-h" className="display-md mt-3">{latest.title}</h2>
-                  {latest.publishAt && <p className="mt-2 text-sm text-muted">{formatDate(latest.publishAt)}</p>}
-                  {latest.description && <p className="mt-4 text-lg text-ink/80">{latest.description}</p>}
+                  <p className="eyebrow">{t("Latest answer")}</p>
+                  <h2 id="latest-h" lang="en" className="display-md mt-3">{latest.title}</h2>
+                  {latest.publishAt && <p className="mt-2 text-sm text-muted">{formatDate(latest.publishAt, undefined, intl)}</p>}
+                  {latest.description && <p lang="en" className="mt-4 text-lg text-ink/80">{latest.description}</p>}
                   <a href={latest.kind === "short" ? `https://www.youtube.com/shorts/${latest.youtubeId}` : `https://www.youtube.com/watch?v=${latest.youtubeId}`} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex items-center gap-2 text-plum link-underline">
-                    Watch on YouTube to like &amp; comment <ExternalIcon />
+                    {t("Watch on YouTube to like & comment")} <ExternalIcon />
                   </a>
                 </div>
               </div>
@@ -91,7 +95,7 @@ export default async function AskAWitchPage({ searchParams }: { searchParams: Pr
           )}
           {shorts.length > 0 && (
             <section className="bg-ivory-deep py-14 lg:py-20" aria-labelledby="shorts-h">
-              <div className="container-page"><SectionHeading title="Shorts" intro="Quick answers in under a minute." /><h2 id="shorts-h" className="sr-only">Shorts</h2></div>
+              <div className="container-page"><SectionHeading title={t("Shorts")} intro={t("Quick answers in under a minute.")} /><h2 id="shorts-h" className="sr-only">{t("Shorts")}</h2></div>
               <div className="no-scrollbar mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 sm:px-8 lg:mx-auto lg:grid lg:max-w-[1320px] lg:grid-cols-5 lg:px-12">
                 {shorts.map((v) => <ShortCard key={v.id} video={v} />)}
               </div>
@@ -99,13 +103,13 @@ export default async function AskAWitchPage({ searchParams }: { searchParams: Pr
           )}
           {videos.length > 0 && (
             <section className="container-page py-14 lg:py-20" aria-labelledby="videos-h">
-              <SectionHeading title="Longer answers" /><h2 id="videos-h" className="sr-only">Videos</h2>
+              <SectionHeading title={t("Longer answers")} /><h2 id="videos-h" className="sr-only">{t("Videos")}</h2>
               <div className="mt-8 grid gap-10 md:grid-cols-2 lg:grid-cols-3">{videos.map((v) => <VideoCard key={v.id} video={v} />)}</div>
             </section>
           )}
         </>
       )}
-      <RetreatPromo eyebrow="Ask Yulia in person" />
+      <RetreatPromo eyebrow={t("Ask Yulia in person")} />
     </>
   );
 }

@@ -10,7 +10,7 @@ import { LanguageSuggest } from "@/components/i18n/LanguageSuggest";
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const { locale, t } = await getI18n();
   const path = await getBarePath();
-  const untranslated = locale !== "en" && !isTranslatedPath(path);
+  const untranslated = locale !== "en" && !isTranslatedPath(path, locale);
   return (
     <LocaleProvider locale={locale} dict={uiDict(locale)}>
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-plum focus:px-5 focus:py-3 focus:text-ivory">

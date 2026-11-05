@@ -25,6 +25,8 @@ export const PATH_HEADER = "x-witchy-path";
 
 /** Marks an English interface string for translation where t() can't be called (lists, constants). */
 export const msg = <S extends string>(s: S) => s;
+/** Marks long-form text kept in a constant, so scripts/readings.ts finds it (translated with rx()). */
+export const prose = <S extends string>(s: S) => s;
 
 export const isLocale = (v: unknown): v is Locale => typeof v === "string" && (LOCALES as readonly string[]).includes(v);
 
@@ -52,8 +54,18 @@ export function splitLocale(full: string): { locale: Locale; path: string } {
  * no hreflang alternates are published (so search engines don't index
  * half-translated pages).
  */
-export const TRANSLATED_PATHS = [/^\/$/, /^\/retreats(\/[^/]+)?$/, /^\/retreats\/[^/]+\/book$/, /^\/booking\/return$/, /^\/about$/, /^\/contact$/, /^\/services$/, /^\/testimonials$/, /^\/discover$/, /^\/policies\/[^/]+$/, /^\/socials$/, /^\/favourites$/];
-export const isTranslatedPath = (p: string) => TRANSLATED_PATHS.some((r) => r.test(p.split(/[?#]/)[0]));
+/** Pages whose content is long-form readings (Phase 2): translated once a language is in READINGS_DONE. */
+export const READINGS_PATHS = [/^\/(horoscope|zodiac|moon|tarot|today|this-week-in-astrology|mercury-retrograde|eclipses|chinese-zodiac|compatibility|birth-chart|calculators|astrology|articles|tips|[a-z-]+-calculator)(\/.*)?$/];
+export const TRANSLATED_PATHS = [/^\/$/, /^\/retreats(\/[^/]+)?$/, /^\/retreats\/[^/]+\/book$/, /^\/booking\/return$/, /^\/about$/, /^\/contact$/, /^\/services$/, /^\/testimonials$/, /^\/discover$/, /^\/policies\/[^/]+$/, /^\/socials$/, /^\/favourites$/, /^\/watch$/, /^\/ask-a-witch$/];
+/** Languages whose long-form readings (Phase 2) are complete. */
+export const READINGS_DONE: readonly Locale[] = [];
+/** The language readings are shown in for a visitor's language. */
+export const readingsLang = (l: Locale): Locale => (l === "en" || READINGS_DONE.includes(l) ? l : "en");
+
+export const isTranslatedPath = (p: string, locale?: Locale) => {
+  const bare = p.split(/[?#]/)[0];
+  return TRANSLATED_PATHS.some((r) => r.test(bare)) || (locale != null && READINGS_DONE.includes(locale) && READINGS_PATHS.some((r) => r.test(bare)));
+};
 
 type Vars = Record<string, string | number>;
 /** Look up an English string in a dictionary, falling back to English; fills {placeholders}. */

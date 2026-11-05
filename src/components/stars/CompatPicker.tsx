@@ -13,7 +13,7 @@ export function CompatPicker() {
   const [a, setA] = useState<Sign | "">("");
   const [b, setB] = useState<Sign | "">("");
   const router = useRouter();
-  const { href } = useI18n();
+  const { href, t } = useI18n();
   const first = a || mine || "";
   const go = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,17 +25,17 @@ export function CompatPicker() {
     <div>
       <label htmlFor={id} className="field-label">{label}</label>
       <select id={id} className="input" value={value} onChange={(e) => set(e.target.value as Sign)} required>
-        <option value="" disabled>Choose a sign</option>
-        {SIGNS.map((s) => <option key={s} value={s}>{SIGN_INFO[s].glyph} {s}</option>)}
+        <option value="" disabled>{t("Choose a sign")}</option>
+        {SIGNS.map((s) => <option key={s} value={s}>{SIGN_INFO[s].glyph} {t(s)}</option>)}
       </select>
     </div>
   );
   return (
     <form onSubmit={go} className="card grid gap-5 p-6 sm:grid-cols-[1fr_auto_1fr_auto] sm:items-end sm:p-8">
-      {select("compat-a", "Your sign", first, setA)}
+      {select("compat-a", t("Your sign"), first, setA)}
       <span aria-hidden className="hidden pb-3 text-center font-display text-3xl text-blush-deep sm:block">♡</span>
-      {select("compat-b", "Their sign", b, setB)}
-      <button className="btn-primary" disabled={!first || !b}>Test our signs</button>
+      {select("compat-b", t("Their sign"), b, setB)}
+      <button className="btn-primary" disabled={!first || !b}>{t("Test our signs")}</button>
     </form>
   );
 }

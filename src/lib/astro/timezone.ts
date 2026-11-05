@@ -4,6 +4,7 @@
  * historical offsets, daylight-saving rules and, for older dates, Local Mean
  * Time where the tz database records it.
  */
+import { prose } from "@/i18n/config";
 
 export interface ZoneResolution {
   utc: Date;
@@ -83,13 +84,13 @@ export function localToUtc(
     const before = zoneOffsetMs(wallMs - 12 * 3600e3, timeZone);
     utcMs = wallMs - before;
     notes.push(
-      "This local time did not exist on that date because the clocks went forward. We used the offset in force just before the change — please double-check the recorded time.",
+      prose("This local time did not exist on that date because the clocks went forward. We used the offset in force just before the change — please double-check the recorded time."),
     );
   } else {
     utcMs = valid[0];
     if (valid.length > 1) {
       notes.push(
-        "This local time occurred twice on that date because the clocks went back. We used the first occurrence; if you were born in the second hour, your Ascendant and houses may differ.",
+        prose("This local time occurred twice on that date because the clocks went back. We used the first occurrence; if you were born in the second hour, your Ascendant and houses may differ."),
       );
     }
   }

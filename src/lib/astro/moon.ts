@@ -1,5 +1,6 @@
 import * as Astronomy from "astronomy-engine";
 import { signOf, type Sign } from "./types";
+import { prose } from "@/i18n/config";
 
 export interface MoonNow {
   phaseName: string;
@@ -62,12 +63,12 @@ export const FULL_MOON_NAMES: Record<number, string> = {
 };
 
 export const PHASE_GUIDANCE: Record<MoonNow["phaseKey"], { theme: string; ritual: string }> = {
-  "new": { theme: "Beginnings and intentions", ritual: "Write your intentions for the month in the present tense and light a candle for them." },
-  "waxing-crescent": { theme: "Taking the first steps", ritual: "Choose one intention and take a small, real action towards it today." },
-  "first-quarter": { theme: "Courage and commitment", ritual: "Notice what's in your way. Write it down, then write one way around it." },
-  "waxing-gibbous": { theme: "Refining and trusting", ritual: "Tweak your plans, tidy your space and trust the timing." },
-  "full": { theme: "Release and gratitude", ritual: "Give thanks for what has grown, release what no longer serves you, and make moon water." },
-  "waning-gibbous": { theme: "Sharing and receiving", ritual: "Share what you've learned with someone you love, and rest more than usual." },
-  "last-quarter": { theme: "Letting go", ritual: "Declutter one drawer, one habit or one worry. Make room." },
-  "waning-crescent": { theme: "Rest and reflection", ritual: "Slow down, journal and sleep early. The new cycle is almost here." },
+  "new": { theme: prose("Beginnings and intentions"), ritual: prose("Write your intentions for the month in the present tense and light a candle for them.") },
+  "waxing-crescent": { theme: prose("Taking the first steps"), ritual: prose("Choose one intention and take a small, real action towards it today.") },
+  "first-quarter": { theme: prose("Courage and commitment"), ritual: prose("Notice what's in your way. Write it down, then write one way around it.") },
+  "waxing-gibbous": { theme: prose("Refining and trusting"), ritual: prose("Tweak your plans, tidy your space and trust the timing.") },
+  "full": { theme: prose("Release and gratitude"), ritual: prose("Give thanks for what has grown, release what no longer serves you, and make moon water.") },
+  "waning-gibbous": { theme: prose("Sharing and receiving"), ritual: prose("Share what you've learned with someone you love, and rest more than usual.") },
+  "last-quarter": { theme: prose("Letting go"), ritual: prose("Declutter one drawer, one habit or one worry. Make room.") },
+  "waning-crescent": { theme: prose("Rest and reflection"), ritual: prose("Slow down, journal and sleep early. The new cycle is almost here.") },
 };

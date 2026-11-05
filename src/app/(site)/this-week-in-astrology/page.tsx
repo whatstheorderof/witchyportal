@@ -1,22 +1,27 @@
-import type { Metadata } from "next";
 import Link from "@/i18n/client";
 import { connection } from "next/server";
 import { todayKey, weekInAstrology, weekStart } from "@/lib/astro/horoscope";
 import { MoonGlyph } from "@/components/MoonGlyph";
 import { addDays } from "@/lib/astro/sky";
 import { SIGN_INFO } from "@/lib/astro/interpretations";
-import { absoluteUrl, breadcrumbLd, pageMeta } from "@/lib/seo";
+import { absoluteUrl, breadcrumbLd } from "@/lib/seo";
+import { getReadings } from "@/i18n/readings";
+import { localeMeta } from "@/i18n/meta";
+import { msg } from "@/i18n/config";
 import { JsonLd } from "@/components/JsonLd";
 import { PageHero } from "@/components/Section";
 
-export const metadata: Metadata = pageMeta({
-  title: "This Week in Astrology | Witchy Portal",
-  absoluteTitle: true,
-  description: "This week in astrology with Yulia Moon: the New and Full Moons, planets changing sign, retrogrades and the big aspects — what they mean and how to work with them.",
-  path: "/this-week-in-astrology",
-});
+export async function generateMetadata() {
+  const rx = await getReadings();
+  return localeMeta({
+    title: rx.t("This Week in Astrology | Witchy Portal"),
+    absoluteTitle: true,
+    description: rx("This week in astrology with Yulia Moon: the New and Full Moons, planets changing sign, retrogrades and the big aspects — what they mean and how to work with them."),
+    path: "/this-week-in-astrology",
+  });
+}
 
-const KIND_LABEL = { lunation: "Moon", ingress: "Sign change", station: "Retrograde", aspect: "Aspect" } as const;
+const KIND_LABEL = { lunation: msg("Moon"), ingress: msg("Sign change"), station: msg("Retrograde"), aspect: msg("Aspect") } as const;
 const KIND_DOT = { lunation: "bg-plum", ingress: "bg-blush-deep", station: "bg-warning", aspect: "bg-lavender-deep" } as const;
 
 export default async function ThisWeekPage({ searchParams }: { searchParams: Promise<{ week?: string }> }) {
@@ -25,30 +30,32 @@ export default async function ThisWeekPage({ searchParams }: { searchParams: Pro
   const asked = (await searchParams).week;
   const allowed = [addDays(thisMonday, -7), thisMonday, addDays(thisMonday, 7)];
   const monday = asked && allowed.includes(asked) ? asked : thisMonday;
-  const w = weekInAstrology(monday);
+  const rx = await getReadings();
+  const t = rx.t;
+  const w = weekInAstrology(monday, rx);
   const i = allowed.indexOf(monday);
   const today = todayKey();
 
   return (
     <>
       <JsonLd data={[
-        { "@type": "Article", headline: `This week in astrology: ${w.label}`, datePublished: `${monday}T00:00:00Z`, author: { "@id": absoluteUrl("/about#yulia") }, publisher: { "@id": absoluteUrl("/#organization") }, url: absoluteUrl("/this-week-in-astrology"), image: absoluteUrl("/opengraph-image") },
-        breadcrumbLd([["Horoscopes", "/horoscope"], ["This week in astrology", "/this-week-in-astrology"]]),
+        { "@type": "Article", headline: t("This week in astrology: {dates}", { dates: w.label }), datePublished: `${monday}T00:00:00Z`, author: { "@id": absoluteUrl("/about#yulia") }, publisher: { "@id": absoluteUrl("/#organization") }, url: absoluteUrl("/this-week-in-astrology"), image: absoluteUrl("/opengraph-image") },
+        breadcrumbLd([[t("Horoscopes"), "/horoscope"], [t("This week in astrology"), "/this-week-in-astrology"]]),
       ]} />
-      <PageHero image="crown" eyebrow={w.label} title="This week in astrology" intro="The sky this week, for everyone: the Moon's phases, planets changing sign, retrogrades and the big meetings between planets — what they mean and how to work with them." />
+      <PageHero image="crown" eyebrow={w.label} title={t("This week in astrology")} intro={rx("The sky this week, for everyone: the Moon's phases, planets changing sign, retrogrades and the big meetings between planets — what they mean and how to work with them.")} />
       <section className="container-page pt-12 lg:pt-16" aria-labelledby="cal-h">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h2 id="cal-h" className="display-md">The week at a glance</h2>
-            <nav aria-label="Choose a week" className="mt-3 flex flex-wrap gap-2">
-            {i > 0 && <Link href={allowed[i - 1] === thisMonday ? "/this-week-in-astrology" : `?week=${allowed[i - 1]}`} className="chip">← Last week</Link>}
-            {i !== 1 && <Link href="/this-week-in-astrology" className="chip">This week</Link>}
-            {i < 2 && <Link href={`?week=${allowed[i + 1]}`} className="chip">Next week →</Link>}
+            <h2 id="cal-h" className="display-md">{t("The week at a glance")}</h2>
+            <nav aria-label={t("Choose a week")} className="mt-3 flex flex-wrap gap-2">
+            {i > 0 && <Link href={allowed[i - 1] === thisMonday ? "/this-week-in-astrology" : `?week=${allowed[i - 1]}`} className="chip">{t("← Last week")}</Link>}
+            {i !== 1 && <Link href="/this-week-in-astrology" className="chip">{t("This week")}</Link>}
+            {i < 2 && <Link href={`?week=${allowed[i + 1]}`} className="chip">{t("Next week →")}</Link>}
           </nav>
           </div>
-          <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted" aria-label="Key">
+          <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted" aria-label={t("Key")}>
             {(Object.keys(KIND_LABEL) as (keyof typeof KIND_LABEL)[]).map((k) => (
-              <li key={k} className="flex items-center gap-1.5"><span aria-hidden className={`h-2.5 w-2.5 rounded-full ${KIND_DOT[k]}`} />{KIND_LABEL[k]}</li>
+              <li key={k} className="flex items-center gap-1.5"><span aria-hidden className={`h-2.5 w-2.5 rounded-full ${KIND_DOT[k]}`} />{t(KIND_LABEL[k])}</li>
             ))}
           </ul>
         </div>
@@ -59,14 +66,14 @@ export default async function ThisWeekPage({ searchParams }: { searchParams: Pro
               <li key={d.day} aria-current={isToday ? "date" : undefined} className={`grid content-start gap-3 rounded-2xl p-4 lg:min-h-64 ${isToday ? "bg-plum-deep text-ivory" : "bg-white/70 ring-1 ring-line"}`}>
                 <div className="flex items-center justify-between gap-3 lg:grid lg:justify-items-center lg:text-center">
                   <p>
-                    <span className={`block text-xs font-medium uppercase tracking-[0.18em] ${isToday ? "text-blush" : "text-plum-soft"}`}>{d.weekday}{isToday ? " · today" : ""}</span>
+                    <span className={`block text-xs font-medium uppercase tracking-[0.18em] ${isToday ? "text-blush" : "text-plum-soft"}`}>{d.weekday}{isToday ? ` · ${t("today")}` : ""}</span>
                     <span className="font-display text-xl">{d.date}</span>
                   </p>
                   <span className="flex items-center gap-2 lg:grid lg:justify-items-center lg:gap-1">
                     <span className={`rounded-full ${isToday ? "" : "bg-plum-deep"} p-0.5`}><MoonGlyph angle={d.moon.angle} size={34} glow={false} /></span>
                     <span className={`text-xs leading-tight ${isToday ? "text-ivory/85" : "text-muted"}`}>
-                      <span className="block">Moon in {d.moon.sign}</span>
-                      {d.moon.entersSign && <span className="block">→ {d.moon.entersSign.sign} {d.moon.entersSign.time}</span>}
+                      <span className="block">{t("Moon in {sign}", { sign: t(d.moon.sign) })}</span>
+                      {d.moon.entersSign && <span className="block">→ {t(d.moon.entersSign.sign)} {d.moon.entersSign.time}</span>}
                     </span>
                   </span>
                 </div>
@@ -82,7 +89,7 @@ export default async function ThisWeekPage({ searchParams }: { searchParams: Pro
                     ))}
                   </ul>
                 ) : (
-                  <p className={`text-sm ${isToday ? "text-ivory/70" : "text-muted"}`}>Follow the Moon.</p>
+                  <p className={`text-sm ${isToday ? "text-ivory/70" : "text-muted"}`}>{t("Follow the Moon.")}</p>
                 )}
               </li>
             );
@@ -91,16 +98,16 @@ export default async function ThisWeekPage({ searchParams }: { searchParams: Pro
       </section>
       <div className="container-page grid gap-12 py-12 lg:grid-cols-[1fr_20rem] lg:py-16">
         <div className="min-w-0">
-          <h2 className="display-md">In detail</h2>
+          <h2 className="display-md">{t("In detail")}</h2>
           {w.events.length === 0 ? (
-            <p className="mt-8 text-ink/80">A quiet week in the sky — no planets change sign and there are no major lunations. Follow the Moon below.</p>
+            <p className="mt-8 text-ink/80">{rx("A quiet week in the sky — no planets change sign and there are no major lunations. Follow the Moon below.")}</p>
           ) : (
             <ol className="mt-8 grid gap-6">
               {w.events.map((e) => (
                 <li key={e.id} id={e.id} className="card scroll-mt-28 p-6 sm:p-8">
-                  <p className="text-sm text-muted"><span className="mr-2 rounded-full bg-lavender/60 px-2.5 py-0.5 text-xs font-medium text-plum">{KIND_LABEL[e.kind]}</span>{e.when}</p>
+                  <p className="text-sm text-muted"><span className="me-2 rounded-full bg-lavender/60 px-2.5 py-0.5 text-xs font-medium text-plum">{t(KIND_LABEL[e.kind])}</span>{e.when}</p>
                   <h2 className="mt-2 font-display text-2xl text-plum sm:text-3xl">{e.title}</h2>
-                  {e.paragraphs.length > 0 ? <div className="mt-3 grid gap-3 leading-relaxed text-ink/85">{e.paragraphs.map((p, j) => <p key={j}>{p}</p>)}</div> : <p className="mt-2 text-ink/75">A quarter Moon — a natural checkpoint. Review your intentions and adjust course.</p>}
+                  {e.paragraphs.length > 0 ? <div lang={rx.lang} className="mt-3 grid gap-3 leading-relaxed text-ink/85">{e.paragraphs.map((p, j) => <p key={j}>{p}</p>)}</div> : <p className="mt-2 text-ink/75">{rx("A quarter Moon — a natural checkpoint. Review your intentions and adjust course.")}</p>}
                 </li>
               ))}
             </ol>
@@ -108,21 +115,21 @@ export default async function ThisWeekPage({ searchParams }: { searchParams: Pro
         </div>
         <aside className="grid content-start gap-6">
           <section className="card p-6" aria-labelledby="moon-h">
-            <h2 id="moon-h" className="font-display text-2xl text-plum">The Moon this week</h2>
+            <h2 id="moon-h" className="font-display text-2xl text-plum">{t("The Moon this week")}</h2>
             <ul className="mt-4 grid gap-4">
               {w.moonDays.map((m, k) => (
                 <li key={k}>
-                  <p className="font-medium text-plum"><span aria-hidden className="mr-1">{SIGN_INFO[m.sign].glyph}</span>Moon in {m.sign}</p>
-                  <p className="text-xs text-muted">From {m.from}</p>
-                  <p className="mt-1 text-sm text-ink/80">{m.text}</p>
+                  <p className="font-medium text-plum"><span aria-hidden className="me-1">{SIGN_INFO[m.sign].glyph}</span>{t("Moon in {sign}", { sign: t(m.sign) })}</p>
+                  <p className="text-xs text-muted">{t("From {when}", { when: m.from })}</p>
+                  <p lang={rx.lang} className="mt-1 text-sm text-ink/80">{m.text}</p>
                 </li>
               ))}
             </ul>
           </section>
           {w.retrogrades.length > 0 && (
-            <section className="card p-6"><h2 className="font-display text-xl text-plum">Retrograde this week</h2><ul className="mt-3 grid gap-1 text-sm">{w.retrogrades.map((r) => <li key={r.planet}>{r.planet} in {r.sign}</li>)}</ul></section>
+            <section className="card p-6"><h2 className="font-display text-xl text-plum">{t("Retrograde this week")}</h2><ul className="mt-3 grid gap-1 text-sm">{w.retrogrades.map((r) => <li key={r.planet}>{t("{body} in {sign}", { body: t(r.planet), sign: t(r.sign) })}</li>)}</ul></section>
           )}
-          <Link href="/horoscope" className="btn-primary justify-center">Your daily horoscope</Link>
+          <Link href="/horoscope" className="btn-primary justify-center">{t("Your daily horoscope")}</Link>
         </aside>
       </div>
     </>

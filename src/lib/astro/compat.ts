@@ -7,6 +7,8 @@ import * as Astronomy from "astronomy-engine";
 import { bodyLongitude } from "./engine";
 import { SIGNS, signOf, type BodyName, type ChartResult, type Sign } from "./types";
 import { ukTime } from "./sky";
+import { msg, prose } from "@/i18n/config";
+import { RX_EN, type Rx } from "@/i18n/readings";
 import { SUN_PAIRS_1 } from "./text/stars/compat-1";
 import { SUN_PAIRS_2 } from "./text/stars/compat-2";
 import { VENUS_LOVE_STYLE, VENUS_PAIRS } from "./text/stars/venus-pairs";
@@ -29,7 +31,7 @@ export function parsePairSlug(slug: string): [Sign, Sign] | null {
   return a && b ? [a, b] : null;
 }
 
-const RELATION = ["same sign", "neighbours", "sextile", "square", "trine", "quincunx", "opposites"] as const;
+const RELATION = [msg("same sign"), msg("neighbours"), msg("sextile"), msg("square"), msg("trine"), msg("quincunx"), msg("opposites")] as const;
 const SCORES: Record<number, { overall: number; love: number; friendship: number; communication: number; trust: number }> = {
   0: { overall: 8, love: 8, friendship: 9, communication: 9, trust: 8 },
   1: { overall: 6, love: 6, friendship: 7, communication: 6, trust: 6 },
@@ -40,21 +42,21 @@ const SCORES: Record<number, { overall: number; love: number; friendship: number
   6: { overall: 7, love: 8, friendship: 6, communication: 6, trust: 6 },
 };
 const RELATION_NOTE: Record<number, string> = {
-  0: "Two of the same sign: instant recognition, and the same blind spots.",
-  1: "Neighbouring signs: different temperaments that teach each other a great deal.",
-  2: "A sextile: friendly elements that spark easy conversation and shared plans.",
-  3: "A square: different rhythms that create chemistry and friction in equal measure.",
-  4: "A trine: the same element — a natural, flowing understanding.",
-  5: "A quincunx: little in common at first, so this bond grows through curiosity and adjustment.",
-  6: "Opposites: a magnetic pull between two halves of the same axis.",
+  0: prose("Two of the same sign: instant recognition, and the same blind spots."),
+  1: prose("Neighbouring signs: different temperaments that teach each other a great deal."),
+  2: prose("A sextile: friendly elements that spark easy conversation and shared plans."),
+  3: prose("A square: different rhythms that create chemistry and friction in equal measure."),
+  4: prose("A trine: the same element — a natural, flowing understanding."),
+  5: prose("A quincunx: little in common at first, so this bond grows through curiosity and adjustment."),
+  6: prose("Opposites: a magnetic pull between two halves of the same axis."),
 };
 
-export function sunCompatibility(a: Sign, b: Sign) {
+export function sunCompatibility(a: Sign, b: Sign, rx: Rx = RX_EN) {
   const [x, y] = pairKey(a, b);
   const key = `${x}|${y}`;
   const t = SUN_PAIRS_1[key] ?? SUN_PAIRS_2[key];
   const d = Math.min(Math.abs(SIGNS.indexOf(x) - SIGNS.indexOf(y)), 12 - Math.abs(SIGNS.indexOf(x) - SIGNS.indexOf(y)));
-  return { a: x, b: y, relation: RELATION[d], relationNote: RELATION_NOTE[d], scores: SCORES[d], text: { summary: paras(t.summary), love: paras(t.love), friendship: paras(t.friendship), challenge: paras(t.challenge), advice: paras(t.advice) } };
+  return rx.deep({ a: x, b: y, relation: RELATION[d], relationLabel: rx.t(RELATION[d]), relationNote: RELATION_NOTE[d], scores: SCORES[d], text: { summary: paras(t.summary), love: paras(t.love), friendship: paras(t.friendship), challenge: paras(t.challenge), advice: paras(t.advice) } });
 }
 
 /* ---------------- Venus (love signs) ---------------- */
@@ -67,9 +69,9 @@ export function venusOn(day: string) {
   return { venus: noon, possible: s0 !== s1 ? [s0, s1] : null, sun: sunSign };
 }
 
-export function venusCompatibility(a: Sign, b: Sign) {
+export function venusCompatibility(a: Sign, b: Sign, rx: Rx = RX_EN) {
   const [x, y] = pairKey(a, b);
-  return { a: x, b: y, text: paras(VENUS_PAIRS[`${x}|${y}`] ?? ""), styleA: VENUS_LOVE_STYLE[a], styleB: VENUS_LOVE_STYLE[b] };
+  return rx.deep({ a: x, b: y, text: paras(VENUS_PAIRS[`${x}|${y}`] ?? ""), styleA: VENUS_LOVE_STYLE[a], styleB: VENUS_LOVE_STYLE[b] });
 }
 
 /* ---------------- Birth chart synastry ---------------- */
@@ -112,7 +114,10 @@ const AREAS: Record<SynastryReport["scores"][number]["area"], [Factor, Factor][]
 };
 const same = (p: [Factor, Factor], x: Factor, y: Factor) => (p[0] === x && p[1] === y) || (p[0] === y && p[1] === x);
 
-export function synastry(A: ChartResult, B: ChartResult, nameA = "You", nameB = "Them"): SynastryReport {
+export function synastry(A: ChartResult, B: ChartResult, nameA?: string, nameB?: string, rx: Rx = RX_EN): SynastryReport {
+  nameA ||= rx.t("You");
+  nameB ||= rx.t("Them");
+  const t = rx.t, S = (x: string) => rx.t(x);
   const factorsOf = (c: ChartResult) => {
     const list: { f: Factor; lon: number }[] = c.placements.filter((p) => (PERSONAL as string[]).includes(p.body) && !p.signUncertain).map((p) => ({ f: p.body as Factor, lon: p.longitude }));
     const asc = c.angles.find((x) => x.name === "Ascendant");
@@ -137,8 +142,8 @@ export function synastry(A: ChartResult, B: ChartResult, nameA = "You", nameB = 
       const nature = asp.type === "conjunction" ? 0.6 : kind === "harmonious" ? 1 : -0.7;
       aspects.push({
         a: x.f, b: y.f, type: asp.type, orb: Math.round(orb * 100) / 100, strength,
-        heading: `${first}'s ${k1} ${word[asp.type]} ${second}'s ${k2}`,
-        paragraphs: paras(fill(text[kind], first, second)),
+        heading: t(`{a}'s {x} ${word[asp.type]} {b}'s {y}`, { a: first, x: S(k1), b: second, y: S(k2) }),
+        paragraphs: paras(fill(rx(text[kind]), first, second)),
         weight: nature * (0.4 + strength / 100),
       });
     }
@@ -153,7 +158,7 @@ export function synastry(A: ChartResult, B: ChartResult, nameA = "You", nameB = 
       if (!(p.body in OVERLAY) || p.signUncertain) continue;
       const house = houseOf(p.longitude, to.houseCusps);
       const t = OVERLAY[p.body as keyof typeof OVERLAY][String(house) as keyof (typeof OVERLAY)["Sun"]];
-      overlays.push({ planet: p.body, house, owner, heading: `${nf}'s ${p.body} in ${nt}'s ${ordinal(house)} house`, paragraphs: paras(fill(t, nf, nt)) });
+      overlays.push({ planet: p.body, house, owner, heading: rx.t("{a}'s {planet} in {b}'s {ord} house", { a: nf, planet: S(p.body), b: nt, ord: rx.ord(house), n: house }), paragraphs: paras(fill(rx(t), nf, nt)) });
     }
   };
   addOverlays(A, B, "A");
@@ -165,13 +170,13 @@ export function synastry(A: ChartResult, B: ChartResult, nameA = "You", nameB = 
     // Element harmony between Sun, Moon and Venus signs adds a little
     const score = Math.max(20, Math.min(97, Math.round(s)));
     const band = score >= 72 ? "high" : score >= 50 ? "mid" : "low";
-    return { area, score, note: SCORE_NOTE[area][band] };
+    return { area, score, note: rx(SCORE_NOTE[area][band]) };
   });
   const overall = Math.round(scores.reduce((n, s) => n + s.score, 0) / scores.length);
 
   const signOfBody = (c: ChartResult, b: BodyName) => c.placements.find((p) => p.body === b)!.sign;
   const notes: string[] = [];
-  if (!A.timeKnown || !B.timeKnown) notes.push("Without both birth times, rising signs and house overlays are left out for the person whose time is unknown, and a Moon that changed sign that day isn't used.");
+  if (!A.timeKnown || !B.timeKnown) notes.push(rx("Without both birth times, rising signs and house overlays are left out for the person whose time is unknown, and a Moon that changed sign that day isn't used."));
   return {
     names: { a: nameA, b: nameB },
     scores,
@@ -191,6 +196,6 @@ function houseOf(longitude: number, cusps: number[]) {
   for (let i = 0; i < 12; i++) if (norm(longitude - cusps[i]) < norm(cusps[(i + 1) % 12] - cusps[i])) return i + 1;
   return 1;
 }
-const ordinal = (n: number) => `${n}${n === 1 ? "st" : n === 2 ? "nd" : n === 3 ? "rd" : "th"}`;
+export const SYNASTRY_TEMPLATES = [msg("{a}'s {x} conjunct {b}'s {y}"), msg("{a}'s {x} sextile {b}'s {y}"), msg("{a}'s {x} square {b}'s {y}"), msg("{a}'s {x} trine {b}'s {y}"), msg("{a}'s {x} opposite {b}'s {y}")];
 
 export const SYNASTRY_PRICE = { amount: 1499, currency: "GBP", label: "£14.99" };

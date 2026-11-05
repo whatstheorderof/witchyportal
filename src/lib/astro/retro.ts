@@ -7,6 +7,7 @@
  *  - Post-shadow: from the direct station until the planet is back at the
  *    degree where it turned retrograde.
  */
+import { msg } from "@/i18n/config";
 import * as Astronomy from "astronomy-engine";
 import { longitudeAt, stations, wrap180, type SkyBody } from "./sky";
 import { SIGNS, signOf, type Sign } from "./types";
@@ -105,8 +106,8 @@ export function retroStatus(body: SkyBody, at: Date) {
 /* ---------------- Eclipses ---------------- */
 
 const LONDON = new Astronomy.Observer(51.5074, -0.1278, 11);
-const LUNAR_KIND: Record<string, string> = { penumbral: "Penumbral", partial: "Partial", total: "Total" };
-const SOLAR_KIND: Record<string, string> = { partial: "Partial", annular: "Annular", total: "Total", hybrid: "Hybrid" };
+const LUNAR_KIND: Record<string, string> = { penumbral: msg("Penumbral"), partial: msg("Partial"), total: msg("Total") };
+const SOLAR_KIND: Record<string, string> = { partial: msg("Partial"), annular: msg("Annular"), total: msg("Total"), hybrid: msg("Hybrid") };
 
 export interface Eclipse {
   type: "solar" | "lunar";
@@ -114,8 +115,9 @@ export interface Eclipse {
   time: Date;
   sign: Sign;
   degree: number;
-  /** UK visibility in plain words */
+  /** UK visibility in plain words: an interface template, fill {pct} with ukPct */
   uk: string;
+  ukPct?: number;
   visibleUk: boolean;
 }
 
@@ -129,20 +131,21 @@ export function eclipsesIn(year: number): Eclipse[] {
     const eq = Astronomy.Equator(Astronomy.Body.Moon, e.peak, LONDON, true, true);
     const alt = Astronomy.Horizon(e.peak, LONDON, eq.ra, eq.dec, "normal").altitude;
     const p = signOf(Astronomy.EclipticGeoMoon(e.peak).lon);
-    out.push({ type: "lunar", kind: LUNAR_KIND[e.kind] ?? "Lunar", time: e.peak.date, ...p, visibleUk: alt > 0, uk: alt > 0 ? "Visible from the UK — the Moon is above the horizon at the peak." : "Not visible from the UK — the Moon is below the horizon at the peak." });
+    out.push({ type: "lunar", kind: LUNAR_KIND[e.kind] ?? "Lunar", time: e.peak.date, ...p, visibleUk: alt > 0, uk: alt > 0 ? msg("Visible from the UK — the Moon is above the horizon at the peak.") : msg("Not visible from the UK — the Moon is below the horizon at the peak.") });
   }
   for (let e = Astronomy.SearchGlobalSolarEclipse(Astronomy.MakeTime(y0)); e.peak.date < y1; e = Astronomy.NextGlobalSolarEclipse(e.peak)) {
     if (!inYear(e.peak.date)) continue;
-    let uk = "", vis = false;
+    let uk = "", vis = false, ukPct: number | undefined;
     try {
       const local = Astronomy.SearchLocalSolarEclipse(Astronomy.MakeTime(new Date(+e.peak.date - 2 * DAY)), LONDON);
       if (Math.abs(+local.peak.time.date - +e.peak.date) < DAY && local.peak.altitude > 0 && local.obscuration > 0) {
         vis = true;
-        uk = `Visible from the UK — about ${Math.max(1, Math.round(local.obscuration * 100))}% of the Sun is covered from London at the peak. Never look at the Sun directly.`;
+        uk = msg("Visible from the UK — about {pct}% of the Sun is covered from London at the peak. Never look at the Sun directly.");
+        ukPct = Math.max(1, Math.round(local.obscuration * 100));
       }
     } catch { /* not visible */ }
     const p = signOf(Astronomy.EclipticGeoMoon(e.peak).lon);
-    out.push({ type: "solar", kind: SOLAR_KIND[e.kind] ?? "Solar", time: e.peak.date, ...p, visibleUk: vis, uk: uk || "Not visible from the UK." });
+    out.push({ type: "solar", kind: SOLAR_KIND[e.kind] ?? "Solar", time: e.peak.date, ...p, visibleUk: vis, uk: uk || msg("Not visible from the UK."), ukPct });
   }
   return out.sort((a, b) => +a.time - +b.time);
 }

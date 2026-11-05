@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { SYNASTRY_PRICE } from "@/lib/astro/compat";
 import { buildSynastry } from "@/lib/astro/synastry-request";
+import { apiLocale, readingsFor } from "@/i18n/readings";
 import { getAdmin } from "@/lib/auth";
 import { paidReportOrder, reportHash, reportSalesOn } from "@/lib/report-purchase";
 import { confirmWithStripe } from "@/lib/orders";
@@ -15,10 +16,12 @@ import { stripeEnabled } from "@/lib/stripe";
  * Birth details are used in memory only and never stored.
  */
 export async function POST(req: NextRequest) {
+  const rx = await readingsFor(apiLocale(req));
+  const t = rx.t;
   let body: unknown;
-  try { body = await req.json(); } catch { return NextResponse.json({ error: "Invalid request" }, { status: 400 }); }
-  const built = await buildSynastry(body);
-  if ("error" in built) return NextResponse.json({ error: built.error }, { status: 400 });
+  try { body = await req.json(); } catch { return NextResponse.json({ error: t("Invalid request") }, { status: 400 }); }
+  const built = await buildSynastry(body, rx);
+  if ("error" in built) return NextResponse.json({ error: t(built.error ?? "") }, { status: 400 });
   const { input, report } = built;
 
   const hash = reportHash(input.a, input.b);

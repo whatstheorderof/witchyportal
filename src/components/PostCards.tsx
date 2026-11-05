@@ -4,6 +4,8 @@ import { formatDate } from "@/lib/dates";
 import { MediaImage } from "./MediaImage";
 import { YouTubeEmbed } from "./YouTube";
 import { FavouriteButton } from "./ShareFavourite";
+import { getI18n } from "@/i18n/server";
+import { getReadings } from "@/i18n/readings";
 
 type P = Post & { cover: Media | null };
 
@@ -19,37 +21,41 @@ function photoFor<T extends readonly string[]>(list: T, slug: string, index?: nu
 }
 const when = (p: Post) => p.publishAt ?? p.createdAt;
 
-export function ArticleCard({ post, index }: { post: P; index?: number }) {
+export async function ArticleCard({ post: original, index }: { post: P; index?: number }) {
+  const [{ t, tc, info: { intl } }, rx] = [await getI18n(), await getReadings()];
+  const post = rx.post(original), rlang = rx.lang;
   return (
-    <article lang="en" className="group relative flex flex-col">
+    <article lang={rlang} className="group relative flex flex-col">
       <div className="relative aspect-[3/2] overflow-hidden rounded-(--radius-card) bg-sand">
         <MediaImage media={post.cover} fallback={photoFor(ARTICLE_PHOTOS, post.slug, index)} sizes="(min-width:1024px) 30vw, 92vw" className="object-[center_25%] transition duration-700 group-hover:scale-[1.04]" />
       </div>
       <p className="mt-4 flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.18em] text-muted">
-        {post.topic && <span className="text-plum-soft">{post.topic}</span>}
+        {post.topic && <span className="text-plum-soft">{tc(post.topic)}</span>}
         {post.topic && <span aria-hidden>·</span>}
-        <time dateTime={when(post).toISOString()}>{formatDate(when(post))}</time>
+        <time dateTime={when(post).toISOString()}>{formatDate(when(post), undefined, intl)}</time>
       </p>
       <h3 className="mt-2 font-display text-2xl leading-snug text-plum">
         <Link href={`/articles/${post.slug}`} className="after:absolute after:inset-0">{post.title}</Link>
       </h3>
       {post.excerpt && <p className="mt-2 line-clamp-3 text-muted">{post.excerpt}</p>}
-      {post.isPlaceholder && <span className="placeholder-flag mt-3 self-start">Sample</span>}
+      {post.isPlaceholder && <span className="placeholder-flag mt-3 self-start">{t("Sample")}</span>}
     </article>
   );
 }
 
 const TONES = ["bg-blush", "bg-lavender", "bg-sand", "bg-plum text-ivory"];
 
-export function TipCard({ post, index = 0 }: { post: P; index?: number }) {
+export async function TipCard({ post: original, index = 0 }: { post: P; index?: number }) {
+  const [{ t, tc, info: { intl } }, rx] = [await getI18n(), await getReadings()];
+  const post = rx.post(original), rlang = rx.lang;
   const tone = TONES[index % TONES.length];
   const dark = tone.includes("text-ivory");
   const isAffirmation = post.type === "affirmation";
   return (
-    <article lang="en" className={`relative flex h-full flex-col justify-between gap-6 rounded-(--radius-card) p-6 sm:p-7 ${tone}`}>
+    <article lang={rlang} className={`relative flex h-full flex-col justify-between gap-6 rounded-(--radius-card) p-6 sm:p-7 ${tone}`}>
       <div>
         <p className={`text-[0.7rem] font-medium uppercase tracking-[0.22em] ${dark ? "text-blush" : "text-plum-soft"}`}>
-          {isAffirmation ? "Affirmation" : post.type === "motivation" ? "Motivation" : post.topic || "Witchy tip"}
+          {isAffirmation ? t("Affirmation") : post.type === "motivation" ? t("Motivation") : (post.topic ? tc(post.topic) : t("Witchy tip"))}
         </p>
         {isAffirmation ? (
           <blockquote className={`mt-4 font-display text-[1.7rem] italic leading-snug ${dark ? "text-ivory" : "text-plum"}`}>
@@ -65,9 +71,9 @@ export function TipCard({ post, index = 0 }: { post: P; index?: number }) {
         )}
       </div>
       <div className="flex items-center justify-between gap-3 text-xs">
-        {post.isPlaceholder ? <span className="placeholder-flag">Sample</span> : <span />}
+        {post.isPlaceholder ? <span className="placeholder-flag">{t("Sample")}</span> : <span />}
         <span className="flex items-center gap-2">
-          <time className={dark ? "text-ivory/75" : "text-ink/75"} dateTime={when(post).toISOString()}>{formatDate(when(post), { month: "short", day: "numeric", year: undefined })}</time>
+          <time className={dark ? "text-ivory/75" : "text-ink/75"} dateTime={when(post).toISOString()}>{formatDate(when(post), { month: "short", day: "numeric", year: undefined }, intl)}</time>
           <FavouriteButton compact dark={dark} item={{ key: `tip:${post.slug}`, type: "tip", title: post.title, href: `/tips/${post.slug}` }} />
         </span>
       </div>
@@ -75,18 +81,20 @@ export function TipCard({ post, index = 0 }: { post: P; index?: number }) {
   );
 }
 
-export function AstrologyCard({ post, featured = false, index }: { post: P; featured?: boolean; index?: number }) {
+export async function AstrologyCard({ post: original, featured = false, index }: { post: P; featured?: boolean; index?: number }) {
+  const [{ t, tc }, rx] = [await getI18n(), await getReadings()];
+  const post = rx.post(original), rlang = rx.lang;
   return (
-    <article lang="en" className={`group relative overflow-hidden rounded-(--radius-card) bg-plum-deep text-ivory ${featured ? "min-h-[420px]" : "min-h-[320px]"}`}>
+    <article lang={rlang} className={`group relative overflow-hidden rounded-(--radius-card) bg-plum-deep text-ivory ${featured ? "min-h-[420px]" : "min-h-[320px]"}`}>
       <MediaImage media={post.cover} fallback={photoFor(ASTRO_PHOTOS, post.slug, index)} sizes="(min-width:1024px) 45vw, 92vw" className="opacity-60 transition duration-700 group-hover:scale-[1.03]" />
       <div className="scrim-card absolute inset-0" />
       <div className="relative flex h-full min-h-[inherit] flex-col justify-end p-6 sm:p-8">
-        <p className="text-[0.7rem] font-medium uppercase tracking-[0.22em] text-blush">{post.period || post.topic || "Astrology"}</p>
+        <p className="text-[0.7rem] font-medium uppercase tracking-[0.22em] text-blush">{post.period || (post.topic ? tc(post.topic) : t("Astrology"))}</p>
         <h3 className={`mt-2 font-display leading-tight text-ivory ${featured ? "text-4xl" : "text-3xl"}`}>
           <Link href={`/astrology/${post.slug}`} className="after:absolute after:inset-0">{post.title}</Link>
         </h3>
         {post.excerpt && <p className="mt-3 max-w-lg text-ivory/80">{post.excerpt}</p>}
-        {post.isPlaceholder && <span className="placeholder-flag mt-3 self-start">Sample</span>}
+        {post.isPlaceholder && <span className="placeholder-flag mt-3 self-start">{t("Sample")}</span>}
       </div>
     </article>
   );

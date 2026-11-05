@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getPlace } from "@/lib/astro/places";
 import { getChartProvider } from "@/lib/astro/provider";
 import { buildReport } from "@/lib/astro/report";
+import { apiLocale, readingsFor } from "@/i18n/readings";
 
 /**
  * Calculates a chart. Birth details are used in memory only — they are not
@@ -16,30 +17,32 @@ const schema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  const rx = await readingsFor(apiLocale(req));
+  const t = rx.t;
   let body: unknown;
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+    return NextResponse.json({ error: t("Invalid request") }, { status: 400 });
   }
   const parsed = schema.safeParse(body);
-  if (!parsed.success) return NextResponse.json({ error: "Please check your birth date, time and place." }, { status: 400 });
+  if (!parsed.success) return NextResponse.json({ error: t("Please check your birth date, time and place.") }, { status: 400 });
   const { date, time, placeId } = parsed.data;
   const year = Number(date.slice(0, 4));
-  if (year < 1800 || year > 2100) return NextResponse.json({ error: "Please enter a birth year between 1800 and 2100." }, { status: 400 });
+  if (year < 1800 || year > 2100) return NextResponse.json({ error: t("Please enter a birth year between 1800 and 2100.") }, { status: 400 });
   const d = new Date(date + "T00:00:00Z");
-  if (Number.isNaN(+d) || d.toISOString().slice(0, 10) !== date) return NextResponse.json({ error: "That date doesn't exist." }, { status: 400 });
+  if (Number.isNaN(+d) || d.toISOString().slice(0, 10) !== date) return NextResponse.json({ error: t("That date doesn't exist.") }, { status: 400 });
 
   const place = await getPlace(placeId);
-  if (!place) return NextResponse.json({ error: "We couldn't find that birthplace. Please choose it from the list." }, { status: 400 });
+  if (!place) return NextResponse.json({ error: t("We couldn't find that birthplace. Please choose it from the list.") }, { status: 400 });
 
   try {
     const chart = await getChartProvider().calculate({
       date, time, latitude: place.latitude, longitude: place.longitude, timeZone: place.timeZone, placeLabel: place.label,
     });
-    return NextResponse.json({ chart, report: buildReport(chart) }, { headers: { "Cache-Control": "no-store" } });
+    return NextResponse.json({ chart: { ...chart, notes: chart.notes.map((n) => rx(n)) }, report: buildReport(chart, rx) }, { headers: { "Cache-Control": "no-store" } });
   } catch (e) {
     console.error("chart calculation failed", e instanceof Error ? e.message : "unknown");
-    return NextResponse.json({ error: "We couldn't calculate this chart right now. Please try again later." }, { status: 502 });
+    return NextResponse.json({ error: t("We couldn't calculate this chart right now. Please try again later.") }, { status: 502 });
   }
 }

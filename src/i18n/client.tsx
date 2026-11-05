@@ -3,7 +3,7 @@
 import { createContext, useContext, useMemo } from "react";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
-import { LOCALE_INFO, localePath, splitLocale, translate, type Locale } from "./config";
+import { LOCALE_INFO, localePath, readingsLang, splitLocale, translate, type Locale } from "./config";
 
 type Ctx = { locale: Locale; dict: Record<string, string> };
 const I18nContext = createContext<Ctx>({ locale: "en", dict: {} });
@@ -19,9 +19,13 @@ export function useI18n() {
   return useMemo(() => ({
     locale,
     dir: LOCALE_INFO[locale].dir,
+    /** The language readings (horoscopes, chart texts) are in: use as lang={rlang}. */
+    rlang: readingsLang(locale),
     intl: LOCALE_INFO[locale].intl,
     t: (text: string, vars?: Record<string, string | number>) => translate(dict, text, vars),
     href: (p: string) => localePath(locale, p),
+    /** An API path with the visitor's language (?lang=xx) so readings come back translated. */
+    api: (p: string) => (locale === "en" ? p : `${p}${p.includes("?") ? "&" : "?"}lang=${locale}`),
   }), [locale, dict]);
 }
 

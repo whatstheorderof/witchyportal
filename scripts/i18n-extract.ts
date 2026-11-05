@@ -96,6 +96,8 @@ async function fromDatabase() {
     for (const h of await sql`select eyebrow, title, text from highlights where status = 'published'`) addAll([h.eyebrow, h.title, h.text]);
     for (const p of await sql`select title, body from pages where status = 'published'`) addAll([p.title, p.body]);
     for (const s of await sql`select key, value from settings where key in ('home', 'about', 'site', 'contact')`) addAll(s.value, skip);
+    // Post topics (labels on cards and filters; the posts themselves are in scripts/readings.ts)
+    for (const p of await sql`select distinct topic from posts where status = 'published' and topic <> ''`) addAll(p.topic);
   } finally {
     await sql.end();
   }

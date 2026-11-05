@@ -27,7 +27,7 @@ const dayLabel = (day: string, intl = "en-GB") => new Intl.DateTimeFormat(intl, 
 /** At-a-glance astrological day for one sign. `compact` for the splash and side cards. */
 export function DayCard({ h, compact = false, light = false, link = true }: { h: DailyHoroscope; compact?: boolean; light?: boolean; link?: boolean }) {
   const muted = light ? "text-ivory/80" : "text-ink/80";
-  const { t, intl } = useI18n();
+  const { t, intl, rlang } = useI18n();
   return (
     <div>
       <div className="flex items-center gap-4">
@@ -37,18 +37,18 @@ export function DayCard({ h, compact = false, light = false, link = true }: { h:
           <p className={`mt-1 text-sm ${muted}`}>{t("{phase} in {sign}", { phase: t(h.moon.phase), sign: t(h.moon.sign) })} · {t("{n}% lit", { n: Math.round(h.moon.illumination * 100) })}{h.moon.entersSign ? ` · ${t("enters {sign} at {time}", { sign: t(h.moon.entersSign.sign), time: h.moon.entersSign.time })}` : ""}</p>
         </div>
       </div>
-      <h3 lang="en" className={`mt-5 font-display text-3xl leading-tight sm:text-4xl ${light ? "text-ivory" : "text-plum"}`}><span aria-hidden className="me-2">{SIGN_INFO[h.sign].glyph}</span>{h.headline}</h3>
-      <p className={`mt-1 text-sm ${muted}`}>{t("Today’s focus for {sign}:", { sign: t(h.sign) })} <span lang="en">{h.focus}</span></p>
+      <h3 lang={rlang} className={`mt-5 font-display text-3xl leading-tight sm:text-4xl ${light ? "text-ivory" : "text-plum"}`}><span aria-hidden className="me-2">{SIGN_INFO[h.sign].glyph}</span>{h.headline}</h3>
+      <p className={`mt-1 text-sm ${muted}`}>{t("Today’s focus for {sign}:", { sign: t(h.sign) })} <span>{h.focus}</span></p>
       <div className="mt-5"><Ratings ratings={h.ratings} light={light} /></div>
-      <div lang="en" className={`mt-5 grid gap-3 leading-relaxed ${light ? "text-ivory/90" : "text-ink/85"}`}>
+      <div lang={rlang} className={`mt-5 grid gap-3 leading-relaxed ${light ? "text-ivory/90" : "text-ink/85"}`}>
         {(compact ? h.paragraphs.slice(0, 1) : h.paragraphs).map((p, i) => <p key={i}>{p}</p>)}
       </div>
-      {!compact && h.retrograde && <p lang="en" className={`mt-4 rounded-2xl p-4 text-[0.95rem] ${light ? "bg-ivory/10" : "bg-lavender/35 text-plum"}`}><strong className="font-medium">{h.retrograde.planet} retrograde: </strong>{h.retrograde.text}</p>}
+      {!compact && h.retrograde && <p lang={rlang} className={`mt-4 rounded-2xl p-4 text-[0.95rem] ${light ? "bg-ivory/10" : "bg-lavender/35 text-plum"}`}><strong className="font-medium">{t("{planet} retrograde:", { planet: t(h.retrograde.planet) })} </strong>{h.retrograde.text}</p>}
       <div className={`mt-5 rounded-2xl p-4 ${light ? "bg-ivory/10" : "bg-blush/50"}`}>
         <p className={`text-xs font-medium uppercase tracking-[0.18em] ${light ? "text-blush" : "text-plum-soft"}`}>{t("Yulia’s ritual for today")}</p>
-        <p lang="en" className={`mt-1 font-display text-lg italic ${light ? "text-ivory" : "text-plum"}`}>{h.ritual}</p>
+        <p lang={rlang} className={`mt-1 font-display text-lg italic ${light ? "text-ivory" : "text-plum"}`}>{h.ritual}</p>
       </div>
-      {!compact && <p lang="en" className={`mt-4 text-sm ${muted}`}>{h.energyNote}</p>}
+      {!compact && <p lang={rlang} className={`mt-4 text-sm ${muted}`}>{h.energyNote}</p>}
       {compact && link && <Link href={`/horoscope/${h.sign.toLowerCase()}`} className={`mt-5 inline-block text-sm link-underline ${light ? "text-ivory" : "text-plum"}`}>{t("Read your full horoscope")}</Link>}
     </div>
   );

@@ -5,7 +5,8 @@ import "server-only";
  * natal planets and angles. Built on the Sun-sign day so ratings, phase and
  * ritual stay consistent with the rest of the site.
  */
-import { dailyHoroscope, type DailyHoroscope } from "./horoscope";
+import { dailyHoroscope, HOUSE_AREA, type DailyHoroscope } from "./horoscope";
+import { RX_EN, type Rx } from "@/i18n/readings";
 import { longitudeAt, positionsAt, ukTime, wrap180, type SkyBody } from "./sky";
 import { houseOf } from "./derive";
 import type { ChartResult, Sign } from "./types";
@@ -16,7 +17,6 @@ import { TRANSIT_3 } from "./text/stars/transits-3";
 
 const TEXT = { ...TRANSIT_1, ...TRANSIT_2, ...TRANSIT_3 };
 type HouseKey = keyof typeof MOON_HOUSE_DAY;
-const HOUSE_AREA = ["you", "money & values", "conversations", "home", "love & creativity", "work & routines", "partners", "intimacy & change", "adventure & learning", "career", "friends & hopes", "rest & dreams"];
 
 const FAST: SkyBody[] = ["Moon", "Sun", "Mercury", "Venus", "Mars"];
 const SLOW: SkyBody[] = ["Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"];
@@ -57,9 +57,9 @@ export interface PersonalDay extends DailyHoroscope {
   };
 }
 
-export function personalDay(chart: ChartResult, day: string): PersonalDay {
+export function personalDay(chart: ChartResult, day: string, rx: Rx = RX_EN): PersonalDay {
   const sun = chart.placements.find((p) => p.body === "Sun")!.sign;
-  const base = dailyHoroscope(sun, day);
+  const base = dailyHoroscope(sun, day, rx);
   const noon = ukTime(day, "12:00"), later = new Date(+noon + 3600000);
   const sky = positionsAt(noon);
   const moonLon = sky.find((p) => p.body === "Moon")!.longitude;
@@ -115,10 +115,10 @@ export function personalDay(chart: ChartResult, day: string): PersonalDay {
 
   const hk = String(house) as HouseKey;
   const seed = [day, sun, String(house), "p"];
-  return {
+  return rx.deep({
     ...base,
     headline: pick(DAY_HEADLINE[hk], ...seed, "h"),
-    focus: HOUSE_AREA[house - 1],
+    focus: rx.t(HOUSE_AREA[house - 1]),
     moon: { ...base.moon, house },
     paragraphs: [pick(MOON_HOUSE_DAY[hk], ...seed), base.paragraphs[1]].filter(Boolean),
     ratings: r,
@@ -130,5 +130,5 @@ export function personalDay(chart: ChartResult, day: string): PersonalDay {
       transits,
       timeKnown: chart.timeKnown,
     },
-  };
+  });
 }

@@ -116,7 +116,7 @@ export function breadcrumbLd(items: [name: string, path: string][]) {
   };
 }
 
-export function articleLd(p: { title: string; description: string; path: string; published: Date; modified: Date; image?: string | null; section?: string }) {
+export function articleLd(p: { title: string; description: string; path: string; published: Date; modified: Date; image?: string | null; section?: string; inLanguage?: string }) {
   return {
     "@type": "BlogPosting",
     headline: p.title.slice(0, 110),
@@ -127,7 +127,7 @@ export function articleLd(p: { title: string; description: string; path: string;
     dateModified: p.modified.toISOString(),
     ...(p.image ? { image: abs(p.image) } : { image: abs("/opengraph-image") }),
     ...(p.section ? { articleSection: p.section } : {}),
-    inLanguage: "en-GB",
+    inLanguage: !p.inLanguage || p.inLanguage === "en" ? "en-GB" : p.inLanguage,
     author: { "@id": abs("/about#yulia"), "@type": "Person", name: "Yulia Moon", url: abs("/about") },
     publisher: { "@id": abs("/#organization") },
   };

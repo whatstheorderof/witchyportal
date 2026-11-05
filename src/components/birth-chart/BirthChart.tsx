@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import type { ChartResult } from "@/lib/astro/types";
 import type { NatalReport } from "@/lib/astro/report-types";
-import Link from "@/i18n/client";
+import Link, { useI18n } from "@/i18n/client";
 import { Report, type ContactLinks } from "./Report";
 import { saveMyChart, useMyChart } from "@/lib/my-chart";
 import { setMySign } from "@/lib/my-sign";
@@ -25,6 +25,7 @@ export function PlaceCombobox({ value, onChange, error }: { value: Place | null;
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const { t } = useI18n();
 
   useEffect(() => {
     if (value && query === value.label) return;
@@ -58,7 +59,7 @@ export function PlaceCombobox({ value, onChange, error }: { value: Place | null;
   const listId = `${id}-list`;
   return (
     <div className="relative">
-      <label htmlFor={id} className="field-label">Place of birth <span aria-hidden className="text-blush-deep">*</span></label>
+      <label htmlFor={id} className="field-label">{t("Place of birth")} <span aria-hidden className="text-blush-deep">*</span></label>
       <input
         id={id}
         className="input"
@@ -70,7 +71,7 @@ export function PlaceCombobox({ value, onChange, error }: { value: Place | null;
         aria-invalid={error ? true : undefined}
         aria-describedby={`${id}-hint${error ? ` ${id}-err` : ""}`}
         autoComplete="off"
-        placeholder="Start typing a town or city"
+        placeholder={t("Start typing a town or city")}
         value={query}
         onChange={(e) => {
           setQuery(e.target.value);
@@ -87,7 +88,7 @@ export function PlaceCombobox({ value, onChange, error }: { value: Place | null;
         }}
       />
       <p id={`${id}-hint`} className="field-hint">
-        {loading ? "Searching…" : failed ? "Place search isn't responding — please try again." : value ? `Time zone: ${value.timeZone}` : "Choose from the list. Add “, country” to narrow it down."}
+        {loading ? t("Searching…") : failed ? t("Place search isn't responding — please try again.") : value ? t("Time zone: {zone}", { zone: value.timeZone }) : t("Choose from the list. Add “, country” to narrow it down.")}
       </p>
       {error && <p id={`${id}-err`} className="field-error">{error}</p>}
       {open && results.length > 0 && (
@@ -109,7 +110,7 @@ export function PlaceCombobox({ value, onChange, error }: { value: Place | null;
         </ul>
       )}
       {open && !loading && query.trim().length >= 2 && results.length === 0 && !failed && (
-        <p className="absolute z-20 mt-1 w-full rounded-xl border border-line bg-white px-4 py-3 text-sm text-muted shadow-(--shadow-soft)">No matching places. Try the nearest town or city.</p>
+        <p className="absolute z-20 mt-1 w-full rounded-xl border border-line bg-white px-4 py-3 text-sm text-muted shadow-(--shadow-soft)">{t("No matching places. Try the nearest town or city.")}</p>
       )}
     </div>
   );
@@ -129,25 +130,26 @@ export function BirthChart({ contact }: { contact: ContactLinks }) {
   const [save, setSave] = useState(false);
   const saved = useMyChart();
   const resultRef = useRef<HTMLDivElement>(null);
+  const { t, api } = useI18n();
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     const errs: Record<string, string> = {};
-    if (!date) errs.date = "Please enter your date of birth";
-    if (!unknownTime && !time) errs.time = "Enter your birth time, or tick “I don't know my birth time”";
-    if (!place) errs.place = "Please choose your birthplace from the list";
+    if (!date) errs.date = t("Please enter your date of birth");
+    if (!unknownTime && !time) errs.time = t("Enter your birth time, or tick “I don't know my birth time”");
+    if (!place) errs.place = t("Please choose your birthplace from the list");
     setErrors(errs);
     if (Object.keys(errs).length) return;
     setStatus("loading");
     setMessage("");
     try {
-      const res = await fetch("/api/chart", {
+      const res = await fetch(api("/api/chart"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ date, time: unknownTime ? null : time, placeId: place!.id }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Something went wrong");
+      if (!res.ok) throw new Error(data.error ?? t("Something went wrong"));
       setChart(data.chart);
       setReport(data.report);
       if (save) {
@@ -159,7 +161,7 @@ export function BirthChart({ contact }: { contact: ContactLinks }) {
       setTimeout(() => { const h = document.getElementById("chart-result"); h?.focus(); resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }); }, 50);
     } catch (err) {
       setStatus("error");
-      setMessage(err instanceof Error ? err.message : "Something went wrong");
+      setMessage(err instanceof Error ? err.message : t("Something went wrong"));
     }
   }
 
@@ -167,48 +169,48 @@ export function BirthChart({ contact }: { contact: ContactLinks }) {
     <div className="grid min-w-0 gap-14 [&>*]:min-w-0">
       <form onSubmit={submit} noValidate className="card grid gap-6 p-6 print:hidden sm:p-10" aria-describedby="privacy-note">
         <div>
-          <label htmlFor="bc-name" className="field-label">Name <span className="font-normal text-muted">(optional — for the report title)</span></label>
+          <label htmlFor="bc-name" className="field-label">{t("Name")} <span className="font-normal text-muted">{t("(optional — for the report title)")}</span></label>
           <input id="bc-name" className="input" autoComplete="off" maxLength={40} value={name} onChange={(e) => setName(e.target.value)} />
         </div>
         <div className="grid gap-6 sm:grid-cols-2">
           <div>
-            <label htmlFor="bc-date" className="field-label">Date of birth <span aria-hidden className="text-blush-deep">*</span></label>
+            <label htmlFor="bc-date" className="field-label">{t("Date of birth")} <span aria-hidden className="text-blush-deep">*</span></label>
             <input id="bc-date" type="date" className="input" min="1800-01-01" max="2100-12-31" value={date} onChange={(e) => setDate(e.target.value)} aria-invalid={errors.date ? true : undefined} aria-describedby={errors.date ? "bc-date-err" : undefined} />
             {errors.date && <p id="bc-date-err" className="field-error">{errors.date}</p>}
           </div>
           <div>
-            <label htmlFor="bc-time" className="field-label">Time of birth {!unknownTime && <span aria-hidden className="text-blush-deep">*</span>}</label>
+            <label htmlFor="bc-time" className="field-label">{t("Time of birth")} {!unknownTime && <span aria-hidden className="text-blush-deep">*</span>}</label>
             <input id="bc-time" type="time" className="input" value={time} disabled={unknownTime} onChange={(e) => setTime(e.target.value)} aria-invalid={errors.time ? true : undefined} aria-describedby={`bc-time-hint${errors.time ? " bc-time-err" : ""}`} />
-            <p id="bc-time-hint" className="field-hint">Local clock time, as on your birth certificate.</p>
+            <p id="bc-time-hint" className="field-hint">{t("Local clock time, as on your birth certificate.")}</p>
             {errors.time && <p id="bc-time-err" className="field-error">{errors.time}</p>}
             <label className="mt-3 flex items-center gap-3 text-[0.95rem]">
               <input type="checkbox" className="h-5 w-5 accent-plum" checked={unknownTime} onChange={(e) => { setUnknownTime(e.target.checked); if (e.target.checked) setTime(""); }} />
-              I don&rsquo;t know my birth time
+              {t("I don’t know my birth time")}
             </label>
           </div>
         </div>
         <PlaceCombobox value={place} onChange={setPlace} error={errors.place} />
         {unknownTime && (
           <p className="rounded-xl bg-lavender/40 px-4 py-3 text-sm text-plum">
-            Without a birth time we can still show your planets&rsquo; signs, but not your rising sign (Ascendant), Midheaven or houses, and your Moon&rsquo;s exact degree is uncertain.
+            {t("Without a birth time we can still show your planets’ signs, but not your rising sign (Ascendant), Midheaven or houses, and your Moon’s exact degree is uncertain.")}
           </p>
         )}
         <div id="save-chart" className="scroll-mt-28 rounded-xl bg-blush/30 px-4 py-3">
           {saved ? (
             <p className="text-[0.95rem] text-plum">
-              A birth chart{saved.name ? ` (${saved.name})` : ""} is saved on this device for your <Link href="/today" className="link-underline">personal daily horoscope</Link>.{" "}
-              <button type="button" className="link-underline" onClick={() => saveMyChart(null)}>Forget it</button>
+              {saved.name ? t("A birth chart ({name}) is saved on this device for your", { name: saved.name }) : t("A birth chart is saved on this device for your")} <Link href="/today" className="link-underline">{t("personal daily horoscope")}</Link>.{" "}
+              <button type="button" className="link-underline" onClick={() => saveMyChart(null)}>{t("Forget it")}</button>
             </p>
           ) : (
             <label className="flex items-start gap-3 text-[0.95rem]">
               <input type="checkbox" className="mt-0.5 h-5 w-5 shrink-0 accent-plum" checked={save} onChange={(e) => setSave(e.target.checked)} />
-              <span><strong className="font-medium text-plum">Save my chart on this device</strong> for a personal daily horoscope read from my whole chart. It stays in this browser only — we never store it — and you can forget it at any time.</span>
+              <span><strong className="font-medium text-plum">{t("Save my chart on this device")}</strong> {t("for a personal daily horoscope read from my whole chart. It stays in this browser only — we never store it — and you can forget it at any time.")}</span>
             </label>
           )}
         </div>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-          <button className="btn-primary" disabled={status === "loading"}>{status === "loading" ? "Reading the sky…" : "Get my free natal chart"}</button>
-          <p id="privacy-note" className="text-sm text-muted">Your birth details are used only to calculate your chart and are never stored on our server.</p>
+          <button className="btn-primary" disabled={status === "loading"}>{status === "loading" ? t("Reading the sky…") : t("Get my free natal chart")}</button>
+          <p id="privacy-note" className="text-sm text-muted">{t("Your birth details are used only to calculate your chart and are never stored on our server.")}</p>
         </div>
         <div aria-live="polite">
           {status === "error" && <p role="alert" className="rounded-xl bg-danger/10 px-4 py-3 text-danger">{message}</p>}

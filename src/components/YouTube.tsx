@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { PlayIcon } from "./Icons";
+import { useI18n } from "@/i18n/client";
 
 /**
  * Privacy-friendly YouTube embed: shows a thumbnail and loads the
@@ -9,6 +10,7 @@ import { PlayIcon } from "./Icons";
  */
 export function YouTubeEmbed({ id, title, vertical = false }: { id: string; title: string; vertical?: boolean }) {
   const [active, setActive] = useState(false);
+  const { t } = useI18n();
   // hqdefault always exists. For Shorts it holds the vertical frame centred in 4:3, so a 9:16 cover crop shows it edge to edge.
   const thumb = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
   return (
@@ -23,7 +25,7 @@ export function YouTubeEmbed({ id, title, vertical = false }: { id: string; titl
           referrerPolicy="strict-origin-when-cross-origin"
         />
       ) : (
-        <button type="button" onClick={() => setActive(true)} className="group absolute inset-0 h-full w-full" aria-label={`Play video: ${title}`}>
+        <button type="button" onClick={() => setActive(true)} className="group absolute inset-0 h-full w-full" aria-label={t("Play video: {title}", { title })}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={thumb}

@@ -9,6 +9,8 @@ import { ukDayKey } from "./sky";
 import type { BodyName, ChartResult, Sign } from "./types";
 import type { CalcCard, CalcKind, CalcResult, SaturnReturn } from "./calc-meta";
 import type { SignTextWithShort } from "./text/types";
+import { msg } from "@/i18n/config";
+import { RX_EN, type Rx } from "@/i18n/readings";
 import { SUN_IN_SIGN } from "./text/sun";
 import { MOON_IN_SIGN } from "./text/moon";
 import { VENUS_IN_SIGN } from "./text/venus";
@@ -18,29 +20,33 @@ import { ASCENDANT_IN_SIGN } from "./text/angles";
 import { TRANSIT_3 } from "./text/stars/transits-3";
 
 const DAY = 86400000;
+/** Card labels (translated in bodyCard). */
+export const CALC_LABELS = [msg("Moon sign"), msg("Sun sign"), msg("Venus sign"), msg("Mars sign"), msg("Saturn sign")];
 const paras = (t: string) => t.split(/\n\s*\n/).map((p) => p.replace(/\s+/g, " ").trim()).filter(Boolean);
 const wrap = (x: number) => ((x + 540) % 360) - 180;
 
-function bodyCard(chart: ChartResult, body: BodyName, label: string, texts: SignTextWithShort, short = false): CalcCard {
+function bodyCard(rx: Rx, chart: ChartResult, body: BodyName, label: string, texts: SignTextWithShort, short = false): CalcCard {
+  const t = rx.t;
   const p = chart.placements.find((x) => x.body === body)!;
   if (p.signUncertain && p.possibleSigns && p.possibleSigns.length > 1) {
     const [a, b] = p.possibleSigns;
     return {
-      label, sign: null, degree: null, possibleSigns: p.possibleSigns,
-      short: `Your ${body} was in ${a} or ${b} on the day you were born — it changed sign during the day, so your birth time decides which.`,
-      paragraphs: p.possibleSigns.map((s) => `${body} in ${s}: ${texts[s].short}`),
-      note: "Add your birth time to know for sure.",
+      label: t(label), sign: null, degree: null, possibleSigns: p.possibleSigns,
+      short: t("Your {body} was in {a} or {b} on the day you were born — it changed sign during the day, so your birth time decides which.", { body: t(body), a: t(a), b: t(b) }),
+      paragraphs: p.possibleSigns.map((s) => t("{body} in {sign}: {text}", { body: t(body), sign: t(s), text: rx(texts[s].short) })),
+      note: t("Add your birth time to know for sure."),
     };
   }
-  return { label, sign: p.sign, degree: p.degree, short: texts[p.sign].short, paragraphs: short ? [] : paras(texts[p.sign].text) };
+  return { label: t(label), sign: p.sign, degree: p.degree, short: texts[p.sign].short, paragraphs: short ? [] : paras(texts[p.sign].text) };
 }
 
-function risingCard(chart: ChartResult, short = false): CalcCard {
+function risingCard(rx: Rx, chart: ChartResult, short = false): CalcCard {
+  const t = rx.t;
   const asc = chart.angles.find((a) => a.name === "Ascendant");
   if (!asc || !chart.timeKnown) {
-    return { label: "Rising sign", sign: null, degree: null, short: "Your rising sign needs your birth time: it changes about every two hours.", paragraphs: [], note: "Add your birth time to find your rising sign." };
+    return { label: t("Rising sign"), sign: null, degree: null, short: t("Your rising sign needs your birth time: it changes about every two hours."), paragraphs: [], note: t("Add your birth time to find your rising sign.") };
   }
-  return { label: "Rising sign", sign: asc.sign, degree: asc.degree, short: ASCENDANT_IN_SIGN[asc.sign].short, paragraphs: short ? [] : paras(ASCENDANT_IN_SIGN[asc.sign].text) };
+  return { label: t("Rising sign"), sign: asc.sign, degree: asc.degree, short: ASCENDANT_IN_SIGN[asc.sign].short, paragraphs: short ? [] : paras(ASCENDANT_IN_SIGN[asc.sign].text) };
 }
 
 /** Every exact return of transiting Saturn to its birth longitude, grouped into returns. */
@@ -81,24 +87,28 @@ export function saturnReturns(natalLon: number, birth: Date, now = new Date()): 
   }));
 }
 
-export function calculate(kind: CalcKind, chart: ChartResult): CalcResult {
+export function calculate(kind: CalcKind, chart: ChartResult, rx: Rx = RX_EN): CalcResult {
+  return rx.deep(calculateEn(kind, chart, rx));
+}
+
+function calculateEn(kind: CalcKind, chart: ChartResult, rx: Rx): CalcResult {
   const notes: string[] = [];
-  if (!chart.timeKnown) notes.push("Without a birth time we use the middle of the day. Planets' signs are still reliable unless one changed sign that day (we'll say so), but the rising sign and houses can't be known.");
-  if (chart.isFixture) notes.push("These are sample positions, not your real chart.");
+  if (!chart.timeKnown) notes.push(rx("Without a birth time we use the middle of the day. Planets' signs are still reliable unless one changed sign that day (we'll say so), but the rising sign and houses can't be known."));
+  if (chart.isFixture) notes.push(rx.t("These are sample positions, not your real chart."));
   switch (kind) {
     case "rising":
-      return { kind, cards: [risingCard(chart)], notes };
+      return { kind, cards: [risingCard(rx, chart)], notes };
     case "moon":
-      return { kind, cards: [bodyCard(chart, "Moon", "Moon sign", MOON_IN_SIGN)], notes };
+      return { kind, cards: [bodyCard(rx, chart, "Moon", "Moon sign", MOON_IN_SIGN)], notes };
     case "big-three":
-      return { kind, cards: [bodyCard(chart, "Sun", "Sun sign", SUN_IN_SIGN, true), bodyCard(chart, "Moon", "Moon sign", MOON_IN_SIGN, true), risingCard(chart, true)], notes };
+      return { kind, cards: [bodyCard(rx, chart, "Sun", "Sun sign", SUN_IN_SIGN, true), bodyCard(rx, chart, "Moon", "Moon sign", MOON_IN_SIGN, true), risingCard(rx, chart, true)], notes };
     case "venus":
-      return { kind, cards: [bodyCard(chart, "Venus", "Venus sign", VENUS_IN_SIGN)], notes };
+      return { kind, cards: [bodyCard(rx, chart, "Venus", "Venus sign", VENUS_IN_SIGN)], notes };
     case "mars":
-      return { kind, cards: [bodyCard(chart, "Mars", "Mars sign", MARS_IN_SIGN)], notes };
+      return { kind, cards: [bodyCard(rx, chart, "Mars", "Mars sign", MARS_IN_SIGN)], notes };
     case "saturn-return": {
       const sat = chart.placements.find((p) => p.body === "Saturn")!;
-      const card = bodyCard(chart, "Saturn", "Saturn sign", SATURN_IN_SIGN, true);
+      const card = bodyCard(rx, chart, "Saturn", "Saturn sign", SATURN_IN_SIGN, true);
       const returns = saturnReturns(sat.longitude, new Date(chart.utc));
       return { kind, cards: [card], notes, returns, returnText: paras(TRANSIT_3["Saturn>Saturn"].conjunction) };
     }

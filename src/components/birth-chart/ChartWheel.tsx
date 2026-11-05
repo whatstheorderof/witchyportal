@@ -1,6 +1,7 @@
 import type { ChartResult } from "@/lib/astro/types";
 import { SIGNS } from "@/lib/astro/types";
 import { BODY_INFO, SIGN_INFO } from "@/lib/astro/interpretations";
+import { useI18n } from "@/i18n/client";
 
 const C = 200;
 const rad = Math.PI / 180;
@@ -14,6 +15,7 @@ const ELEMENT_FILL: Record<string, string> = {
 export const ASPECT_COLOUR = { conjunction: "#64508d", sextile: "#3a6348", trine: "#3a6348", square: "#9e4639", opposition: "#9e4639" } as const;
 
 export function ChartWheel({ chart }: { chart: ChartResult }) {
+  const { t } = useI18n();
   const asc = chart.angles.find((a) => a.name === "Ascendant")?.longitude ?? 0;
   // Ascendant on the left; zodiac runs anticlockwise as on a traditional chart.
   const theta = (lon: number) => 180 + (lon - asc);
@@ -44,9 +46,9 @@ export function ChartWheel({ chart }: { chart: ChartResult }) {
 
   return (
     <svg viewBox="-16 -16 432 432" role="img" aria-labelledby="wheel-title wheel-desc" className="h-auto w-full max-w-[560px]">
-      <title id="wheel-title">Natal chart wheel</title>
+      <title id="wheel-title">{t("Natal chart wheel")}</title>
       <desc id="wheel-desc">
-        {`Birth chart wheel showing ${chart.placements.map((p) => `${p.body} in ${p.sign}`).join(", ")}${chart.timeKnown ? `, with the Ascendant in ${chart.angles[0]?.sign}` : ""}.`}
+        {t(chart.timeKnown ? "Birth chart wheel showing {list}, with the Ascendant in {asc}." : "Birth chart wheel showing {list}.", { list: chart.placements.map((p) => t("{body} in {sign}", { body: t(p.body), sign: t(p.sign) })).join(", "), asc: t(chart.angles[0]?.sign ?? "") })}
       </desc>
       {/* Sign ring */}
       {SIGNS.map((s, i) => {

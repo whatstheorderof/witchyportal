@@ -1,26 +1,32 @@
 import { featuredYear } from "@/lib/astro/yearly";
-import type { Metadata } from "next";
 import Link from "@/i18n/client";
 import { connection } from "next/server";
 import { SIGNS } from "@/lib/astro/types";
 import { SIGN_INFO } from "@/lib/astro/interpretations";
 import { dailyHoroscope, todayKey } from "@/lib/astro/horoscope";
 import { moonPhaseAt, positionsAt, ukTime } from "@/lib/astro/sky";
-import { absoluteUrl, breadcrumbLd, pageMeta } from "@/lib/seo";
+import { absoluteUrl, breadcrumbLd } from "@/lib/seo";
+import { getReadings } from "@/i18n/readings";
+import { localeMeta } from "@/i18n/meta";
 import { JsonLd } from "@/components/JsonLd";
 import { PageHero } from "@/components/Section";
 import { MoonGlyph } from "@/components/MoonGlyph";
 import { YourDay } from "@/components/stars/YourDay";
 
-export const metadata: Metadata = pageMeta({
-  title: "Daily Horoscopes for Every Star Sign | Witchy Portal",
-  absoluteTitle: true,
-  description: "Free daily horoscopes for all twelve signs from Yulia Moon, read from today's real sky — plus monthly horoscopes and this week in astrology.",
-  path: "/horoscope",
-});
+export async function generateMetadata() {
+  const rx = await getReadings();
+  return localeMeta({
+    title: rx.t("Daily Horoscopes for Every Star Sign | Witchy Portal"),
+    absoluteTitle: true,
+    description: rx("Free daily horoscopes for all twelve signs from Yulia Moon, read from today's real sky — plus monthly horoscopes and this week in astrology."),
+    path: "/horoscope",
+  });
+}
 
 export default async function HoroscopeHub() {
   await connection();
+  const rx = await getReadings();
+  const t = rx.t;
   const day = todayKey();
   const noon = ukTime(day, "12:00");
   const pos = positionsAt(noon);
@@ -28,40 +34,40 @@ export default async function HoroscopeHub() {
   const phase = moonPhaseAt(noon);
   const retro = pos.filter((p) => p.retrograde);
   const year = featuredYear();
-  const label = new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" }).format(new Date(`${day}T12:00:00Z`));
+  const label = new Intl.DateTimeFormat(rx.intl, { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" }).format(new Date(`${day}T12:00:00Z`));
   return (
     <>
-      <JsonLd data={[breadcrumbLd([["Horoscopes", "/horoscope"]]), { "@type": "ItemList", name: "Daily horoscopes", itemListElement: SIGNS.map((s, i) => ({ "@type": "ListItem", position: i + 1, name: `${s} horoscope`, url: absoluteUrl(`/horoscope/${s.toLowerCase()}`) })) }]} />
-      <PageHero image="veil" eyebrow={label} title="Daily horoscopes" intro="What's in store for you today, read from the real sky — the Moon's journey through your chart, its phase and its meetings with the planets — in Yulia's words, with a small ritual for every day." />
+      <JsonLd data={[breadcrumbLd([[t("Horoscopes"), "/horoscope"]]), { "@type": "ItemList", name: t("Daily horoscopes"), itemListElement: SIGNS.map((s, i) => ({ "@type": "ListItem", position: i + 1, name: t("{sign} horoscope", { sign: t(s) }), url: absoluteUrl(`/horoscope/${s.toLowerCase()}`) })) }]} />
+      <PageHero image="veil" eyebrow={label} title={t("Daily horoscopes")} intro={rx("What's in store for you today, read from the real sky — the Moon's journey through your chart, its phase and its meetings with the planets — in Yulia's words, with a small ritual for every day.")} />
       <section className="container-page grid gap-10 py-12 lg:grid-cols-[1.2fr_1fr] lg:py-16">
         <YourDay />
         <div className="grid content-start gap-6">
           <div className="card flex items-center gap-5 p-6">
             <MoonGlyph angle={phase.angle} size={72} glow={false} />
             <div>
-              <p className="eyebrow">Today&rsquo;s sky</p>
-              <p className="mt-1 font-display text-2xl text-plum">{phase.name} in {moon.sign}</p>
-              <p className="text-sm text-muted">{Math.round(phase.illumination * 100)}% lit · Sun in {pos[0].sign}</p>
-              {retro.length > 0 && <p className="mt-1 text-sm text-muted">Retrograde: {retro.map((r) => `${r.body} in ${r.sign}`).join(", ")}</p>}
+              <p className="eyebrow">{t("Today’s sky")}</p>
+              <p className="mt-1 font-display text-2xl text-plum">{t("{phase} in {sign}", { phase: t(phase.name), sign: t(moon.sign) })}</p>
+              <p className="text-sm text-muted">{t("{n}% lit", { n: Math.round(phase.illumination * 100) })} · {t("Sun in {sign}", { sign: t(pos[0].sign) })}</p>
+              {retro.length > 0 && <p className="mt-1 text-sm text-muted">{t("Retrograde:")} {retro.map((r) => t("{body} in {sign}", { body: t(r.body), sign: t(r.sign) })).join(", ")}</p>}
             </div>
           </div>
-          <Link href="/this-week-in-astrology" className="card group p-6"><p className="eyebrow">For everyone</p><p className="mt-1 font-display text-2xl text-plum">This week in astrology</p><p className="text-sm text-muted">The week&rsquo;s New and Full Moons, planets changing sign and the big aspects.</p></Link>
-          <Link href="/moon/phases" className="card group p-6"><p className="eyebrow">Moon magic</p><p className="mt-1 font-display text-2xl text-plum">Moon phases guide</p><p className="text-sm text-muted">What each phase is for, and when the next one falls.</p></Link>
+          <Link href="/this-week-in-astrology" className="card group p-6"><p className="eyebrow">{t("For everyone")}</p><p className="mt-1 font-display text-2xl text-plum">{t("This week in astrology")}</p><p className="text-sm text-muted">{t("The week’s New and Full Moons, planets changing sign and the big aspects.")}</p></Link>
+          <Link href="/moon/phases" className="card group p-6"><p className="eyebrow">{t("Moon magic")}</p><p className="mt-1 font-display text-2xl text-plum">{t("Moon phases guide")}</p><p className="text-sm text-muted">{t("What each phase is for, and when the next one falls.")}</p></Link>
         </div>
       </section>
       <section className="container-page pb-16" aria-labelledby="signs-h">
-        <h2 id="signs-h" className="display-md">Choose your sign</h2>
+        <h2 id="signs-h" className="display-md">{t("Choose your sign")}</h2>
         <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {SIGNS.map((s) => {
-            const h = dailyHoroscope(s, day);
+            const h = dailyHoroscope(s, day, rx);
             return (
               <li key={s}>
                 <Link href={`/horoscope/${s.toLowerCase()}`} className="card flex h-full gap-4 p-5 transition hover:-translate-y-0.5">
                   <span aria-hidden className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-plum-deep font-display text-2xl text-ivory">{SIGN_INFO[s].glyph}</span>
                   <span className="min-w-0">
-                    <span className="block font-display text-2xl text-plum">{s}</span>
-                    <span className="block text-[0.95rem] text-ink/80">{h.headline}</span>
-                    <span className="mt-1 block text-xs text-muted">Read today&rsquo;s horoscope</span>
+                    <span className="block font-display text-2xl text-plum">{t(s)}</span>
+                    <span lang={rx.lang} className="block text-[0.95rem] text-ink/80">{h.headline}</span>
+                    <span className="mt-1 block text-xs text-muted">{t("Read today’s horoscope")}</span>
                   </span>
                 </Link>
               </li>
@@ -71,11 +77,11 @@ export default async function HoroscopeHub() {
       </section>
       <section className="container-page pb-16" aria-labelledby="year-h">
         <div className="rounded-[2rem] bg-plum-deep p-6 text-ivory sm:p-10">
-          <p className="eyebrow text-blush">The year ahead</p>
-          <h2 id="year-h" className="mt-2 font-display text-3xl text-ivory sm:text-4xl">Your {year} horoscope</h2>
-          <p className="mt-2 max-w-2xl text-ivory/80">Jupiter&rsquo;s blessing, Saturn&rsquo;s lesson, the eclipses and retrogrades in your chart, and every New and Full Moon of {year}, month by month.</p>
+          <p className="eyebrow text-blush">{t("The year ahead")}</p>
+          <h2 id="year-h" className="mt-2 font-display text-3xl text-ivory sm:text-4xl">{t("Your {year} horoscope", { year })}</h2>
+          <p className="mt-2 max-w-2xl text-ivory/80">{t("Jupiter’s blessing, Saturn’s lesson, the eclipses and retrogrades in your chart, and every New and Full Moon of {year}, month by month.", { year })}</p>
           <ul className="mt-6 flex flex-wrap gap-2">
-            {SIGNS.map((s) => <li key={s}><Link href={`/horoscope/${s.toLowerCase()}/${year}`} className="inline-block rounded-full border border-ivory/30 px-4 py-2 text-sm text-ivory hover:bg-ivory/10"><span aria-hidden>{SIGN_INFO[s].glyph}</span> {s} {year}</Link></li>)}
+            {SIGNS.map((s) => <li key={s}><Link href={`/horoscope/${s.toLowerCase()}/${year}`} className="inline-block rounded-full border border-ivory/30 px-4 py-2 text-sm text-ivory hover:bg-ivory/10"><span aria-hidden>{SIGN_INFO[s].glyph}</span> {t(s)} {year}</Link></li>)}
           </ul>
         </div>
       </section>

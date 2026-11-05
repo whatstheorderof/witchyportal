@@ -1,4 +1,5 @@
 import * as Astronomy from "astronomy-engine";
+import { prose } from "@/i18n/config";
 import { localToUtc } from "./timezone";
 import {
   type Angle,
@@ -271,7 +272,7 @@ export function calculateChart(input: BirthInput): ChartResult {
       cusps = wholeSignCusps(asc);
       houseSystem = "whole-sign";
       notes.push(
-        "Placidus houses cannot be calculated this close to the poles, so Whole Sign houses are shown instead.",
+        prose("Placidus houses cannot be calculated this close to the poles, so Whole Sign houses are shown instead."),
       );
     }
   }
@@ -303,7 +304,7 @@ export function calculateChart(input: BirthInput): ChartResult {
 
   if (!timeKnown) {
     notes.push(
-      "Without a birth time the Ascendant, Midheaven and houses cannot be determined, and the Moon's exact degree is uncertain (it moves about 13° a day). Positions are shown for local noon.",
+      prose("Without a birth time the Ascendant, Midheaven and houses cannot be determined, and the Moon's exact degree is uncertain (it moves about 13° a day). Positions are shown for local noon."),
     );
   }
 

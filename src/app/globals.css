@@ -143,10 +143,10 @@
   .prose-witchy h2 { @apply mt-10 font-display text-3xl text-plum; }
   .prose-witchy h3 { @apply mt-8 font-display text-2xl text-plum; }
   .prose-witchy a { @apply link-underline text-plum; }
-  .prose-witchy ul { @apply list-disc pl-6; }
-  .prose-witchy ol { @apply list-decimal pl-6; }
+  .prose-witchy ul { @apply list-disc ps-6; }
+  .prose-witchy ol { @apply list-decimal ps-6; }
   .prose-witchy li + li { margin-top: 0.35em; }
-  .prose-witchy blockquote { @apply border-l-2 border-blush-deep pl-5 font-display text-2xl italic text-plum; }
+  .prose-witchy blockquote { @apply border-s-2 border-blush-deep ps-5 font-display text-2xl italic text-plum; }
   .prose-witchy strong { @apply font-semibold text-plum-deep; }
 
   .placeholder-flag {

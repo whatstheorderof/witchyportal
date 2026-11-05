@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { track } from "@/components/Track";
+import { useI18n } from "@/i18n/client";
 
 export interface TVVideo {
   youtubeId: string;
@@ -55,9 +56,10 @@ const showTitle = (t: string) => t.replace(/^[^A-Za-z]*(the\s+)?yulia moon show[
 const PAGE = 48;
 
 const thumb = (id: string, q = "mqdefault") => `https://i.ytimg.com/vi/${id}/${q}.jpg`;
-const fmt = (iso: string | null) => (iso ? new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" }).format(new Date(iso)) : "");
+const fmt = (iso: string | null, intl: string) => (iso ? new Intl.DateTimeFormat(intl, { day: "numeric", month: "short", year: "numeric" }).format(new Date(iso)) : "");
 
 export function WatchTV({ videos, uploadsPlaylist, shortsPlaylist, channelUrl, startId, startChannel }: { videos: TVVideo[]; uploadsPlaylist: string | null; shortsPlaylist?: string | null; channelUrl: string; startId?: string; startChannel?: string }) {
+  const { t, intl } = useI18n();
   const channels = useMemo<Channel[]>(() => {
     const list: Channel[] = [];
     // Series channels are full-length episodes only; every vertical video lives in Witchy Shorts.
@@ -65,15 +67,15 @@ export function WatchTV({ videos, uploadsPlaylist, shortsPlaylist, channelUrl, s
     if (videos.some((v) => v.series === "ask" && ep(v))) list.push({ key: "ask", label: "Ask a Witch", filter: (v) => v.series === "ask" && ep(v) });
     if (videos.some((v) => v.series === "show" && ep(v))) list.push({ key: "show", label: "The Yulia Moon Show", filter: (v) => v.series === "show" && ep(v) });
     // Witchy Shorts: every vertical video. Falls back to the channel's own Shorts playlist if none are imported yet.
-    if (videos.some((v) => v.kind === "short")) list.push({ key: "shorts", label: "Witchy Shorts", filter: (v) => v.kind === "short", vertical: true });
-    else if (shortsPlaylist) list.push({ key: "shorts", label: "Witchy Shorts", playlist: shortsPlaylist, vertical: true, note: "Every one of Yulia\u2019s Shorts, newest first. Use the playlist button inside the player to jump around, or choose another channel above." });
-    if (videos.some(ep)) list.push({ key: "videos", label: "Full episodes", filter: ep });
-    for (const t of [...new Set(videos.map((v) => v.topic).filter(Boolean))].sort()) list.push({ key: `t:${t}`, label: t, filter: (v) => v.topic === t });
-    if (videos.length) list.push({ key: "all", label: "Everything" });
+    if (videos.some((v) => v.kind === "short")) list.push({ key: "shorts", label: t("Witchy Shorts"), filter: (v) => v.kind === "short", vertical: true });
+    else if (shortsPlaylist) list.push({ key: "shorts", label: t("Witchy Shorts"), playlist: shortsPlaylist, vertical: true, note: t("Every one of Yulia’s Shorts, newest first. Use the playlist button inside the player to jump around, or choose another channel above.") });
+    if (videos.some(ep)) list.push({ key: "videos", label: t("Full episodes"), filter: ep });
+    for (const topic of [...new Set(videos.map((v) => v.topic).filter(Boolean))].sort()) list.push({ key: `t:${topic}`, label: topic, filter: (v) => v.topic === topic });
+    if (videos.length) list.push({ key: "all", label: t("Everything") });
     // Nothing imported yet: play the whole channel straight from YouTube.
-    else if (uploadsPlaylist) list.push({ key: "channel", label: "Everything", playlist: uploadsPlaylist, note: "Playing every upload from the channel, newest first. Use the playlist button inside the player to jump around." });
+    else if (uploadsPlaylist) list.push({ key: "channel", label: t("Everything"), playlist: uploadsPlaylist, note: t("Playing every upload from the channel, newest first. Use the playlist button inside the player to jump around.") });
     return list;
-  }, [videos, uploadsPlaylist, shortsPlaylist]);
+  }, [videos, uploadsPlaylist, shortsPlaylist, t]);
 
   const startIndex = startId ? videos.findIndex((v) => v.youtubeId === startId) : -1;
   const [channelKey, setChannelKey] = useState(
@@ -201,10 +203,10 @@ export function WatchTV({ videos, uploadsPlaylist, shortsPlaylist, channelUrl, s
             {!on && (
               <button type="button" onClick={() => setOn(true)} className="group absolute inset-0 flex flex-col items-center justify-center gap-4 bg-gradient-to-t from-black/80 via-black/30 to-black/10 text-ivory">
                 <span className="grid h-20 w-20 place-items-center rounded-full bg-ivory text-plum shadow-2xl transition group-hover:scale-105 sm:h-24 sm:w-24">
-                  <svg viewBox="0 0 24 24" className="ml-1 h-9 w-9" aria-hidden="true"><path d="M8 5.5v13a.8.8 0 0 0 1.2.7l10.3-6.5a.8.8 0 0 0 0-1.4L9.2 4.8A.8.8 0 0 0 8 5.5Z" fill="currentColor" /></svg>
+                  <svg viewBox="0 0 24 24" className="ms-1 h-9 w-9" aria-hidden="true"><path d="M8 5.5v13a.8.8 0 0 0 1.2.7l10.3-6.5a.8.8 0 0 0 0-1.4L9.2 4.8A.8.8 0 0 0 8 5.5Z" fill="currentColor" /></svg>
                 </span>
-                <span className="font-display text-2xl sm:text-3xl">Turn on Witchy TV</span>
-                <span className="max-w-xs text-center text-sm text-ivory/70">Videos play one after another. Nothing loads from YouTube until you press play.</span>
+                <span className="font-display text-2xl sm:text-3xl">{t("Turn on Witchy TV")}</span>
+                <span className="max-w-xs text-center text-sm text-ivory/70">{t("Videos play one after another. Nothing loads from YouTube until you press play.")}</span>
               </button>
             )}
           </div>
@@ -213,23 +215,23 @@ export function WatchTV({ videos, uploadsPlaylist, shortsPlaylist, channelUrl, s
         {/* NOW PLAYING + CONTROLS */}
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <span className="inline-flex items-center gap-2 rounded-full bg-blush-deep/20 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-blush">
-            <span className={`h-2 w-2 rounded-full bg-blush ${on ? "animate-pulse" : ""}`} aria-hidden /> {on ? "On air" : "Off air"}
+            <span className={`h-2 w-2 rounded-full bg-blush ${on ? "animate-pulse" : ""}`} aria-hidden /> {on ? t("On air") : t("Off air")}
           </span>
           <p className="min-w-0 flex-1 truncate font-display text-xl text-ivory sm:text-2xl" aria-live="polite">
-            {channel?.playlist ? nowTitle || `${channel.label} — playing in order` : current?.title ?? "No videos yet"}
+            {channel?.playlist ? nowTitle || t("{channel} — playing in order", { channel: channel.label }) : current?.title ?? t("No videos yet")}
           </p>
           <div className="flex items-center gap-2">
             {!channel?.playlist && (
               <>
-                <button type="button" onClick={() => { setOn(true); next(-1); }} className="grid h-11 w-11 place-items-center rounded-full bg-ivory/10 text-ivory hover:bg-ivory/20" aria-label="Previous video">
+                <button type="button" onClick={() => { setOn(true); next(-1); }} className="grid h-11 w-11 place-items-center rounded-full bg-ivory/10 text-ivory hover:bg-ivory/20" aria-label={t("Previous video")}>
                   <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true"><path d="M6 5v14M18 6 9 12l9 6V6Z" fill="currentColor" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /></svg>
                 </button>
-                <button type="button" onClick={() => { setOn(true); next(1); }} className="grid h-11 w-11 place-items-center rounded-full bg-ivory/10 text-ivory hover:bg-ivory/20" aria-label="Next video">
+                <button type="button" onClick={() => { setOn(true); next(1); }} className="grid h-11 w-11 place-items-center rounded-full bg-ivory/10 text-ivory hover:bg-ivory/20" aria-label={t("Next video")}>
                   <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true"><path d="M18 5v14M6 6l9 6-9 6V6Z" fill="currentColor" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /></svg>
                 </button>
-                <label className="ml-1 flex min-h-11 cursor-pointer items-center gap-2 rounded-full bg-ivory/10 px-4 text-sm text-ivory">
+                <label className="ms-1 flex min-h-11 cursor-pointer items-center gap-2 rounded-full bg-ivory/10 px-4 text-sm text-ivory">
                   <input type="checkbox" checked={autoplay} onChange={(e) => setAutoplay(e.target.checked)} className="h-4 w-4 accent-blush-deep" />
-                  Autoplay next
+                  {t("Autoplay next")}
                 </label>
               </>
             )}
@@ -242,7 +244,7 @@ export function WatchTV({ videos, uploadsPlaylist, shortsPlaylist, channelUrl, s
       </div>
 
       {/* CHANNELS */}
-      <nav ref={chipsRef} aria-label="Channels" className="no-scrollbar -mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
+      <nav ref={chipsRef} aria-label={t("Channels")} className="no-scrollbar -mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
         <ul className="flex gap-2">
           {channels.map((c) => (
             <li key={c.key}>
@@ -265,9 +267,9 @@ export function WatchTV({ videos, uploadsPlaylist, shortsPlaylist, channelUrl, s
           {channel.note}
         </p>
       ) : queue.length === 0 ? (
-        <p className="rounded-2xl bg-ivory/5 p-5 text-ivory/75">No videos in this channel yet.</p>
+        <p className="rounded-2xl bg-ivory/5 p-5 text-ivory/75">{t("No videos in this channel yet.")}</p>
       ) : (
-        <section aria-label="Programme guide">
+        <section aria-label={t("Programme guide")}>
           <h2 className="mb-4 text-xs font-medium uppercase tracking-[0.22em] text-ivory/60">Up next · {queue.length} video{queue.length === 1 ? "" : "s"}</h2>
           <ol className={`grid gap-x-4 gap-y-6 ${channel?.vertical ? "grid-cols-3 sm:grid-cols-4 lg:grid-cols-6" : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"}`}>
             {queue.slice(0, visible).map((v, i) => {
@@ -278,11 +280,11 @@ export function WatchTV({ videos, uploadsPlaylist, shortsPlaylist, channelUrl, s
                     <span className={`relative block overflow-hidden rounded-xl bg-plum ring-2 transition ${active ? "ring-blush" : "ring-transparent group-hover:ring-ivory/40"} ${v.kind === "short" ? (channel?.vertical ? "aspect-[9/16]" : "aspect-[4/5]") : "aspect-video"}`}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={thumb(v.youtubeId, v.kind === "short" ? "hqdefault" : "mqdefault")} alt="" loading="lazy" className="h-full w-full object-cover opacity-90 transition group-hover:scale-[1.03] group-hover:opacity-100" />
-                      <span className="absolute left-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-[0.65rem] uppercase tracking-wider text-ivory">{v.kind === "short" ? "Short" : "Episode"}</span>
-                      {active && on && <span className="absolute inset-x-0 bottom-0 bg-blush px-2 py-1 text-xs font-medium text-plum-deep">Now playing</span>}
+                      <span className="absolute start-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-[0.65rem] uppercase tracking-wider text-ivory">{v.kind === "short" ? t("Short") : t("Episode")}</span>
+                      {active && on && <span className="absolute inset-x-0 bottom-0 bg-blush px-2 py-1 text-xs font-medium text-plum-deep">{t("Now playing")}</span>}
                     </span>
                     <span className="mt-2 line-clamp-2 block text-sm leading-snug text-ivory">{channel?.key === "show" ? showTitle(v.title) : v.title}</span>
-                    {v.published && <span className="mt-0.5 block text-xs text-ivory/55">{fmt(v.published)}</span>}
+                    {v.published && <span className="mt-0.5 block text-xs text-ivory/55">{fmt(v.published, intl)}</span>}
                   </button>
                 </li>
               );
@@ -291,9 +293,9 @@ export function WatchTV({ videos, uploadsPlaylist, shortsPlaylist, channelUrl, s
           {visible < queue.length && (
             <div className="mt-10 flex flex-col items-center gap-2">
               <button type="button" onClick={() => setShown(visible + PAGE)} className="min-h-12 rounded-full border border-ivory/30 px-6 text-ivory/90 hover:border-ivory/70">
-                Show more
+                {t("Show more")}
               </button>
-              <p className="text-xs text-ivory/55">Showing {visible} of {queue.length}</p>
+              <p className="text-xs text-ivory/55">{t("Showing {n} of {total}", { n: visible, total: queue.length })}</p>
             </div>
           )}
         </section>

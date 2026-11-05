@@ -1,23 +1,30 @@
-import type { Metadata } from "next";
 import Link from "@/i18n/client";
-import { pageMeta } from "@/lib/seo";
+import { getReadings } from "@/i18n/readings";
+import { localeMeta } from "@/i18n/meta";
+import { msg } from "@/i18n/config";
 import { YourDay } from "@/components/stars/YourDay";
 
-export const metadata: Metadata = pageMeta({
-  title: "Your day in the stars",
-  description: "Your astrological day at a glance: today's Moon, your horoscope, love, work and energy ratings, and a small ritual from Yulia.",
-  path: "/today",
-});
+export async function generateMetadata() {
+  const rx = await getReadings();
+  return localeMeta({
+    title: rx.t("Your day in the stars"),
+    description: rx("Your astrological day at a glance: today's Moon, your horoscope, love, work and energy ratings, and a small ritual from Yulia."),
+    path: "/today",
+  });
+}
 
-export default function TodayPage() {
+const MORE = [["/horoscope", msg("All horoscopes")], ["/this-week-in-astrology", msg("This week in astrology")], ["/compatibility", msg("Compatibility")], ["/tarot", msg("Card of the day")], ["/moon/phases", msg("Moon phases")]];
+
+export default async function TodayPage() {
+  const { t } = await getReadings();
   return (
     <div className="min-h-[100svh] bg-plum-deep pt-24 pb-28 lg:pt-32">
       <div className="container-page max-w-3xl">
-        <h1 className="sr-only">Your day in the stars</h1>
+        <h1 className="sr-only">{t("Your day in the stars")}</h1>
         <YourDay light full />
-        <nav aria-label="More from the stars" className="mt-8 flex flex-wrap gap-2">
-          {[["/horoscope", "All horoscopes"], ["/this-week-in-astrology", "This week in astrology"], ["/compatibility", "Compatibility"], ["/tarot", "Card of the day"], ["/moon/phases", "Moon phases"]].map(([href, label]) => (
-            <Link key={href} href={href} className="rounded-full border border-ivory/30 px-4 py-2 text-sm text-ivory hover:bg-ivory/10">{label}</Link>
+        <nav aria-label={t("More from the stars")} className="mt-8 flex flex-wrap gap-2">
+          {MORE.map(([href, label]) => (
+            <Link key={href} href={href} className="rounded-full border border-ivory/30 px-4 py-2 text-sm text-ivory hover:bg-ivory/10">{t(label)}</Link>
           ))}
         </nav>
       </div>

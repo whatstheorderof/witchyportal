@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "@/i18n/client";
-import { useBarePath } from "@/i18n/client";
+import { useBarePath, useI18n } from "@/i18n/client";
 import type { DailyHoroscope } from "@/lib/astro/horoscope";
 import { getMySign, markSplashSeen, splashEnabled, splashSeenOn } from "@/lib/my-sign";
 import { DayCard } from "./DayCard";
@@ -17,6 +17,7 @@ export function DailySplash() {
   const [h, setH] = useState<DailyHoroscope | null>(null);
   const pathname = useBarePath();
   const closeRef = useRef<HTMLButtonElement>(null);
+  const { t, api } = useI18n();
 
   useEffect(() => {
     const sign = getMySign();
@@ -24,11 +25,11 @@ export function DailySplash() {
     if (!sign || !splashEnabled() || splashSeenOn() === today) return;
     if (pathname.startsWith("/today") || pathname.startsWith("/horoscope") || pathname.startsWith("/admin")) return;
     if (window.matchMedia("print").matches) return;
-    fetch(`/api/today?sign=${sign.toLowerCase()}`)
+    fetch(api(`/api/today?sign=${sign.toLowerCase()}`))
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => { if (d?.horoscope) { setH(d.horoscope); markSplashSeen(today); } })
       .catch(() => {});
-  }, [pathname]);
+  }, [pathname, api]);
 
   useEffect(() => {
     if (!h) return;
@@ -42,15 +43,15 @@ export function DailySplash() {
 
   if (!h) return null;
   return (
-    <div role="dialog" aria-modal="true" aria-label={`Your day, ${h.sign}`} className="fixed inset-0 z-[60] flex items-end justify-center bg-plum-deep/70 p-0 backdrop-blur-sm sm:items-center sm:p-6 print:hidden">
+    <div role="dialog" aria-modal="true" aria-label={t("Your day, {sign}", { sign: t(h.sign) })} className="fixed inset-0 z-[60] flex items-end justify-center bg-plum-deep/70 p-0 backdrop-blur-sm sm:items-center sm:p-6 print:hidden">
       <div className="reveal relative max-h-[100dvh] w-full max-w-xl overflow-y-auto rounded-t-[2rem] bg-plum-deep p-6 pb-10 text-ivory shadow-2xl sm:rounded-[2rem] sm:p-10">
-        <button ref={closeRef} type="button" onClick={() => setH(null)} aria-label="Close" className="absolute right-4 top-4 grid h-11 w-11 place-items-center rounded-full text-2xl text-ivory/80 hover:bg-ivory/10">×</button>
+        <button ref={closeRef} type="button" onClick={() => setH(null)} aria-label={t("Close")} className="absolute end-4 top-4 grid h-11 w-11 place-items-center rounded-full text-2xl text-ivory/80 hover:bg-ivory/10">×</button>
         <DayCard h={h} light compact link={false} />
         <div className="mt-6 flex flex-wrap gap-3">
-          <Link href={`/horoscope/${h.sign.toLowerCase()}`} onClick={() => setH(null)} className="btn-primary bg-ivory text-plum hover:bg-blush">My full horoscope</Link>
-          <button type="button" onClick={() => setH(null)} className="btn-outline border-ivory/40 text-ivory hover:bg-ivory/10">Enter Witchy Portal</button>
+          <Link href={`/horoscope/${h.sign.toLowerCase()}`} onClick={() => setH(null)} className="btn-primary bg-ivory text-plum hover:bg-blush">{t("My full horoscope")}</Link>
+          <button type="button" onClick={() => setH(null)} className="btn-outline border-ivory/40 text-ivory hover:bg-ivory/10">{t("Enter Witchy Portal")}</button>
         </div>
-        <p className="mt-4 text-xs text-ivory/60">You can switch this greeting off on your <Link href="/today" onClick={() => setH(null)} className="underline">Today</Link> page.</p>
+        <p className="mt-4 text-xs text-ivory/60">{t("You can switch this greeting off on your")} <Link href="/today" onClick={() => setH(null)} className="underline">{t("Today")}</Link> {t("page.")}</p>
       </div>
     </div>
   );

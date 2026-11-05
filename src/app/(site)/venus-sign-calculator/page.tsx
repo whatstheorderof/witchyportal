@@ -1,6 +1,6 @@
 import { CalcPage, calcMetadata } from "@/components/stars/CalcPage";
 
-export const metadata = calcMetadata("venus");
+export const generateMetadata = () => calcMetadata("venus");
 
 export default function Page() {
   return <CalcPage kind="venus" />;

@@ -2,6 +2,7 @@
 
 import type { TarotCard } from "@/lib/tarot";
 import { TarotBack, TarotFace } from "@/components/TarotCardView";
+import { useI18n } from "@/i18n/client";
 
 export const prefersReducedMotion = () =>
   typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -31,11 +32,12 @@ export function ShufflingDeck({ shuffling, count = 6, className = "" }: { shuffl
 
 /** A card that flips from its back to its face. */
 export function FlipCard({ card, reversed = false, flipped, className = "", compact = false }: { card: TarotCard; reversed?: boolean; flipped: boolean; className?: string; compact?: boolean }) {
+  const { t } = useI18n();
   return (
     <div aria-hidden className={`tarot-flip ${className}`}>
       <div className={`tarot-flip-inner ${flipped ? "is-flipped" : ""}`}>
         <div className="tarot-face"><TarotBack /></div>
-        <div className="tarot-face tarot-face-front"><TarotFace card={card} reversed={reversed} compact={compact} /></div>
+        <div className="tarot-face tarot-face-front"><TarotFace card={card} reversed={reversed} compact={compact} reversedLabel={t("Reversed")} /></div>
       </div>
     </div>
   );

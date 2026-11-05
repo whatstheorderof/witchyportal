@@ -23,6 +23,7 @@ import { CardSymbol } from "@/components/TarotCardView";
 import { MoonGlyph } from "@/components/MoonGlyph";
 import { YourDay } from "@/components/stars/YourDay";
 import { getI18n } from "@/i18n/server";
+import { getReadings } from "@/i18n/readings";
 import { localeMeta } from "@/i18n/meta";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -36,7 +37,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const [home, contact, { t, tc, date }] = await Promise.all([getSetting("home"), getSetting("contact"), getI18n()]);
+  const [home, contact, { t, tc, date }, rx] = await Promise.all([getSetting("home"), getSetting("contact"), getI18n(), getReadings()]);
   const dated = (d: Date | null | undefined) => (d ? date(d, { day: "numeric", month: "long" }) : "");
   const [retreats, highlights, astro, articles, shorts, latestVideos, pickedVideo, pickedArticle, pickedTip, latestTip] = await Promise.all([
     listRetreats(),
@@ -121,8 +122,8 @@ export default async function HomePage() {
           <span aria-hidden className="grid h-14 w-10 shrink-0 place-items-center rounded-md border-2 border-ivory bg-plum font-display text-2xl text-ivory shadow-(--shadow-soft)"><CardSymbol card={card} /></span>
           <span className="min-w-0">
             <span className="block text-[0.7rem] uppercase tracking-[0.2em] text-plum-soft">{t("Card of the day")}</span>
-            <span lang="en" className="block font-display text-xl leading-tight text-plum">{card.name}</span>
-            <span lang="en" className="block truncate text-sm text-muted">{card.keywords}</span>
+            <span lang={rx.lang} className="block font-display text-xl leading-tight text-plum">{rx(card.name)}</span>
+            <span lang={rx.lang} className="block truncate text-sm text-muted">{rx(card.keywords)}</span>
           </span>
           <ArrowRight className="ms-auto h-4 w-4 shrink-0 text-plum transition group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
         </Link>

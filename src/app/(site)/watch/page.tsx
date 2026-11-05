@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
-import { pageMeta } from "@/lib/seo";
+import { getI18n } from "@/i18n/server";
+import { localeMeta } from "@/i18n/meta";
 import Link from "@/i18n/client";
 import { listVideos } from "@/lib/queries";
 import { getSetting } from "@/lib/settings";
@@ -7,15 +7,18 @@ import { videoSeries } from "@/lib/youtube";
 import { WatchTV, type TVVideo } from "@/components/watch/WatchTV";
 import { MoonMark } from "@/components/Logo";
 
-export const metadata: Metadata = pageMeta({
-  title: "Watch — Witchy TV",
-  description: "Watch every Yulia Moon video in one place: Ask a Witch, The Yulia Moon Show, tarot readings, moon rituals and Shorts, playing one after another.",
-  path: "/watch",
-});
+export async function generateMetadata() {
+  const { t } = await getI18n();
+  return localeMeta({
+    title: t("Watch — Witchy TV"),
+    description: t("Watch every Yulia Moon video in one place: Ask a Witch, The Yulia Moon Show, tarot readings, moon rituals and Shorts, playing one after another."),
+    path: "/watch",
+  });
+}
 
 export default async function WatchPage({ searchParams }: { searchParams: Promise<{ v?: string; channel?: string }> }) {
   const { v: startId, channel: startChannel } = await searchParams;
-  const [rows, yt] = await Promise.all([listVideos({ limit: 3000 }), getSetting("youtube")]);
+  const [rows, yt, { t }] = await Promise.all([listVideos({ limit: 3000 }), getSetting("youtube"), getI18n()]);
   const videos: TVVideo[] = rows
     .map((v) => ({
       youtubeId: v.youtubeId,
@@ -39,12 +42,13 @@ export default async function WatchPage({ searchParams }: { searchParams: Promis
         <header className="flex flex-wrap items-end justify-between gap-4 py-6 lg:py-8">
           <div>
             <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.25em] text-blush"><MoonMark className="h-4 w-4" />Witchy TV</p>
-            <h1 className="mt-2 font-display text-4xl text-ivory sm:text-5xl">Watch Yulia</h1>
-            <p className="mt-2 max-w-xl text-ivory/70">Ask a Witch, The Yulia Moon Show, tarot readings, moon rituals and Shorts — all of Yulia&rsquo;s videos, playing one after another.</p>
+            <h1 className="mt-2 font-display text-4xl text-ivory sm:text-5xl">{t("Watch Yulia")}</h1>
+            <p className="mt-2 max-w-xl text-ivory/70">{t("Ask a Witch, The Yulia Moon Show, tarot readings, moon rituals and Shorts — all of Yulia’s videos, playing one after another.")}</p>
+            <p className="mt-1 text-sm text-ivory/55">{t("Videos are in English.")}</p>
           </div>
           <div className="flex gap-2 text-sm">
-            <Link href="/ask-a-witch" className="rounded-full border border-ivory/25 px-4 py-2.5 text-ivory/85 hover:border-ivory/60">Browse Ask a Witch</Link>
-            {yt.channelUrl && <a href={`${yt.channelUrl}?sub_confirmation=1`} target="_blank" rel="noopener noreferrer" className="rounded-full bg-ivory px-4 py-2.5 font-medium text-plum hover:bg-white">Subscribe ↗</a>}
+            <Link href="/ask-a-witch" className="rounded-full border border-ivory/25 px-4 py-2.5 text-ivory/85 hover:border-ivory/60">{t("Browse Ask a Witch")}</Link>
+            {yt.channelUrl && <a href={`${yt.channelUrl}?sub_confirmation=1`} target="_blank" rel="noopener noreferrer" className="rounded-full bg-ivory px-4 py-2.5 font-medium text-plum hover:bg-white">{t("Subscribe")} ↗</a>}
           </div>
         </header>
         <WatchTV videos={videos} uploadsPlaylist={uploadsPlaylist} shortsPlaylist={shortsPlaylist} channelUrl={yt.channelUrl} startId={startId} startChannel={startChannel} />

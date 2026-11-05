@@ -3,13 +3,15 @@
 import { useState } from "react";
 import { MoonGlyph } from "@/components/MoonGlyph";
 import type { KeyDate, KeyKind } from "@/lib/astro/calendar";
+import { useI18n } from "@/i18n/client";
+import { msg } from "@/i18n/config";
 
 const FILTERS: { key: string; label: string; kinds: KeyKind[] }[] = [
-  { key: "all", label: "Everything", kinds: [] },
-  { key: "moons", label: "New & full moons", kinds: ["new-moon", "full-moon"] },
-  { key: "eclipses", label: "Eclipses", kinds: ["lunar-eclipse", "solar-eclipse"] },
-  { key: "wheel", label: "Sabbats & seasons", kinds: ["sabbat", "season"] },
-  { key: "retro", label: "Retrogrades", kinds: ["retrograde"] },
+  { key: "all", label: msg("Everything"), kinds: [] },
+  { key: "moons", label: msg("New & full moons"), kinds: ["new-moon", "full-moon"] },
+  { key: "eclipses", label: msg("Eclipses"), kinds: ["lunar-eclipse", "solar-eclipse"] },
+  { key: "wheel", label: msg("Sabbats & seasons"), kinds: ["sabbat", "season"] },
+  { key: "retro", label: msg("Retrogrades"), kinds: ["retrograde"] },
 ];
 
 /** Key date with its display text already formatted on the server (avoids hydration differences). */
@@ -31,6 +33,7 @@ function Icon({ kind }: { kind: KeyKind }) {
 
 export function KeyDates({ dates, now }: { dates: ShownKeyDate[]; now: string }) {
   const [filter, setFilter] = useState("all");
+  const { t, rlang } = useI18n();
   const f = FILTERS.find((x) => x.key === filter)!;
   const list = dates.filter((d) => !f.kinds.length || f.kinds.includes(d.kind));
   const nextId = list.find((d) => (d.end ?? d.start) >= now)?.id;
@@ -43,16 +46,16 @@ export function KeyDates({ dates, now }: { dates: ShownKeyDate[]; now: string })
 
   return (
     <div>
-      <div role="group" aria-label="Show" className="no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5 sm:mx-0 sm:flex-wrap sm:px-0">
+      <div role="group" aria-label={t("Show")} className="no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5 sm:mx-0 sm:flex-wrap sm:px-0">
         {FILTERS.map((x) => (
           <button key={x.key} type="button" aria-pressed={filter === x.key} onClick={() => setFilter(x.key)} className="chip min-h-11 shrink-0 whitespace-nowrap aria-pressed:border-plum aria-pressed:bg-plum aria-pressed:text-ivory">
-            {x.label}
+            {t(x.label)}
           </button>
         ))}
       </div>
 
       {groups.length === 0 ? (
-        <p className="mt-8 text-muted">Nothing of this kind this year.</p>
+        <p className="mt-8 text-muted">{t("Nothing of this kind this year.")}</p>
       ) : (
         <div className="mt-8 grid gap-10">
           {groups.map(([month, items]) => (
@@ -68,14 +71,14 @@ export function KeyDates({ dates, now }: { dates: ShownKeyDate[]; now: string })
                       <div className="min-w-0">
                         <p className="text-sm text-muted">
                           {d.when}
-                          {isNext && <span className="ml-2 rounded-full bg-plum px-2 py-0.5 text-[0.7rem] font-medium uppercase tracking-wider text-ivory">Next</span>}
-                          {past && <span className="ml-2 rounded-full border border-line px-2 py-0.5 text-[0.7rem] uppercase tracking-wider text-ink/75">Passed</span>}
+                          {isNext && <span className="ms-2 rounded-full bg-plum px-2 py-0.5 text-[0.7rem] font-medium uppercase tracking-wider text-ivory">{t("Next")}</span>}
+                          {past && <span className="ms-2 rounded-full border border-line px-2 py-0.5 text-[0.7rem] uppercase tracking-wider text-ink/75">{t("Passed")}</span>}
                         </p>
                         <p className="mt-1 font-display text-2xl leading-snug text-plum">{d.title}</p>
-                        <p className="mt-1 text-[0.95rem] text-ink/80">{d.detail}</p>
+                        <p lang={rlang} className="mt-1 text-[0.95rem] text-ink/80">{d.detail}</p>
                         {d.tags.length > 0 && (
                           <p className="mt-2 flex flex-wrap gap-1.5">
-                            {d.tags.map((t) => <span key={t} className="rounded-full bg-lavender/60 px-2.5 py-0.5 text-xs text-plum">{t}</span>)}
+                            {d.tags.map((x) => <span key={x} className="rounded-full bg-lavender/60 px-2.5 py-0.5 text-xs text-plum">{x}</span>)}
                           </p>
                         )}
                       </div>

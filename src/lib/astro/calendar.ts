@@ -5,6 +5,8 @@
 import * as Astronomy from "astronomy-engine";
 import { signOf, type Sign } from "./types";
 import { FULL_MOON_NAMES } from "./moon";
+import { msg, prose } from "@/i18n/config";
+import { RX_EN, type Rx } from "@/i18n/readings";
 
 export const CAL_TZ = "Europe/London";
 const LONDON = new Astronomy.Observer(51.5074, -0.1278, 11);
@@ -34,6 +36,8 @@ export interface KeyDate {
   title: string;
   detail: string;
   tags: string[];
+  /** Retrogrades: the planet */
+  planet?: string;
 }
 
 const moonSign = (t: Astronomy.AstroTime) => signOf(Astronomy.EclipticGeoMoon(t).lon).sign;
@@ -72,14 +76,14 @@ export function yearMoons(year: number): MonthMoons[] {
 /* ------------------------------------------------------------------ */
 
 const SIGN_THEMES: Record<Sign, string> = {
-  Aries: "courage and fresh starts", Taurus: "comfort, money and the body", Gemini: "words, learning and connection",
-  Cancer: "home, family and feelings", Leo: "joy, confidence and creativity", Virgo: "health, routine and order",
-  Libra: "love, balance and beauty", Scorpio: "depth, desire and transformation", Sagittarius: "adventure, faith and freedom",
-  Capricorn: "ambition, structure and commitment", Aquarius: "friendship, ideas and change", Pisces: "dreams, intuition and healing",
+  Aries: prose("courage and fresh starts"), Taurus: prose("comfort, money and the body"), Gemini: prose("words, learning and connection"),
+  Cancer: prose("home, family and feelings"), Leo: prose("joy, confidence and creativity"), Virgo: prose("health, routine and order"),
+  Libra: prose("love, balance and beauty"), Scorpio: prose("depth, desire and transformation"), Sagittarius: prose("adventure, faith and freedom"),
+  Capricorn: prose("ambition, structure and commitment"), Aquarius: prose("friendship, ideas and change"), Pisces: prose("dreams, intuition and healing"),
 };
 
-const LUNAR_KIND: Record<string, string> = { penumbral: "Penumbral", partial: "Partial", total: "Total" };
-const SOLAR_KIND: Record<string, string> = { partial: "Partial", annular: "Annular", total: "Total", hybrid: "Hybrid" };
+const LUNAR_KIND: Record<string, string> = { penumbral: msg("Penumbral lunar eclipse"), partial: msg("Partial lunar eclipse"), total: msg("Total lunar eclipse") };
+const SOLAR_KIND: Record<string, string> = { partial: msg("Partial solar eclipse"), annular: msg("Annular solar eclipse"), total: msg("Total solar eclipse"), hybrid: msg("Hybrid solar eclipse") };
 
 /** Planet's apparent geocentric ecliptic longitude */
 function elon(body: Astronomy.Body, d: Date) {
@@ -115,12 +119,13 @@ function retrogrades(body: Astronomy.Body, year: number) {
 }
 
 const RETRO_NOTES: Partial<Record<Astronomy.Body, string>> = {
-  [Astronomy.Body.Mercury]: "Slow down with contracts, travel and tech. A beautiful time to review, rewrite and reconnect with old friends.",
-  [Astronomy.Body.Venus]: "Love and money ask to be re-examined. Old flames may resurface — reflect before you leap into anything new.",
-  [Astronomy.Body.Mars]: "Energy turns inward. Rest rather than push, and revisit goals before charging ahead.",
+  [Astronomy.Body.Mercury]: prose("Slow down with contracts, travel and tech. A beautiful time to review, rewrite and reconnect with old friends."),
+  [Astronomy.Body.Venus]: prose("Love and money ask to be re-examined. Old flames may resurface — reflect before you leap into anything new."),
+  [Astronomy.Body.Mars]: prose("Energy turns inward. Rest rather than push, and revisit goals before charging ahead."),
 };
 
-export function keyDates(year: number): KeyDate[] {
+export function keyDates(year: number, rx: Rx = RX_EN): KeyDate[] {
+  const t = rx.t, S = (x: string) => rx.t(x);
   const y0 = new Date(Date.UTC(year, 0, 1)), y1 = new Date(Date.UTC(year + 1, 0, 1));
   const inYear = (d: Date) => ukDay(d).startsWith(String(year));
   const out: KeyDate[] = [];
@@ -131,29 +136,29 @@ export function keyDates(year: number): KeyDate[] {
     if (!inYear(e.peak.date)) continue;
     const eq = Astronomy.Equator(Astronomy.Body.Moon, e.peak, LONDON, true, true);
     const alt = Astronomy.Horizon(e.peak, LONDON, eq.ra, eq.dec, "normal").altitude;
-    const kind = LUNAR_KIND[e.kind] ?? "Lunar";
-    eclipseDays.set(ukDay(e.peak.date), `${kind} lunar eclipse`);
+    const kind = t(LUNAR_KIND[e.kind] ?? "Lunar eclipse");
+    eclipseDays.set(ukDay(e.peak.date), kind);
     out.push({
       id: `lunar-${ukDay(e.peak.date)}`, kind: "lunar-eclipse", start: e.peak.date.toISOString(),
-      title: `${kind} lunar eclipse in ${moonSign(e.peak)}`,
-      detail: `A full moon eclipse — powerful for endings and emotional release. Skip big manifesting; let go instead. ${alt > 0 ? "The Moon is above the horizon in the UK at its peak." : "Not visible from the UK — the Moon is below the horizon at its peak."}`,
-      tags: [alt > 0 ? "Visible from the UK" : "Not visible from the UK"],
+      title: t("{eclipse} in {sign}", { eclipse: kind, sign: S(moonSign(e.peak)) }),
+      detail: `${rx("A full moon eclipse — powerful for endings and emotional release. Skip big manifesting; let go instead.")} ${alt > 0 ? rx("The Moon is above the horizon in the UK at its peak.") : rx("Not visible from the UK — the Moon is below the horizon at its peak.")}`,
+      tags: [alt > 0 ? t("Visible from the UK") : t("Not visible from the UK")],
     });
   }
   for (let e = Astronomy.SearchGlobalSolarEclipse(Astronomy.MakeTime(new Date(+y0 - 20 * 86400000))); e.peak.date < y1; e = Astronomy.NextGlobalSolarEclipse(e.peak)) {
     if (!inYear(e.peak.date)) continue;
-    const kind = SOLAR_KIND[e.kind] ?? "Solar";
+    const kind = t(SOLAR_KIND[e.kind] ?? "Solar eclipse");
     let uk = "";
     try {
       const local = Astronomy.SearchLocalSolarEclipse(Astronomy.MakeTime(new Date(+e.peak.date - 2 * 86400000)), LONDON);
-      if (Math.abs(+local.peak.time.date - +e.peak.date) < 86400000 && local.peak.altitude > 0) uk = `About ${Math.round(local.obscuration * 100)}% of the Sun is covered from London.`;
+      if (Math.abs(+local.peak.time.date - +e.peak.date) < 86400000 && local.peak.altitude > 0) uk = rx.fill("About {pct}% of the Sun is covered from London.", { pct: Math.round(local.obscuration * 100) });
     } catch { /* not visible */ }
-    eclipseDays.set(ukDay(e.peak.date), `${kind} solar eclipse`);
+    eclipseDays.set(ukDay(e.peak.date), kind);
     out.push({
       id: `solar-${ukDay(e.peak.date)}`, kind: "solar-eclipse", start: e.peak.date.toISOString(),
-      title: `${kind} solar eclipse in ${signOf(Astronomy.EclipticGeoMoon(e.peak).lon).sign}`,
-      detail: `A supercharged new moon — doors open suddenly. Notice what begins now rather than forcing it. ${uk || "Not visible from the UK."} Never look at the Sun directly.`,
-      tags: [uk ? "Visible from the UK" : "Not visible from the UK"],
+      title: t("{eclipse} in {sign}", { eclipse: kind, sign: S(signOf(Astronomy.EclipticGeoMoon(e.peak).lon).sign) }),
+      detail: `${rx("A supercharged new moon — doors open suddenly. Notice what begins now rather than forcing it.")} ${uk || t("Not visible from the UK.")} ${rx("Never look at the Sun directly.")}`,
+      tags: [uk ? t("Visible from the UK") : t("Not visible from the UK")],
     });
   }
 
@@ -166,45 +171,45 @@ export function keyDates(year: number): KeyDate[] {
     // An eclipse on the same day already stands for this new/full moon — merge into it.
     const eclipse = eclipseDays.has(day) ? out.find((e) => e.kind.endsWith("eclipse") && ukDay(new Date(e.start)) === day) : undefined;
     if (q.kind === "new") {
-      if (eclipse) { eclipse.title += ` · New Moon`; continue; }
-      out.push({ id: `new-${day}`, kind: "new-moon", start: q.time.toISOString(), title: `New Moon in ${q.sign}`, detail: `Plant intentions around ${SIGN_THEMES[q.sign]}.`, tags });
+      if (eclipse) { eclipse.title += ` · ${t("New Moon")}`; continue; }
+      out.push({ id: `new-${day}`, kind: "new-moon", start: q.time.toISOString(), title: t("New Moon in {sign}", { sign: S(q.sign) }), detail: rx.fill("Plant intentions around {themes}.", { themes: rx(SIGN_THEMES[q.sign]) }), tags });
     } else {
       const month = day.slice(0, 7);
       const nth = (fullsPerMonth.get(month) ?? 0) + 1;
       fullsPerMonth.set(month, nth);
       const km = Astronomy.GeoMoon(Astronomy.MakeTime(q.time)).Length() * Astronomy.KM_PER_AU;
-      if (km < 362000) tags.push("Supermoon");
-      if (nth === 2) tags.push("Blue Moon");
+      if (km < 362000) tags.push(t("Supermoon"));
+      if (nth === 2) tags.push(t("Blue Moon"));
       const name = nth === 2 ? "Blue Moon" : FULL_MOON_NAMES[Number(day.slice(5, 7)) - 1];
-      if (eclipse) { eclipse.title += ` · ${name}`; eclipse.tags.push(...tags); continue; }
-      out.push({ id: `full-${day}`, kind: "full-moon", start: q.time.toISOString(), title: `Full ${name.replace(/ Moon$/, "")} Moon in ${q.sign}`, detail: `Release and give thanks — a peak for ${SIGN_THEMES[q.sign]}. Leave water out to charge overnight.`, tags });
+      if (eclipse) { eclipse.title += ` · ${t(name)}`; eclipse.tags.push(...tags); continue; }
+      out.push({ id: `full-${day}`, kind: "full-moon", start: q.time.toISOString(), title: t("Full {name} in {sign}", { name: rx.locale === "en" ? name : t(name), sign: S(q.sign) }), detail: rx.fill("Release and give thanks — a peak for {themes}. Leave water out to charge overnight.", { themes: rx(SIGN_THEMES[q.sign]) }), tags });
     }
   }
 
   // Equinoxes, solstices and the Wheel of the Year
   const s = Astronomy.Seasons(year);
   const seasons: [Astronomy.AstroTime, string, string][] = [
-    [s.mar_equinox, "Ostara · Spring equinox", "Day and night in balance. Plant seeds — literally or in your journal — and welcome new growth."],
-    [s.jun_solstice, "Litha · Summer solstice", "The longest day. Celebrate your light, gather herbs and dance in the sun."],
-    [s.sep_equinox, "Mabon · Autumn equinox", "The second harvest. Give thanks, share abundance and find balance before the dark half of the year."],
-    [s.dec_solstice, "Yule · Winter solstice", "The longest night and the return of the light. Rest, light candles and dream up the year ahead."],
+    [s.mar_equinox, msg("Ostara · Spring equinox"), prose("Day and night in balance. Plant seeds — literally or in your journal — and welcome new growth.")],
+    [s.jun_solstice, msg("Litha · Summer solstice"), prose("The longest day. Celebrate your light, gather herbs and dance in the sun.")],
+    [s.sep_equinox, msg("Mabon · Autumn equinox"), prose("The second harvest. Give thanks, share abundance and find balance before the dark half of the year.")],
+    [s.dec_solstice, msg("Yule · Winter solstice"), prose("The longest night and the return of the light. Rest, light candles and dream up the year ahead.")],
   ];
-  for (const [t, title, detail] of seasons) out.push({ id: `season-${ukDay(t.date)}`, kind: "season", start: t.date.toISOString(), title, detail, tags: ["Wheel of the Year"] });
+  for (const [at, title, detail] of seasons) out.push({ id: `season-${ukDay(at.date)}`, kind: "season", start: at.date.toISOString(), title: t(title), detail: rx(detail), tags: [t("Wheel of the Year")] });
   const sabbats: [number, number, string, string][] = [
-    [1, 1, "Imbolc", "First stirrings of spring. Cleanse your space, light a candle and honour new beginnings."],
-    [4, 1, "Beltane", "Fire, passion and fertility. Celebrate life, love and creativity — flowers and bonfires welcome."],
-    [7, 1, "Lammas · Lughnasadh", "The first harvest. Bake bread, give thanks and notice what you've grown this year."],
-    [9, 31, "Samhain", "The witches' new year, when the veil is thin. Honour your ancestors and reflect on what's ending."],
+    [1, 1, "Imbolc", prose("First stirrings of spring. Cleanse your space, light a candle and honour new beginnings.")],
+    [4, 1, "Beltane", prose("Fire, passion and fertility. Celebrate life, love and creativity — flowers and bonfires welcome.")],
+    [7, 1, "Lammas · Lughnasadh", prose("The first harvest. Bake bread, give thanks and notice what you've grown this year.")],
+    [9, 31, "Samhain", prose("The witches' new year, when the veil is thin. Honour your ancestors and reflect on what's ending.")],
   ];
-  for (const [m, d, title, detail] of sabbats) out.push({ id: `sabbat-${m}-${d}`, kind: "sabbat", start: new Date(Date.UTC(year, m, d, 12)).toISOString(), title, detail, tags: ["Wheel of the Year", "Traditional date"] });
+  for (const [m, d, title, detail] of sabbats) out.push({ id: `sabbat-${m}-${d}`, kind: "sabbat", start: new Date(Date.UTC(year, m, d, 12)).toISOString(), title, detail: rx(detail), tags: [t("Wheel of the Year"), t("Traditional date")] });
 
   // Retrogrades
   for (const [body, name] of [[Astronomy.Body.Mercury, "Mercury"], [Astronomy.Body.Venus, "Venus"], [Astronomy.Body.Mars, "Mars"]] as const) {
     for (const p of retrogrades(body, year)) {
       const from = signOf(elon(body, p.from)).sign, to = signOf(elon(body, p.to)).sign;
       out.push({
-        id: `retro-${name}-${ukDay(p.from)}`, kind: "retrograde", start: p.from.toISOString(), end: p.to.toISOString(),
-        title: `${name} retrograde in ${from === to ? from : `${from} → ${to}`}`, detail: RETRO_NOTES[body] ?? "", tags: [],
+        id: `retro-${name}-${ukDay(p.from)}`, kind: "retrograde", start: p.from.toISOString(), end: p.to.toISOString(), planet: name,
+        title: t("{planet} retrograde in {sign}", { planet: S(name), sign: from === to ? S(from) : `${S(from)} → ${S(to)}` }), detail: rx(RETRO_NOTES[body] ?? ""), tags: [],
       });
     }
   }

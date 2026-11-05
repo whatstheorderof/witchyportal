@@ -6,6 +6,8 @@ import "server-only";
 import type { AspectFactor, BodyName, ChartResult, Element, Modality, Sign } from "./types";
 import type { AspectReading, FactorSection, HouseSection, NatalReport, Reading } from "./report-types";
 import { formatDegree } from "./types";
+import { msg, prose } from "@/i18n/config";
+import { RX_EN, type Rx } from "@/i18n/readings";
 import { pairKey, type Factor, type HouseText, type SignText, type SignTextWithShort } from "./text/types";
 import { SUN_IN_SIGN } from "./text/sun";
 import { MOON_IN_SIGN } from "./text/moon";
@@ -28,22 +30,21 @@ import { ASCENDANT_IN_SIGN, HOUSE_INTRO, MIDHEAVEN_IN_SIGN } from "./text/angles
 import { SIGN_ON_CUSP } from "./text/cusps";
 
 const paras = (t: string) => t.split(/\n\s*\n/).map((p) => p.replace(/\s+/g, " ").trim()).filter(Boolean);
-const ordinal = (n: number) => `${n}${n === 1 ? "st" : n === 2 ? "nd" : n === 3 ? "rd" : "th"}`;
 
 /** What each planet or point represents — the opening line of its section. */
 export const FACTOR_INTRO: Record<BodyName, string> = {
-  Sun: "The Sun is your core self: your vitality, purpose and the light you are here to grow into. It is the sign most people know as their star sign.",
-  Moon: "The Moon is your emotional body: your instincts, moods and needs, what comforts you and how you look after yourself and others.",
-  Mercury: "Mercury is your mind and voice: how you think, learn, speak, listen and make sense of the world.",
-  Venus: "Venus is love, pleasure and value: how you attract and relate, what you find beautiful, and what you treasure.",
-  Mars: "Mars is your drive: desire, courage, anger and the way you go after what you want.",
-  Jupiter: "Jupiter is expansion and grace: where you grow, find meaning and faith, and where life tends to open doors.",
-  Saturn: "Saturn is structure and time: your lessons, responsibilities and fears, and the mastery you build slowly over a lifetime.",
-  Uranus: "Uranus is awakening: freedom, originality and sudden change. Because it stays in a sign for about seven years, its sign is shared by your generation; its house shows where it touches you personally.",
-  Neptune: "Neptune is the dream: imagination, compassion, spirituality and the longing for something beyond the everyday. Its sign is generational; its house is personal.",
-  Pluto: "Pluto is depth and transformation: power, what must be released, and how you are reborn through change. Its sign is generational; its house is personal.",
-  "North Node": "The Moon's Nodes are the axis of your soul's journey. The South Node is the familiar, well-worn path you come in with; the North Node, directly opposite, is the direction of growth that feels new and stretching.",
-  Lilith: "Black Moon Lilith (the Moon's mean apogee) is your wild, unapologetic side: what you were told was \"too much\", where you refuse to be tamed, and the power that comes from reclaiming it.",
+  Sun: prose("The Sun is your core self: your vitality, purpose and the light you are here to grow into. It is the sign most people know as their star sign."),
+  Moon: prose("The Moon is your emotional body: your instincts, moods and needs, what comforts you and how you look after yourself and others."),
+  Mercury: prose("Mercury is your mind and voice: how you think, learn, speak, listen and make sense of the world."),
+  Venus: prose("Venus is love, pleasure and value: how you attract and relate, what you find beautiful, and what you treasure."),
+  Mars: prose("Mars is your drive: desire, courage, anger and the way you go after what you want."),
+  Jupiter: prose("Jupiter is expansion and grace: where you grow, find meaning and faith, and where life tends to open doors."),
+  Saturn: prose("Saturn is structure and time: your lessons, responsibilities and fears, and the mastery you build slowly over a lifetime."),
+  Uranus: prose("Uranus is awakening: freedom, originality and sudden change. Because it stays in a sign for about seven years, its sign is shared by your generation; its house shows where it touches you personally."),
+  Neptune: prose("Neptune is the dream: imagination, compassion, spirituality and the longing for something beyond the everyday. Its sign is generational; its house is personal."),
+  Pluto: prose("Pluto is depth and transformation: power, what must be released, and how you are reborn through change. Its sign is generational; its house is personal."),
+  "North Node": prose("The Moon's Nodes are the axis of your soul's journey. The South Node is the familiar, well-worn path you come in with; the North Node, directly opposite, is the direction of growth that feels new and stretching."),
+  Lilith: prose("Black Moon Lilith (the Moon's mean apogee) is your wild, unapologetic side: what you were told was \"too much\", where you refuse to be tamed, and the power that comes from reclaiming it."),
 };
 
 const IN_SIGN: Partial<Record<BodyName, SignTextWithShort | SignText>> = {
@@ -58,22 +59,23 @@ const IN_HOUSE: Partial<Record<BodyName, HouseText>> = {
 const ASPECT_TEXT = { ...ASPECTS_1, ...ASPECTS_2, ...ASPECTS_3, ...POINT_ASPECTS };
 const ASPECT_WORD = { conjunction: "conjunct", sextile: "sextile", square: "square", trine: "trine", opposition: "opposite" } as const;
 
-function signReading(body: BodyName, sign: Sign, headingName = body): Reading | null {
+function signReading(rx: Rx, body: BodyName, sign: Sign): Reading | null {
   const entry = IN_SIGN[body]?.[sign];
   if (!entry) return null;
-  const heading = `${headingName} in ${sign}`;
+  const heading = rx.t("{body} in {sign}", { body: rx.t(body), sign: rx.t(sign) });
   return typeof entry === "string" ? { heading, paragraphs: paras(entry) } : { heading, paragraphs: paras(entry.text), short: entry.short };
 }
 
-function aspectReading(a: AspectFactor, b: AspectFactor, type: keyof typeof ASPECT_WORD, orb: number, strength: number): AspectReading | null {
+function aspectReading(rx: Rx, a: AspectFactor, b: AspectFactor, type: keyof typeof ASPECT_WORD, orb: number, strength: number): AspectReading | null {
   const pair = ASPECT_TEXT[pairKey(a as Factor, b as Factor)];
   if (!pair) return null;
   const text = type === "conjunction" ? pair.conjunction : type === "square" ? pair.square : type === "opposition" ? pair.opposition : pair.harmonious;
   const [first, second] = pairKey(a as Factor, b as Factor).split("|");
-  return { a, b, type, orb, strength, heading: `${first} ${ASPECT_WORD[type]} ${second}`, paragraphs: paras(text) };
+  return { a, b, type, orb, strength, heading: rx.t(`{a} ${ASPECT_WORD[type]} {b}`, { a: rx.t(first), b: rx.t(second) }), paragraphs: paras(text) };
 }
 
-export function buildReport(chart: ChartResult): NatalReport {
+export function buildReport(chart: ChartResult, rx: Rx = RX_EN): NatalReport {
+  const t = rx.t, S = (x: string) => rx.t(x);
   const get = (b: BodyName) => chart.placements.find((p) => p.body === b)!;
   const asc = chart.angles.find((a) => a.name === "Ascendant");
   const mc = chart.angles.find((a) => a.name === "Midheaven");
@@ -82,41 +84,41 @@ export function buildReport(chart: ChartResult): NatalReport {
   const aspectsFor = (factor: AspectFactor) =>
     chart.aspects
       .filter((x) => pairKey(x.a as Factor, x.b as Factor).split("|")[0] === factor)
-      .map((x) => aspectReading(x.a, x.b, x.type, x.orb, x.strength))
+      .map((x) => aspectReading(rx, x.a, x.b, x.type, x.orb, x.strength))
       .filter(Boolean) as AspectReading[];
 
   const section = (body: BodyName, id: string): FactorSection => {
     const p = get(body);
     const signs = p.signUncertain && p.possibleSigns ? p.possibleSigns : [p.sign];
-    const sign = signs.map((s) => signReading(body, s)).filter(Boolean) as Reading[];
+    const sign = signs.map((s) => signReading(rx, body, s)).filter(Boolean) as Reading[];
     const houseText = p.house ? IN_HOUSE[body]?.[p.house - 1] : null;
     return {
       id,
       factor: body,
       intro: FACTOR_INTRO[body],
       sign,
-      house: houseText && p.house ? { heading: `${body} in the ${ordinal(p.house)} house`, paragraphs: paras(houseText) } : null,
+      house: houseText && p.house ? { heading: t("{body} in the {ord} house", { body: S(body), ord: rx.ord(p.house), n: p.house }), paragraphs: paras(houseText) } : null,
       aspects: aspectsFor(body),
     };
   };
 
   const planets = (["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"] as BodyName[]).map((b) => section(b, b.toLowerCase()));
   const node = section("North Node", "nodes");
-  node.sign = node.sign.map((r) => ({ ...r, heading: `${r.heading} · South Node in ${chart.points.find((x) => x.name === "South Node")?.sign ?? ""}` }));
+  node.sign = node.sign.map((r) => ({ ...r, heading: t("{heading} · South Node in {sign}", { heading: r.heading, sign: S(chart.points.find((x) => x.name === "South Node")?.sign ?? "") }) }));
   const points = [node, section("Lilith", "lilith")];
 
   const pof = chart.points.find((x) => x.name === "Part of Fortune");
   const fortune = pof
     ? {
-        sign: { heading: `Part of Fortune in ${pof.sign}`, paragraphs: paras(FORTUNE_IN_SIGN[pof.sign]) },
-        house: pof.house ? { heading: `Part of Fortune in the ${ordinal(pof.house)} house`, paragraphs: paras(FORTUNE_IN_HOUSE[pof.house - 1]) } : null,
+        sign: { heading: t("Part of Fortune in {sign}", { sign: S(pof.sign) }), paragraphs: paras(FORTUNE_IN_SIGN[pof.sign]) },
+        house: pof.house ? { heading: t("Part of Fortune in the {ord} house", { ord: rx.ord(pof.house), n: pof.house }), paragraphs: paras(FORTUNE_IN_HOUSE[pof.house - 1]) } : null,
       }
     : null;
 
   const sun = get("Sun"), moon = get("Moon");
   const bigThree: NatalReport["bigThree"] = [
     { factor: "Sun", sign: sun.sign, short: SUN_IN_SIGN[sun.sign].short },
-    { factor: "Moon", sign: moon.signUncertain && moon.possibleSigns ? moon.possibleSigns.join(" or ") : moon.sign, short: moon.signUncertain ? "The Moon changed sign on your birth day, so it depends on your birth time." : MOON_IN_SIGN[moon.sign].short },
+    { factor: "Moon", sign: moon.signUncertain && moon.possibleSigns ? moon.possibleSigns.map(S).join(t(" or ")) : moon.sign, short: moon.signUncertain ? rx("The Moon changed sign on your birth day, so it depends on your birth time.") : MOON_IN_SIGN[moon.sign].short },
   ];
   if (asc) bigThree.push({ factor: "Ascendant", sign: asc.sign, short: ASCENDANT_IN_SIGN[asc.sign].short });
 
@@ -130,8 +132,8 @@ export function buildReport(chart: ChartResult): NatalReport {
           house: n,
           cuspSign: sign,
           cuspDegree: cusp % 30,
-          intro: paras(HOUSE_INTRO[i]).join(" "),
-          cusp: text ? { heading: `${sign} on the ${ordinal(n)} house cusp`, paragraphs: paras(text) } : null,
+          intro: paras(rx(HOUSE_INTRO[i])).join(" "),
+          cusp: text ? { heading: t("{sign} on the {ord} house cusp", { sign: S(sign), ord: rx.ord(n), n }), paragraphs: paras(text) } : null,
           planets: [...chart.placements.filter((p) => p.house === n).map((p) => p.body as string), ...(pof?.house === n ? ["Part of Fortune"] : [])],
         };
       })
@@ -140,16 +142,16 @@ export function buildReport(chart: ChartResult): NatalReport {
   const strongWeak = (count: number, strongAt: number) => (count >= strongAt ? "strong" : count === 0 ? "weak" : null);
   const els = chart.balance.elements, mods = chart.balance.modalities;
 
-  return {
+  return rx.deep({
     bigThree,
     planets,
     points,
     fortune,
     moonPhase: chart.moonPhase
-      ? { heading: `Born under a ${chart.moonPhase.name}${chart.moonPhase.name.endsWith("Moon") ? "" : " Moon"}`, paragraphs: paras(MOON_PHASE[chart.moonPhase.name]), short: `${Math.round(chart.moonPhase.illumination * 100)}% of the Moon was lit, ${Math.round(chart.moonPhase.elongation)}° ahead of the Sun.` }
+      ? { heading: t(chart.moonPhase.name.endsWith("Moon") ? "Born under a {phase}" : "Born under a {phase} Moon", { phase: S(chart.moonPhase.name) }), paragraphs: paras(MOON_PHASE[chart.moonPhase.name]), short: t("{pct}% of the Moon was lit, {deg}° ahead of the Sun.", { pct: Math.round(chart.moonPhase.illumination * 100), deg: Math.round(chart.moonPhase.elongation) }) }
       : null,
-    ascendant: asc ? { heading: `Ascendant in ${asc.sign} (${formatDegree(asc.degree)})`, paragraphs: paras(ASCENDANT_IN_SIGN[asc.sign].text), short: ASCENDANT_IN_SIGN[asc.sign].short } : null,
-    midheaven: mc ? { heading: `Midheaven in ${mc.sign} (${formatDegree(mc.degree)})`, paragraphs: paras(MIDHEAVEN_IN_SIGN[mc.sign]) } : null,
+    ascendant: asc ? { heading: t("Ascendant in {sign} ({degree})", { sign: S(asc.sign), degree: formatDegree(asc.degree) }), paragraphs: paras(ASCENDANT_IN_SIGN[asc.sign].text), short: ASCENDANT_IN_SIGN[asc.sign].short } : null,
+    midheaven: mc ? { heading: t("Midheaven in {sign} ({degree})", { sign: S(mc.sign), degree: formatDegree(mc.degree) }), paragraphs: paras(MIDHEAVEN_IN_SIGN[mc.sign]) } : null,
     houses,
     balance: {
       elements: (Object.keys(els) as Element[]).map((name) => {
@@ -161,5 +163,7 @@ export function buildReport(chart: ChartResult): NatalReport {
         return { name, count: mods[name], note, text: note ? MODALITY_BALANCE[name][note] : null };
       }),
     },
-  };
+  });
 }
+
+export const REPORT_TEMPLATES = [msg("{a} conjunct {b}"), msg("{a} sextile {b}"), msg("{a} square {b}"), msg("{a} trine {b}"), msg("{a} opposite {b}")];
