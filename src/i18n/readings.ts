@@ -21,6 +21,7 @@ type Dict = Record<string, string>;
 
 const LOADERS: Partial<Record<Locale, () => Promise<{ default: Dict }>>> = {
   es: () => import("./readings/es"),
+  zh: () => import("./readings/zh"),
 };
 
 
