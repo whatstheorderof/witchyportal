@@ -6,6 +6,7 @@ import d_chart_mercury from "./chart-mercury.json";
 import d_chart_moon_phase from "./chart-moon-phase.json";
 import d_chart_saturn from "./chart-saturn.json";
 import d_chart_venus from "./chart-venus.json";
+import d_stars_chinese_2028 from "./stars-chinese-2028.json";
 
-const dict: Record<string, string> = Object.assign({}, d_chart_jupiter, d_chart_lilith, d_chart_mars, d_chart_mercury, d_chart_moon_phase, d_chart_saturn, d_chart_venus);
+const dict: Record<string, string> = Object.assign({}, d_chart_jupiter, d_chart_lilith, d_chart_mars, d_chart_mercury, d_chart_moon_phase, d_chart_saturn, d_chart_venus, d_stars_chinese_2028);
 export default dict;
