@@ -64,7 +64,7 @@ export default async function PairPage({ params }: Props) {
                 <div key={k} className="grid grid-cols-[8.5rem_1fr_2rem] items-center gap-3 text-sm">
                   <dt>{t(label)}</dt>
                   <dd className="h-2.5 overflow-hidden rounded-full bg-ivory/15" aria-hidden><span className="block h-full rounded-full bg-blush" style={{ width: `${c.scores[k] * 10}%` }} /></dd>
-                  <dd className="text-end tabular-nums" aria-label={t("{label}: {n} out of 10", { label: t(label), n: c.scores[k] })}>{c.scores[k]}</dd>
+                  <dd className="text-end tabular-nums"><span aria-hidden>{c.scores[k]}</span><span className="sr-only">{t("{label}: {n} out of 10", { label: t(label), n: c.scores[k] })}</span></dd>
                 </div>
               ))}
             </dl>

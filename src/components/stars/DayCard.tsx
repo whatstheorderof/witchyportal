@@ -13,7 +13,8 @@ export function Ratings({ ratings, light = false }: { ratings: DailyHoroscope["r
       {(["love", "work", "energy"] as const).map((k) => (
         <div key={k} className={`rounded-2xl px-3 py-2 text-center ${light ? "bg-ivory/10" : "bg-white/70 ring-1 ring-line"}`}>
           <dt className={`text-[0.68rem] uppercase tracking-[0.18em] ${light ? "text-ivory/75" : "text-plum-soft"}`}>{LABEL[k]}</dt>
-          <dd className="mt-0.5" aria-label={t("{n} out of 5", { n: ratings[k] })}>
+          <dd className="mt-0.5">
+            <span className="sr-only">{t("{n} out of 5", { n: ratings[k] })}</span>
             {Array.from({ length: 5 }, (_, i) => <span key={i} aria-hidden className={i < ratings[k] ? (light ? "text-gold" : "text-plum") : light ? "text-ivory/25" : "text-line"}>★</span>)}
           </dd>
         </div>
