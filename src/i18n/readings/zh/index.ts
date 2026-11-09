@@ -17,6 +17,7 @@ import d_stars_chinese_year from "./stars-chinese-year.json";
 import d_stars_daily_aspects from "./stars-daily-aspects.json";
 import d_stars_transits_1 from "./stars-transits-1.json";
 import d_stars_transits_2 from "./stars-transits-2.json";
+import d_stars_transits_3 from "./stars-transits-3.json";
 
-const dict: Record<string, string> = Object.assign({}, d_chart_jupiter, d_chart_lilith, d_chart_mars, d_chart_mercury, d_chart_moon_phase, d_chart_moon, d_chart_node, d_chart_outer, d_chart_saturn, d_chart_sun, d_chart_venus, d_pages, d_posts, d_stars_chinese_2028, d_stars_chinese_year, d_stars_daily_aspects, d_stars_transits_1, d_stars_transits_2);
+const dict: Record<string, string> = Object.assign({}, d_chart_jupiter, d_chart_lilith, d_chart_mars, d_chart_mercury, d_chart_moon_phase, d_chart_moon, d_chart_node, d_chart_outer, d_chart_saturn, d_chart_sun, d_chart_venus, d_pages, d_posts, d_stars_chinese_2028, d_stars_chinese_year, d_stars_daily_aspects, d_stars_transits_1, d_stars_transits_2, d_stars_transits_3);
 export default dict;
