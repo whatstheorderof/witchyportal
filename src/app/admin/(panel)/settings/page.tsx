@@ -87,6 +87,11 @@ export default async function SettingsAdmin() {
               <F label="YouTube URL" name="youtube" defaultValue={contact.youtube} mono />
               <F label="TikTok URL" name="tiktok" defaultValue={contact.tiktok} mono />
             </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <F label="PayPal email" name="paypalEmail" type="email" defaultValue={contact.paypalEmail} hint="Shown under “How to pay” on Services and Contact. Leave empty to hide PayPal." />
+              <F label="Revolut username" name="revolut" defaultValue={contact.revolut} mono hint="Without the @, e.g. wportal. Shows a pay link and QR code. Leave empty to hide Revolut." />
+              <F label="PayPal.Me link (optional)" name="paypalMe" defaultValue={contact.paypalMe} mono hint="e.g. https://paypal.me/yourname — adds a tap-to-pay PayPal button." />
+            </div>
           </AdminForm>
         </Panel>
         <Panel title="YouTube channel" id="youtube" intro="Powers the Ask a Witch hub and the daily automatic import.">

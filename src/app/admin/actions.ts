@@ -518,6 +518,13 @@ export async function saveSettings(_: FormState, fd: FormData): Promise<FormStat
     const wa = String(value.whatsapp ?? "").replace(/[\s()-]/g, "");
     if (wa && !/^\+[1-9]\d{7,14}$/.test(wa)) return fail("Enter the WhatsApp number in international format, e.g. +447899034140", { whatsapp: "Use +44… format" });
     value.whatsapp = wa;
+    const paypalEmail = String(value.paypalEmail ?? "");
+    if (paypalEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(paypalEmail)) return fail("Enter a valid PayPal email", { paypalEmail: "Invalid email" });
+    const paypalMe = String(value.paypalMe ?? "");
+    if (paypalMe && !/^https:\/\/(www\.)?paypal\.(me|com)\//.test(paypalMe)) return fail("The PayPal.Me link must start with https://paypal.me/", { paypalMe: "Use https://paypal.me/…" });
+    const revolut = String(value.revolut ?? "").replace(/^@/, "");
+    if (revolut && !/^[A-Za-z0-9._-]{2,40}$/.test(revolut)) return fail("Enter the Revolut username, e.g. wportal", { revolut: "Letters, numbers, . _ - only" });
+    value.revolut = revolut;
     for (const k of ["instagram", "youtube", "tiktok", "etsy"]) {
       const v = String(value[k] ?? "");
       if (v && !/^https:\/\//.test(v)) return fail("Social links must start with https://", { [k]: "Must start with https://" });

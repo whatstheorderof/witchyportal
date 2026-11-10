@@ -12,6 +12,7 @@ import { EnquiryForm } from "@/components/forms";
 import { Markdown } from "@/components/Markdown";
 import { getI18n } from "@/i18n/server";
 import { localeMeta } from "@/i18n/meta";
+import { PaymentOptions, hasPayment } from "@/components/PaymentOptions";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getI18n();
@@ -72,6 +73,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
               )}
             </div>
           )}
+          {hasPayment(contact) && <PaymentOptions contact={contact} t={t} compact />}
           {faqs.length > 0 && (
             <div>
               <p className="eyebrow">{t("Frequently asked")}</p>

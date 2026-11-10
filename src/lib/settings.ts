@@ -51,6 +51,12 @@ export interface ContactSettings {
   tiktok: string;
   etsy: string;
   responseTime: string;
+  /** PayPal email shown under "How to pay" on Services and Contact (empty hides PayPal) */
+  paypalEmail: string;
+  /** Optional PayPal.Me link (https://paypal.me/…) for a tap-to-pay button */
+  paypalMe: string;
+  /** Revolut username without the @, e.g. wportal (empty hides Revolut) */
+  revolut: string;
 }
 
 export interface YouTubeSettings {
@@ -112,6 +118,9 @@ export const DEFAULTS = {
     tiktok: "",
     etsy: "",
     responseTime: "Yulia usually replies within 2–3 working days.",
+    paypalEmail: "",
+    paypalMe: "",
+    revolut: "",
   } as ContactSettings,
   youtube: {
     channelId: "UCj3-UQXzdWlMcUTAJOMigLw",

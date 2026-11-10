@@ -11,6 +11,7 @@ import { TestimonialsStrip } from "@/components/Testimonials";
 import { RetreatPromo } from "@/components/RetreatPromo";
 import { ArrowRight, ExternalIcon } from "@/components/Icons";
 import { getI18n } from "@/i18n/server";
+import { PaymentOptions } from "@/components/PaymentOptions";
 import { localeMeta } from "@/i18n/meta";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -86,6 +87,8 @@ export default async function ServicesPage() {
           </ul>
         </div>
       </section>
+
+      <PaymentOptions contact={contact} t={t} />
 
       {/* Astrology */}
       <section className="container-page py-14 lg:py-20" aria-labelledby="astrology-reports">

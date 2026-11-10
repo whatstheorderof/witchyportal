@@ -20,3 +20,9 @@ export function retreatEmailOf(contact: { email: string; retreatEmail?: string }
 export function mailto(email: string, subject?: string) {
   return `mailto:${email}${subject ? `?subject=${encodeURIComponent(subject)}` : ""}`;
 }
+
+/** revolut.me link for a Revolut username (with or without the @). */
+export function revolutLink(handle: string) {
+  const h = handle.trim().replace(/^@/, "");
+  return h ? `https://revolut.me/${encodeURIComponent(h)}` : null;
+}
