@@ -97,7 +97,31 @@ export default async function AboutPage() {
         </div>
       </div>
 
-      <section id="craft" className="scroll-mt-24 bg-plum-deep py-16 text-ivory lg:py-24" aria-labelledby="craft-title">
+      <section id="miss-generation" className="scroll-mt-24 container-page pb-16 lg:pb-24" aria-labelledby="miss-generation-title">
+        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-14">
+          <div>
+            <p className="eyebrow">{t("Miss Generation 2025")}</p>
+            <h2 id="miss-generation-title" className="display-md mt-3">{t("Crowned Miss Generation 2025")}</h2>
+            <p className="mt-4 max-w-md text-muted">{t("The night Yulia won Miss Generation 2025: red feathers, a jewelled crown and a lot of joy.")}</p>
+            <a href="https://www.youtube.com/shorts/aZITy31NNWA" target="_blank" rel="noopener noreferrer" className="btn-outline mt-6">
+              {t("Watch Yulia talk about the win")} <ArrowRight />
+            </a>
+          </div>
+          <ul className="grid aspect-[6/5] grid-cols-2 grid-rows-2 gap-3 sm:gap-4">
+            {[
+              { src: "/images/miss-generation-sash.jpg", alt: t("Yulia smiling in her jewelled crown and Miss Generation 2025 sash, hands raised to the crown"), cls: "row-span-2 rounded-ss-[5rem]", pos: "object-[center_30%]", sizes: "(min-width:1024px) 28vw, 46vw" },
+              { src: "/images/miss-generation-bouquet.jpg", alt: t("Yulia laughing on stage in her crown and Miss Generation sash, raising a bouquet of flowers"), cls: "", pos: "object-[center_25%]", sizes: "(min-width:1024px) 28vw, 46vw" },
+              { src: "/images/miss-generation-crowning.jpg", alt: t("Yulia on stage in a red feathered gown and Miss Generation sash, holding the jewelled crown on her head"), cls: "rounded-ee-[5rem]", pos: "object-[center_35%]", sizes: "(min-width:1024px) 28vw, 46vw" },
+            ].map((p) => (
+              <li key={p.src} className={`relative overflow-hidden rounded-[1.5rem] ${p.cls}`}>
+                <Image src={p.src} alt={p.alt} fill sizes={p.sizes} className={`object-cover ${p.pos}`} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section id="craft"className="scroll-mt-24 bg-plum-deep py-16 text-ivory lg:py-24" aria-labelledby="craft-title">
         <div className="container-page">
           <p className="eyebrow text-blush">{t("My craft")}</p>
           <h2 id="craft-title" className="display-md mt-2 text-ivory">{t("At Yulia’s altar")}</h2>
