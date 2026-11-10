@@ -6,7 +6,7 @@ Last updated 2 October 2026. See also [PRIORITY_REVIEW.md](PRIORITY_REVIEW.md) f
 
 | # | What | Why |
 | --- | --- | --- |
-| 1.1 | **Retreat details**: dates, location, price and deposit, what's included and not, accommodation, a day-by-day outline, cancellation terms | "Awaken the Wild Goddess" is live but has no dates or prices yet, so it currently only collects waitlist sign-ups. |
+| 1.1 | **Retreat details**: dates, location, price and deposit, what's included and not, accommodation, a day-by-day outline, cancellation terms | "Feral Goddess Rising" is live but has no dates or prices yet, so it currently only collects waitlist sign-ups. |
 | 1.2 | **Payment links** for each booking option (live and test) | So guests can actually pay. Stripe Payment Links are the simplest option — see docs/BOOKINGS.md. |
 | 1.3 | **Point witchyportal.org at the new site** | Domain added in Vercel; add the DNS records (see DEPLOYMENT.md §5). Her YouTube channel links to the old witchyportal.com — update it to witchyportal.org. |
 | 1.4 | A **public contact email** | The Contact page currently offers the form and Instagram only. |

@@ -1,5 +1,5 @@
 ---
-title: Awaken the Wild Goddess
+title: Feral Goddess Rising
 tagline: An intimate 7-day journey to awaken the wild Goddess within.
 location: Location to be announced
 duration: 7 days
@@ -104,7 +104,7 @@ itinerary:
       Workshop: "Tools for Real Life" — how to take your feral energy home.
       Afternoon: Relaxed beach time.
       Evening: Closing feast, then a gentle moonlight dance or reflective circle.
-seoTitle: "Awaken the Wild Goddess — 7-day witchy retreat with Yulia Moon"
+seoTitle: "Feral Goddess Rising — 7-day witchy retreat with Yulia Moon"
 seoDescription: "A 7-day retreat of tarot, candle rituals, sea ceremonies, island boat trips and dancing under the stars. Join the waitlist."
 ---
 ## Are you ready to awaken the wild Goddess within?
