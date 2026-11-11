@@ -24,6 +24,7 @@ export const discoverNav = [
   ...starsNav.slice(1),
   { href: "/tarot", label: msg("Tarot"), blurb: msg("Card of the day, and draw your own.") },
   { href: "/journal", label: msg("Your journal"), blurb: msg("Tarot pulls, dreams and Moon intentions, private to you.") },
+  { href: "/dream-dictionary", label: msg("Dream dictionary"), blurb: msg("What your dreams mean, symbol by symbol.") },
   { href: "/moon", label: msg("Moon calendar"), blurb: msg("The year's new and full moons, eclipses and sabbats.") },
   { href: "/zodiac", label: msg("Zodiac signs"), blurb: msg("The twelve signs: traits, love and compatibility.") },
   { href: "/mercury-retrograde", label: msg("Mercury retrograde"), blurb: msg("Every retrograde and shadow, and what it means for you.") },

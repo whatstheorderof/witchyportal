@@ -41,6 +41,8 @@ export function JournalApp({ cards }: { cards: string[] }) {
         setCard({ n, reversed });
         setTitle(reversed ? t("{card}, reversed", { card: cards[n] }) : cards[n]);
       }
+      const given = q.get("title");
+      if (given) setTitle(given.slice(0, 120));
       setReady(true);
     }, 0);
     return () => clearTimeout(id);
