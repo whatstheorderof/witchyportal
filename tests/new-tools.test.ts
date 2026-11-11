@@ -134,3 +134,32 @@ describe("Chinese New Year pages are written ahead", () => {
     expect(CHINESE_YEARS[next], `Write the ${next} Chinese New Year text (src/lib/astro/chinese-years.ts)`).toBeTruthy();
   });
 });
+
+import { birthdayNumber, lifePath, nameNumbers, personalYear, reduce, slugNum } from "@/lib/numerology";
+describe("numerology", () => {
+  it("reduces and keeps master numbers", () => {
+    expect(reduce(29)).toBe(11);
+    expect(reduce(29, false)).toBe(2);
+    expect(reduce(38)).toBe(11);
+    expect(reduce(1992)).toBe(3);
+  });
+  it("life path from month, day and year", () => {
+    expect(lifePath("1992-07-14")).toBe("6");
+    expect(lifePath("1990-11-29")).toBe("5"); // 11 + 11 + 1 = 23 → 5
+    expect(lifePath("1998-11-02")).toBe("22"); // 11 + 2 + 9
+  });
+  it("rejects invalid dates", () => {
+    expect(lifePath("2023-02-30")).toBeNull();
+    expect(lifePath("")).toBeNull();
+  });
+  it("birthday, personal year and name numbers", () => {
+    expect(birthdayNumber("1992-07-29")).toBe("11");
+    expect(personalYear("1992-07-14", 2026)).toBe(reduce(7 + 5 + 1, false));
+    const n = nameNumbers("José Ålva")!;
+    expect(n.expression).toBe("22"); // J1 O6 S1 E5 A1 L3 V4 A1
+    expect(n.soul).toBe("4"); // O6 E5 A1 A1 = 13
+    expect(nameNumbers("李华")).toBeNull();
+    expect(slugNum("life-path-33")).toBe("33");
+    expect(slugNum("life-path-10")).toBeNull();
+  });
+});
