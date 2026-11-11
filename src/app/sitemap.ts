@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { DREAMS } from "@/lib/astro/text/stars/dreams";
+import { CORRESPONDENCES } from "@/lib/astro/text/stars/correspondences";
 import { siteUrl } from "@/lib/env";
 import { listPosts, listRetreats } from "@/lib/queries";
 import { SIGNS } from "@/lib/astro/types";
@@ -37,6 +38,8 @@ const STATIC: [string, Entry["changeFrequency"], number][] = [
   ...yearlyYears().flatMap((y) => SIGNS.map((s) => [`/horoscope/${s.toLowerCase()}/${y}`, "monthly", 0.7] as [string, Entry["changeFrequency"], number])),
   ["/chinese-zodiac", "monthly", 0.7],
   ["/dream-dictionary", "monthly", 0.7],
+  ["/correspondences", "monthly", 0.7],
+  ...Object.keys(CORRESPONDENCES).map((c) => [`/correspondences/${c}`, "monthly", 0.6] as [string, Entry["changeFrequency"], number]),
   ...Object.keys(DREAMS).map((d) => [`/dream-dictionary/${d}`, "monthly", 0.6] as [string, Entry["changeFrequency"], number]),
   ...Object.keys(CHINESE_YEARS).map((y) => [`/chinese-zodiac/${y}`, "monthly", 0.7] as [string, Entry["changeFrequency"], number]),
   ...ANIMALS.map((a) => [`/chinese-zodiac/${a.toLowerCase()}`, "monthly", 0.6] as [string, Entry["changeFrequency"], number]),

@@ -36,9 +36,11 @@ function walk(dir: string, out: string[] = []) {
 const ui = new Set<string>();
 const callRe = /\b(?:t|tr|msg)\(\s*("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\$]|\\.)*`)/g;
 for (const file of walk(path.join(ROOT, "src"))) {
-  if (file.includes(`${path.sep}lib${path.sep}astro${path.sep}text`)) continue;
+  // Reading texts are translated by scripts/readings.ts; only their msg() labels (names, filters) are interface strings.
+  const isText = file.includes(`${path.sep}lib${path.sep}astro${path.sep}text`);
   const src = readFileSync(file, "utf8");
   for (const m of src.matchAll(callRe)) {
+    if (isText && !m[0].startsWith("msg")) continue;
     const lit = m[1];
     let v: string;
     if (lit.startsWith("`")) v = lit.slice(1, -1).replace(/\\`/g, "`");
