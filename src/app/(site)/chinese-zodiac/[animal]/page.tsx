@@ -1,4 +1,5 @@
 import Link from "@/i18n/client";
+import { ShareImage } from "@/components/ShareImage";
 import { notFound } from "next/navigation";
 import { ANIMALS, FIXED_ELEMENT, RELATION_LABEL, animalFromSlug, animalSlug, elementOfYear, lunarNewYearCached, relation, yearsOf, type Animal } from "@/lib/astro/chinese";
 import { CHINESE_ANIMALS } from "@/lib/astro/text/stars/chinese-animals";
@@ -55,6 +56,7 @@ export default async function AnimalPage({ params }: Props) {
           <nav aria-label={tr("Breadcrumb")} className="text-sm text-ivory/70"><Link href="/chinese-zodiac" className="hover:text-ivory">{tr("Chinese zodiac")}</Link> <span aria-hidden>/</span> {A}</nav>
           <h1 className="display-lg mt-4 text-ivory">{tr("The {animal}", { animal: a === "Goat" ? tr("Goat (Sheep)") : A })}</h1>
           <p className="mt-2 text-ivory/80"><span lang="zh">{t.chineseName}</span> · {tr("fixed element {element}", { element: tr(FIXED_ELEMENT[a]) })} · <span lang={L}>{t.keywords.join(", ")}</span></p>
+          <div className="mt-5"><ShareImage query={{ kind: "animal", a }} filename={`chinese-zodiac-${a.toLowerCase()}`} className="btn-light" /></div>
         </div>
       </section>
       <div className="container-page grid max-w-3xl gap-6 py-12">

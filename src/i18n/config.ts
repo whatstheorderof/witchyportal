@@ -56,7 +56,7 @@ export function splitLocale(full: string): { locale: Locale; path: string } {
  */
 /** Pages whose content is long-form readings (Phase 2): translated once a language is in READINGS_DONE. */
 export const READINGS_PATHS = [/^\/(horoscope|zodiac|moon|tarot|today|this-week-in-astrology|mercury-retrograde|eclipses|chinese-zodiac|compatibility|birth-chart|calculators|astrology|articles|tips|[a-z-]+-calculator)(\/.*)?$/];
-export const TRANSLATED_PATHS = [/^\/$/, /^\/retreats(\/[^/]+)?$/, /^\/retreats\/[^/]+\/book$/, /^\/booking\/return$/, /^\/about$/, /^\/contact$/, /^\/services$/, /^\/testimonials$/, /^\/discover$/, /^\/policies\/[^/]+$/, /^\/socials$/, /^\/favourites$/, /^\/watch$/, /^\/ask-a-witch$/];
+export const TRANSLATED_PATHS = [/^\/$/, /^\/retreats(\/[^/]+)?$/, /^\/retreats\/[^/]+\/book$/, /^\/booking\/return$/, /^\/about$/, /^\/contact$/, /^\/services$/, /^\/testimonials$/, /^\/discover$/, /^\/policies\/[^/]+$/, /^\/socials$/, /^\/favourites$/, /^\/journal$/, /^\/watch$/, /^\/ask-a-witch$/];
 /** Languages whose long-form readings (Phase 2) are complete. */
 export const READINGS_DONE: readonly Locale[] = ["es", "zh"];
 /** The language readings are shown in for a visitor's language. */

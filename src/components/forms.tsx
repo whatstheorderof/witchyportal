@@ -61,7 +61,7 @@ export function Field({
   );
 }
 
-export function NewsletterForm({ source = "footer", dark = false }: { source?: string; dark?: boolean }) {
+export function NewsletterForm({ source = "footer", dark = false, buttonLabel }: { source?: string; dark?: boolean; buttonLabel?: string }) {
   const { state, action, pending, onSubmit } = useActionForm(subscribe);
   const id = useId();
   const { t } = useI18n();
@@ -77,7 +77,7 @@ export function NewsletterForm({ source = "footer", dark = false }: { source?: s
           defaultValue={state.values?.email} aria-invalid={state.errors?.email ? true : undefined}
           aria-describedby={state.errors?.email ? `${id}-err` : undefined} className="input flex-1"
         />
-        <button className={dark ? "btn-light" : "btn-primary"} disabled={pending}>{pending ? t("Joining…") : t("Subscribe")}</button>
+        <button className={dark ? "btn-light" : "btn-primary"} disabled={pending}>{pending ? t("Joining…") : buttonLabel ?? t("Subscribe")}</button>
       </div>
       {state.errors?.email && <p id={`${id}-err`} className={`text-sm ${dark ? "text-blush" : "text-danger"}`}>{state.errors.email}</p>}
       <label className={`flex items-start gap-3 text-sm ${dark ? "text-ivory/80" : "text-muted"}`}>

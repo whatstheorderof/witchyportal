@@ -38,7 +38,8 @@ export async function subscribe(_: FormState, fd: FormData): Promise<FormState> 
       .values({ email: parsed.data.email, source: parsed.data.source ?? "site" })
       .onConflictDoUpdate({ target: subscribers.email, set: { unsubscribedAt: null, consentAt: new Date() } });
     const source = parsed.data.source ?? "site";
-    after(() => addToList(source === "synastry-report" ? "REPORTS" : "NEWSLETTER", parsed.data.email));
+    after(() => addToList(source === "synastry-report" ? "REPORTS" : source === "moon" ? "MOON" : "NEWSLETTER", parsed.data.email));
+    if (source === "moon") return { ok: true, message: t("You're on the Moon list. Look out for an email on the next New or Full Moon (check your Promotions folder if it doesn't arrive).") };
     return { ok: true, message: t("You're subscribed — thank you! Look out for Yulia's next letter in your inbox (check your Promotions folder if it doesn't arrive).") };
   } catch (e) {
     console.error("subscribe failed", e);

@@ -80,7 +80,7 @@ async function fromDatabase() {
   if (!url) { console.warn("⚠ DATABASE_URL not set — content from the database is skipped."); return; }
   const sql = postgres(url, { max: 1, onnotice: () => {} });
   try {
-    const skip = new Set(["id", "slug", "status", "publishAt", "createdAt", "updatedAt", "heroMediaId", "videoUrl", "seoTitle", "syncHash", "gallery", "currency", "email", "retreatEmail", "whatsapp", "instagram", "youtube", "tiktok", "etsy", "featuredRetreatId", "weekVideoPickId", "weekArticlePickId", "weekTipPickId", "welcomeVideoUrl", "heroVideoMediaId", "introMediaId", "portraitMediaId", "secondaryMediaId", "meetMediaId", "announcement", "channelId", "channelUrl"]);
+    const skip = new Set(["id", "slug", "status", "publishAt", "createdAt", "updatedAt", "heroMediaId", "videoUrl", "seoTitle", "syncHash", "gallery", "currency", "email", "retreatEmail", "whatsapp", "instagram", "youtube", "tiktok", "etsy", "paypalEmail", "paypalMe", "revolut", "featuredRetreatId", "weekVideoPickId", "weekArticlePickId", "weekTipPickId", "welcomeVideoUrl", "heroVideoMediaId", "introMediaId", "portraitMediaId", "secondaryMediaId", "meetMediaId", "announcement", "channelId", "channelUrl"]);
     const retreats = await sql`select * from retreats where status = 'published'`;
     for (const r of retreats) {
       const { title, tagline, location, country, summary, concept, personal_message, guest_experience, benefits, activities, itinerary, inclusions, exclusions, accommodation, duration, meals, travel, for_me, terms, seo_title, seo_description } = r;

@@ -11,6 +11,8 @@ import { RetreatPromo } from "@/components/RetreatPromo";
 import { ArrowRight } from "@/components/Icons";
 import { MoonYear, type DayMark } from "@/components/moon/MoonYear";
 import { KeyDates } from "@/components/moon/KeyDates";
+import { NewsletterForm } from "@/components/forms";
+import { siteUrl } from "@/lib/env";
 
 export async function generateMetadata() {
   const year = new Intl.DateTimeFormat("en-GB", { timeZone: SITE_TIMEZONE, year: "numeric" }).format(new Date());
@@ -67,6 +69,7 @@ export default async function MoonPage({ searchParams }: Props) {
     }
   }
 
+  const webcal = `${siteUrl().replace(/^https?:/, "webcal:")}/moon/calendar.ics`;
   return (
     <>
       <PageHero image="veiledSea" eyebrow={t("Moon calendar")} title={t("Live by the moon")} intro={rx("Tonight's moon, the whole year at a glance, and the dates worth planning your rituals around.")} />
@@ -128,6 +131,25 @@ export default async function MoonPage({ searchParams }: Props) {
         <p className="mt-6 text-xs text-muted">
           {rx("Calculated with Astronomy Engine for the UK (Europe/London). Full moon names are traditional Northern Hemisphere names; a Blue Moon is the second full moon in a calendar month; supermoons are full moons closer than 362,000 km. Imbolc, Beltane, Lammas and Samhain are shown on their traditional dates.")}
         </p>
+      </section>
+      <section id="reminders" className="scroll-mt-24 bg-plum-deep py-14 text-ivory lg:py-20" aria-labelledby="reminders-title">
+        <div className="container-page grid gap-10 lg:grid-cols-2 lg:gap-16">
+          <div>
+            <p className="eyebrow text-blush">{t("Moon reminders")}</p>
+            <h2 id="reminders-title" className="display-md mt-2 text-ivory">{t("Never miss a Moon")}</h2>
+            <p className="mt-4 text-ivory/85">{t("Add every New and Full Moon, eclipse and sabbat to your phone's calendar. It updates by itself, so next year's Moons appear on their own.")}</p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a href={webcal} className="btn-light min-h-11">{t("Subscribe on iPhone or Mac")}</a>
+              <a href={`https://calendar.google.com/calendar/render?cid=${encodeURIComponent(webcal)}`} target="_blank" rel="noopener noreferrer" className="btn-outline min-h-11 border-ivory/40 text-ivory hover:bg-ivory/10">{t("Add to Google Calendar")}</a>
+            </div>
+          </div>
+          <div className="rounded-[2rem] bg-ivory/10 p-6 ring-1 ring-ivory/15 sm:p-8">
+            <p className="font-display text-2xl text-ivory">{t("Or get an email on each New and Full Moon")}</p>
+            <p className="mt-2 text-ivory/80">{t("Yulia's ritual for that Moon, in your inbox on the day. Unsubscribe any time.")}</p>
+            <div className="mt-5"><NewsletterForm source="moon" dark buttonLabel={t("Remind me")} /></div>
+            <Link href="/journal?add=moon" className="mt-6 inline-block text-ivory underline underline-offset-4">{t("Write a Moon intention in your journal")}</Link>
+          </div>
+        </div>
       </section>
       <RetreatPromo eyebrow={t("Dance under the stars")} />
     </>

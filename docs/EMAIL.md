@@ -7,13 +7,14 @@ The site uses Brevo (account: feralgoddessrising@gmail.com) for:
 | Newsletter sign-up (footer and elsewhere) | Contact added to the **Newsletter** list |
 | "Tell me when the compatibility report launches" | Added to the **Reports** list (or Newsletter if that list isn't set) |
 | Retreat waitlist | Added to the **Waitlist** list; the visitor gets a confirmation email; Yulia gets an alert at the retreat email (feralgoddessrising@gmail.com) |
+| "Never miss a Moon" sign-up on /moon | Added to the **Moon reminders** list. Every morning at 06:30 UTC `/api/cron/moon-email` checks for a New or Full Moon that UK day and, once per Moon, sends that list a Brevo campaign with Yulia's ritual for the Moon's sign (from the New/Full Moon in each sign readings). English only. Needs `CRON_SECRET` set in Vercel, like the YouTube sync. |
 | Contact form | Yulia gets the enquiry by email (retreat enquiries → retreat email; others → the public email). Reply goes straight to the visitor |
 
 Everything is still saved in the database first (Admin → Inbox), so nothing is lost if Brevo is down or not set up. Newsletters themselves are written and sent from Brevo (Campaigns), which also handles unsubscribes.
 
 ## Setting it up (once)
 
-1. **Brevo → Contacts → Lists**: create three lists — `Newsletter`, `Retreat waitlist`, `Report launch`. Note each list's ID (the number shown next to it).
+1. **Brevo → Contacts → Lists**: create four lists — `Newsletter`, `Retreat waitlist`, `Report launch`, `Moon reminders`. Note each list's ID (the number shown next to it).
 2. **Brevo → SMTP & API → API keys**: create a key named `witchyportal`.
 3. **Sender.** Best: authenticate the domain so emails come from `hello@witchyportal.org` and land in inboxes, not spam:
    - Brevo → Senders, Domains & Dedicated IPs → **Domains → Add a domain** → `witchyportal.org`.
@@ -29,6 +30,7 @@ Everything is still saved in the database first (Admin → Inbox), so nothing is
 | `BREVO_LIST_NEWSLETTER` | list ID, e.g. `3` |
 | `BREVO_LIST_WAITLIST` | list ID |
 | `BREVO_LIST_REPORTS` | list ID (optional) |
+| `BREVO_LIST_MOON` | list ID for Moon reminders |
 
 Without `BREVO_API_KEY` the site works as before and sends nothing. Errors from Brevo are written to the Vercel logs and never stop a form.
 

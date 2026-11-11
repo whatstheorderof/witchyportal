@@ -13,7 +13,7 @@ export async function generateMetadata() {
   });
 }
 
-const MORE = [["/horoscope", msg("All horoscopes")], ["/this-week-in-astrology", msg("This week in astrology")], ["/compatibility", msg("Compatibility")], ["/tarot", msg("Card of the day")], ["/moon/phases", msg("Moon phases")]];
+const MORE = [["/tarot#your-card", msg("Draw your card for today")], ["/journal", msg("Your journal")], ["/horoscope", msg("All horoscopes")], ["/this-week-in-astrology", msg("This week in astrology")], ["/compatibility", msg("Compatibility")], ["/tarot", msg("Card of the day")], ["/moon/phases", msg("Moon phases")]];
 
 export default async function TodayPage() {
   const { t } = await getReadings();

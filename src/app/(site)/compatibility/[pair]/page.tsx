@@ -1,4 +1,5 @@
 import Link from "@/i18n/client";
+import { ShareImage } from "@/components/ShareImage";
 import { notFound, permanentRedirect } from "next/navigation";
 import { SIGNS } from "@/lib/astro/types";
 import { SIGN_INFO } from "@/lib/astro/interpretations";
@@ -55,6 +56,7 @@ export default async function PairPage({ params }: Props) {
           <p className="mt-6 flex items-center gap-4 font-display text-5xl sm:text-6xl" aria-hidden><span>{SIGN_INFO[c.a].glyph}</span><span className="text-blush">♡</span><span>{SIGN_INFO[c.b].glyph}</span></p>
           <h1 className="display-lg mt-4 text-ivory">{t("{a} & {b} compatibility", { a: A, b: B })}</h1>
           <p lang={rx.lang} className="mt-3 max-w-2xl text-lg text-ivory/85">{c.text.summary.join(" ")}</p>
+          <div className="mt-5"><ShareImage query={{ kind: "compat", a: c.a, b: c.b }} filename={`${c.a}-and-${c.b}`.toLowerCase()} className="btn-light" /></div>
           <div className="mt-8 grid gap-6 sm:grid-cols-[auto_1fr] sm:items-center">
             <div className="grid h-32 w-32 place-items-center rounded-full border-4 border-blush/70 text-center">
               <span><span className="block font-display text-5xl leading-none">{c.scores.overall}</span><span className="text-sm text-ivory/75">{t("out of 10")}</span></span>

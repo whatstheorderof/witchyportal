@@ -12,7 +12,7 @@ export const OG_TYPE = "image/png";
 
 const ASSETS = join(process.cwd(), "assets");
 let fonts: Promise<{ name: string; data: Buffer; weight: 500 | 600; style: "normal" | "italic" }[]> | null = null;
-function loadFonts() {
+export function loadFonts() {
   fonts ??= Promise.all([
     readFile(join(ASSETS, "fonts/cormorant-garamond-latin-600-normal.woff")).then((data) => ({ name: "Cormorant", data, weight: 600 as const, style: "normal" as const })),
     readFile(join(ASSETS, "fonts/cormorant-garamond-latin-500-italic.woff")).then((data) => ({ name: "Cormorant", data, weight: 500 as const, style: "italic" as const })),

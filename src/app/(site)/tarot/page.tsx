@@ -10,6 +10,7 @@ import { CardSymbol } from "@/components/TarotCardView";
 import { formatDate } from "@/lib/dates";
 import { PageHero } from "@/components/Section";
 import { DailyCard } from "@/components/tarot/DailyCard";
+import { DailyPull } from "@/components/tarot/DailyPull";
 import { TarotReading } from "@/components/tarot/TarotReading";
 import { RetreatPromo } from "@/components/RetreatPromo";
 import { ArrowRight } from "@/components/Icons";
@@ -36,6 +37,10 @@ export default async function TarotPage() {
 
       <section className="container-page py-14 lg:py-20" aria-labelledby="today">
         <DailyCard card={today} depth={depth[today.n]} dateLabel={formatDate(new Date(), { weekday: "long", day: "numeric", month: "long", year: undefined }, info.intl)} />
+      </section>
+
+      <section id="your-card" className="scroll-mt-24 bg-ivory-deep py-14 lg:py-20" aria-label={t("Your card for today")}>
+        <div className="container-page"><DailyPull deck={deck} depth={depth} /></div>
       </section>
 
       <section className="container-page py-14 lg:py-20" aria-labelledby="arcana">

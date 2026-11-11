@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { ShareImage } from "@/components/ShareImage";
 import Link, { useI18n } from "@/i18n/client";
 import { PlaceCombobox, type Place } from "@/components/birth-chart/BirthChart";
 import { CALCS, type CalcKind, type CalcResult } from "@/lib/astro/calc-meta";
@@ -113,6 +114,9 @@ export function SignCalculator({ kind }: { kind: CalcKind }) {
               </ol>
               {result.returnText && <div className="mt-6 grid gap-3 leading-relaxed text-ink/85">{result.returnText.map((p, i) => <p key={i}>{p}</p>)}</div>}
             </section>
+          )}
+          {kind === "big-three" && result.cards[0]?.sign && result.cards[1]?.sign && (
+            <div><ShareImage query={{ kind: "big3", sun: result.cards[0].sign, moon: result.cards[1].sign, ...(result.cards[2]?.sign ? { rising: result.cards[2].sign } : {}) }} filename="my-big-three" className="btn-primary" /></div>
           )}
           {result.notes.map((n) => <p key={n} className="text-sm text-muted">{n}</p>)}
           <p className="rounded-2xl bg-plum-deep p-6 text-ivory">
