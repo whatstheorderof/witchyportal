@@ -27,6 +27,7 @@ export const discoverNav = [
   { href: "/dream-dictionary", label: msg("Dream dictionary"), blurb: msg("What your dreams mean, symbol by symbol.") },
   { href: "/correspondences", label: msg("Correspondences"), blurb: msg("Crystals, herbs and candle colours for every intention.") },
   { href: "/numerology", label: msg("Numerology"), blurb: msg("Your life path number and what it means.") },
+  { href: "/quizzes", label: msg("Quizzes"), blurb: msg("Which witch are you? And is the retreat for you?") },
   { href: "/moon", label: msg("Moon calendar"), blurb: msg("The year's new and full moons, eclipses and sabbats.") },
   { href: "/zodiac", label: msg("Zodiac signs"), blurb: msg("The twelve signs: traits, love and compatibility.") },
   { href: "/mercury-retrograde", label: msg("Mercury retrograde"), blurb: msg("Every retrograde and shadow, and what it means for you.") },

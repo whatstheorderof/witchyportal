@@ -404,6 +404,7 @@ export default async function RetreatPage(props: Props) {
               <div className="mt-10 scroll-mt-36 border-t border-line pt-8" id="waitlist">
                 <h3 className="font-display text-2xl text-plum">{t("Join the waitlist")}</h3>
                 <p className="mt-2 text-muted">{t("We’ll email you when dates are released or a place opens up, before anything is announced publicly. Joining the waitlist is not a booking.")}</p>
+                {retreat.slug === "awaken-the-wild-goddess" && <p className="mt-2 text-sm"><Link href="/quizzes/feral-goddess-rising" className="text-plum link-underline">{t("Not sure it’s for you? Take the two-minute quiz")}</Link></p>}
                 <div className="mt-5">
                   <WaitlistForm retreatId={retreat.id} departures={departures.map((d) => ({ id: d.id, label: d.dateLabel }))} />
                 </div>

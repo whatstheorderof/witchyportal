@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { NUM_KEYS, numSlug } from "@/lib/numerology";
+import { WITCH_TYPES } from "@/lib/astro/text/stars/quizzes";
 import { DREAMS } from "@/lib/astro/text/stars/dreams";
 import { CORRESPONDENCES } from "@/lib/astro/text/stars/correspondences";
 import { siteUrl } from "@/lib/env";
@@ -41,6 +42,10 @@ const STATIC: [string, Entry["changeFrequency"], number][] = [
   ["/dream-dictionary", "monthly", 0.7],
   ["/correspondences", "monthly", 0.7],
   ["/numerology", "monthly", 0.7],
+  ["/quizzes", "monthly", 0.6],
+  ["/quizzes/which-witch", "monthly", 0.6],
+  ["/quizzes/feral-goddess-rising", "monthly", 0.6],
+  ...WITCH_TYPES.map((w) => [`/quizzes/which-witch/${w}`, "monthly", 0.5] as [string, Entry["changeFrequency"], number]),
   ...NUM_KEYS.map((n) => [`/numerology/${numSlug(n)}`, "monthly", 0.6] as [string, Entry["changeFrequency"], number]),
   ...Object.keys(CORRESPONDENCES).map((c) => [`/correspondences/${c}`, "monthly", 0.6] as [string, Entry["changeFrequency"], number]),
   ...Object.keys(DREAMS).map((d) => [`/dream-dictionary/${d}`, "monthly", 0.6] as [string, Entry["changeFrequency"], number]),
